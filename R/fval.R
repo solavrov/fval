@@ -802,16 +802,19 @@ demoTFutSensToRP <- function(ticker) {
 
 #' Chart historical interest rates for some period of 2017 related to XXU7 contracts
 #'
+#' @param histFile History file where function takes interest rate data
 #' @param ois3 Chart USD OIS 3M if TRUE
 #' @param ois4 Chart USD OIS 4M if TRUE
 #'
 #' @return Chart of historical interest rates
 #' @export
-demoTFutRatesHistory <- function(ois3 = FALSE, ois4 = FALSE) {
+demoTFutRatesHistory <- function(histFile = "fval_data/hist_tuu7.csv",
+                                 ois3 = FALSE,
+                                 ois4 = FALSE) {
 
   cat("ATTENTION: Need demo data files in fval_data folder\n")
 
-  hist <- read.csv("fval_data/hist_tuu7.csv")
+  hist <- read.csv(histFile)
   hist$dates <- as.Date(lubridate::parse_date_time(as.character(hist$dates), "ymd"))
 
   yRange <-
@@ -845,7 +848,7 @@ demoTFutRatesHistory <- function(ois3 = FALSE, ois4 = FALSE) {
     col = "black",
     xlab = "Date",
     ylab = "Rate",
-    main = "Interest Rates 2017",
+    main = "Interest Rates",
     ylim = yRange
   )
 
