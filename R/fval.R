@@ -410,10 +410,12 @@ futDataList <- function() {
       "10Y TNote Sep-17",
       "Ultra 10Y TNote Sep-17",
       "TBond Sep-17",
-      "Ultra TBond Sep-17"
+      "Ultra TBond Sep-17",
+      "2Y TNote Mar-17",
+      "2Y TNote Mar-18"
     ),
 
-    tickers = c("TUU7", "FVU7", "TYU7", "UXYU7", "USU7", "WNU7"),
+    tickers = c("TUU7", "FVU7", "TYU7", "UXYU7", "USU7", "WNU7", "TUH7", "TUH8"),
 
     deliveryDates = c(
       "2017-10-04",
@@ -421,10 +423,12 @@ futDataList <- function() {
       "2017-09-29",
       "2017-09-29",
       "2017-09-29",
-      "2017-09-29"
+      "2017-09-29",
+      "2017-04-05",
+      "2018-04-04"
     ),
 
-    notionals = c(2*10^5, 10^5, 10^5, 10^5, 10^5, 10^5),
+    notionals = c(2*10^5, 10^5, 10^5, 10^5, 10^5, 10^5, 2*10^5, 2*10^5),
 
     ctdFiles = c(
       "fval_data/ctd_tuu7.csv",
@@ -432,7 +436,9 @@ futDataList <- function() {
       "fval_data/ctd_tyu7.csv",
       "fval_data/ctd_uxyu7.csv",
       "fval_data/ctd_usu7.csv",
-      "fval_data/ctd_wnu7.csv"
+      "fval_data/ctd_wnu7.csv",
+      "fval_data/ctd_tuh7.csv",
+      "fval_data/ctd_tuh8.csv"
     ),
 
     histFiles = c(
@@ -441,7 +447,9 @@ futDataList <- function() {
       "fval_data/hist_tyu7.csv",
       "fval_data/hist_uxyu7.csv",
       "fval_data/hist_usu7.csv",
-      "fval_data/hist_wnu7.csv"
+      "fval_data/hist_wnu7.csv",
+      "fval_data/hist_tuh7.csv",
+      "fval_data/hist_tuh8.csv"
     )
 
   )
@@ -618,7 +626,7 @@ getTFutModelAnalytics <- function(fut,
                                   futField = "futPrices",
                                   ctdField = "ctdPrices",
                                   repoField = "repoRates",
-                                  dateFormat = "dmy",
+                                  dateFormat = "ymd",
                                   sep = ",") {
 
   hist <- read.csv(histFile, sep = sep)
@@ -765,7 +773,7 @@ demoTFutSensToRP <- function(ticker) {
   fut <- TFutures(ticker)
   i <- which(futDataList()$tickers == fut$ticker)
   hist <- read.csv(futDataList()$histFiles[i])
-  hist$dates <- as.Date(lubridate::parse_date_time(as.character(hist$dates), "dmy"))
+  hist$dates <- as.Date(lubridate::parse_date_time(as.character(hist$dates), "ymd"))
 
   pvbprp <- hlpr::KKKV(getPVBPRPofTFutures,
                        fut,
@@ -804,7 +812,7 @@ demoTFutRatesHistory <- function(ois3 = FALSE, ois4 = FALSE) {
   cat("ATTENTION: Need demo data files in fval_data folder\n")
 
   hist <- read.csv("fval_data/hist_tuu7.csv")
-  hist$dates <- as.Date(lubridate::parse_date_time(as.character(hist$dates), "dmy"))
+  hist$dates <- as.Date(lubridate::parse_date_time(as.character(hist$dates), "ymd"))
 
   yRange <-
     c(
