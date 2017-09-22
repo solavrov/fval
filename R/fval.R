@@ -620,7 +620,7 @@ getPVBPRPofTFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date())
 #' @param sep Separator i.e. comma, semicolon or else
 #'
 #' @return Data frame with impliedRates, modelPrices, errors32nds
-#' @export
+#' @exporjib
 getTFutModelAnalytics <- function(fut,
                                   histFile,
                                   futField = "futPrices",
