@@ -42,6 +42,45 @@ nextBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 }
 
 
+prevBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
+
+  repeat {
+    date <- date - 1
+    if (RQuantLib::isBusinessDay(calendar, date)) break
+  }
+
+  return (date)
+
+}
+
+
+nextMonth <- function(month) {
+
+  month <- month + 1
+  if (month > 12) month <- 1
+
+  return (month)
+
+}
+
+
+lastBizDay <- function(month, year, calendar = "WeekendsOnly") {
+
+  prevBizDay(as.Date(paste0(year, '-', nextMonth(month), '-', '01')), calendar)
+
+}
+
+
+firstBizDay <- function(month, year, calendar = "WeekendsOnly") {
+
+  nextBizDay(prevBizDay(
+    as.Date(paste0(year, '-', month, '-', '01')),
+    calendar)
+    )
+
+}
+
+
 #' Constructor of european option object
 #'
 #' Attributes:
@@ -473,7 +512,7 @@ futDataList <- function() {
 TFutures <- function(ticker = NA) {
 
   fut <- list()
-  class(fut) <- "TFutures.fval"
+  class(fut) <- "TFutures"
 
   #default attributes
   fut$name <- NA
@@ -484,23 +523,150 @@ TFutures <- function(ticker = NA) {
 
   if (!is.na(ticker)) {
 
-    if (is.character(ticker)) {
-      i <- which(futDataList()$tickers == ticker)
-    } else {
-      i <- ticker
-    }
+    fut$name <- getName.TFutures(ticker)
+    fut$ticker <- ticker
+    fut$deliveryDate <- getDeliveryDate.TFutures(ticker)
+    fut$notionalAmount <- getNotional.TFutures(ticker)
 
-    fut$name <- futDataList()$names[i]
-    fut$ticker <- futDataList()$tickers[i]
-    fut$deliveryDate <- as.Date(futDataList()$deliveryDates[i])
-    fut$notionalAmount <- futDataList()$notionals[i]
-    fut$ctd <- Bond(futDataList()$ctdFiles[i], "mdy")
+
+    ctdFileName <- paste0("fval_data/ctd_", tolower(ticker), ".csv")
+    if (file.exists(ctdFileName)) {
+      fut$ctd <- Bond(ctdFileName, "mdy")
+    } else {
+      cat("Can't find CTD's file", ctdFileName, "\nPlease, set up CTD manually...\n\n")
+    }
 
   }
 
   return (fut)
 
 }
+
+
+getMonthNumberFromMonthCode <- function(code) {
+
+  switch(code,
+         F = 1, G = 2, H = 3, J = 4, K = 5, M = 6,
+         N = 7, Q = 8, U = 9, V = 10, X = 11, Z = 12,
+         NA)
+
+}
+
+
+getMonthNumberFromFuturesTicker <- function(ticker) {
+
+  code <- substr(ticker, nchar(ticker) - 1, nchar(ticker) - 1)
+  month <- getMonthNumberFromMonthCode(code)
+
+  return (month)
+
+}
+
+
+getYearFromFuturesTicker <- function(ticker, decade = "auto") {
+
+  sysYear <- as.numeric(substr(Sys.Date(), 1, 4))
+
+  presYear <- 10 * as.numeric(substr(Sys.Date(), 1, 3)) +
+    as.numeric(substr(ticker, nchar(ticker), nchar(ticker)))
+
+  if (presYear >= sysYear) {
+    autoYear <- presYear
+  } else {
+    autoYear <- presYear + 10
+  }
+
+  year <- switch(decade,
+                 "auto" = autoYear,
+                 "pres" = presYear,
+                 "prev" = presYear - 10,
+                 "next" = presYear + 10,
+                 NA)
+
+  return (year)
+
+}
+
+
+getFuturesCodeFromTicker <- function(ticker) {
+
+  substr(ticker, 1, nchar(ticker) - 2)
+
+}
+
+
+getContractType.TFutures <- function(ticker) {
+
+  switch(getFuturesCodeFromTicker(ticker),
+         TU = "2Y TNote",
+         "3Y" = "3Y TNote",
+         FV = "5Y TNote",
+         TY = "10Y TNote",
+         UXY = "Ultra 10Y TNote",
+         US = "TBond",
+         WN = "Ultra TBond",
+         NA)
+
+}
+
+
+getName.TFutures <- function(ticker, decade = "auto") {
+
+  paste0(getContractType.TFutures(ticker),
+         ' ',
+         month.abb[getMonthNumberFromFuturesTicker(ticker)][1],
+         '-',
+         getYearFromFuturesTicker(ticker, decade))
+
+}
+
+
+getNotional.TFutures <- function(ticker) {
+
+    switch(getFuturesCodeFromTicker(ticker),
+           TU = 2e5,
+           "3Y" = 1e5,
+           FV = 1e5,
+           TY = 1e5,
+           UXY = 1e5,
+           US = 1e5,
+           WN = 1e5,
+           NA)
+
+}
+
+
+getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
+
+
+  futuresCode <- getFuturesCodeFromTicker(ticker)
+
+  lastMonthBizDay <- lastBizDay(getMonthNumberFromFuturesTicker(ticker),
+                                getYearFromFuturesTicker(ticker, decade),
+                                calendar = "UnitedStates/GovernmentBond")
+
+  thirdNextMonthBizDay <- lastMonthBizDay
+
+  for (i in 1:3) thirdNextMonthBizDay <- nextBizDay(thirdNextMonthBizDay,
+                                                    calendar = "UnitedStates/GovernmentBond")
+
+  deliveryDate <- switch(
+    futuresCode,
+    TU = thirdNextMonthBizDay,
+    "3Y" = thirdNextMonthBizDay,
+    FV = thirdNextMonthBizDay,
+    TY = lastMonthBizDay,
+    UXY = lastMonthBizDay,
+    US = lastMonthBizDay,
+    WN = lastMonthBizDay,
+    NA
+  )
+
+  return (deliveryDate)
+
+}
+
+
 
 
 #' Calculate model price of TFutures object for 100 notional
