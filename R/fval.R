@@ -496,53 +496,6 @@ futDataList <- function() {
 }
 
 
-#' Constructor of T-bond-note futures contract
-#'
-#' Attributes:
-#' $name - name as you wish
-#' $ticker - ticker like TYU7 etc
-#' $notionalAmount - notional amount of futures
-#' $deliveryDate - Delivery date
-#' $ctd - Ceapest-to-deliver Bond object
-#'
-#' @param ticker Ticker or its number from futDataList like TYU7 etc
-#'
-#' @return TFutures object
-#' @export
-TFutures <- function(ticker = NA) {
-
-  fut <- list()
-  class(fut) <- "TFutures"
-
-  #default attributes
-  fut$name <- NA
-  fut$ticker <- NA
-  fut$notionalAmount <- NA
-  fut$deliveryDate <- NA
-  fut$ctd <- NA
-
-  if (!is.na(ticker)) {
-
-    fut$name <- getName.TFutures(ticker)
-    fut$ticker <- ticker
-    fut$deliveryDate <- getDeliveryDate.TFutures(ticker)
-    fut$notionalAmount <- getNotional.TFutures(ticker)
-
-
-    ctdFileName <- paste0("fval_data/ctd_", tolower(ticker), ".csv")
-    if (file.exists(ctdFileName)) {
-      fut$ctd <- Bond(ctdFileName, "mdy")
-    } else {
-      cat("Can't find CTD's file", ctdFileName, "\nPlease, set up CTD manually...\n\n")
-    }
-
-  }
-
-  return (fut)
-
-}
-
-
 getMonthNumberFromMonthCode <- function(code) {
 
   switch(code,
@@ -612,26 +565,32 @@ getContractType.TFutures <- function(ticker) {
 
 getName.TFutures <- function(ticker, decade = "auto") {
 
-  paste0(getContractType.TFutures(ticker),
-         ' ',
-         month.abb[getMonthNumberFromFuturesTicker(ticker)][1],
-         '-',
-         getYearFromFuturesTicker(ticker, decade))
+  name <- NA
+
+  type <- getContractType.TFutures(ticker)
+
+  if (!is.na(type)) {
+    month <- month.abb[getMonthNumberFromFuturesTicker(ticker)][1]
+    year <- getYearFromFuturesTicker(ticker, decade)
+    name <- paste0(type, ' ', month, '-', year)
+  }
+
+  return (name)
 
 }
 
 
 getNotional.TFutures <- function(ticker) {
 
-    switch(getFuturesCodeFromTicker(ticker),
-           TU = 2e5,
-           "3Y" = 1e5,
-           FV = 1e5,
-           TY = 1e5,
-           UXY = 1e5,
-           US = 1e5,
-           WN = 1e5,
-           NA)
+  switch(getFuturesCodeFromTicker(ticker),
+         TU = 2e5,
+         "3Y" = 1e5,
+         FV = 1e5,
+         TY = 1e5,
+         UXY = 1e5,
+         US = 1e5,
+         WN = 1e5,
+         NA)
 
 }
 
@@ -667,6 +626,61 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 }
 
 
+#' Constructor of T-bond-note futures contract
+#'
+#' Attributes:
+#' $name - name as you wish
+#' $ticker - ticker like TYU7 etc
+#' $notionalAmount - notional amount of futures
+#' $deliveryDate - Last delivery date that is supposed to be an accual delivary date
+#' $ctd - Ceapest-to-deliver Bond object
+#'
+#' @param ticker Bloomber ticker like TYU7 etc
+#' @param ctdFileName name of ctd data file
+#' @param dateFormat File date format from lubridate package i.e. "dmy", "mdy" etc
+#'
+#' @return TFutures object
+#' @export
+TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
+
+  fut <- list()
+  class(fut) <- "TFutures"
+
+  #default attributes
+  fut$name <- NA
+  fut$ticker <- NA
+  fut$notionalAmount <- NA
+  fut$deliveryDate <- NA
+  fut$ctd <- NA
+
+  #attributes by ticker
+  if (!is.na(ticker))  {
+
+    if (!is.na(fut$name <- getName.TFutures(ticker))) {
+
+      fut$ticker <- ticker
+      fut$deliveryDate <- getDeliveryDate.TFutures(ticker)
+      fut$notionalAmount <- getNotional.TFutures(ticker)
+
+      if (ctdFileName == "") {
+        ctdFileName <- paste0("fval_data/ctd_", tolower(ticker), ".csv")
+        if (!file.exists(ctdFileName)) {
+          ctdFileName <- ""
+          cat("Can't find CTD's file", ctdFileName, "\nPlease, set up CTD manually...\n\n")
+        }
+      }
+
+    } else {
+      cat("Ticker is wrong. Default contract was created\n")
+    }
+
+  }
+
+  if (ctdFileName != "") fut$ctd <- Bond(ctdFileName, dateFormat)
+
+  return (fut)
+
+}
 
 
 #' Calculate model price of TFutures object for 100 notional
