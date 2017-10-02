@@ -428,7 +428,6 @@ getPVBPofBond <- function(bond, price, settleDate = nextBizDay()) {
 }
 
 
-
 #' Calculate carry for Bond object for 100 face
 #'
 #' @param bond Bond object
@@ -458,66 +457,6 @@ getCarryPer100 <- function(bond,
     repoRate * as.numeric(settleDate2 - settleDate1) / 360
 
   return (carry)
-
-}
-
-
-#' Return list of TFutures actual data
-#'
-#' @return List of TFutures actual data
-#' @export
-futDataList <- function() {
-
-  list(
-    names = c(
-      "2Y TNote Sep-17",
-      "5Y TNote Sep-17",
-      "10Y TNote Sep-17",
-      "Ultra 10Y TNote Sep-17",
-      "TBond Sep-17",
-      "Ultra TBond Sep-17",
-      "2Y TNote Mar-17",
-      "2Y TNote Mar-18"
-    ),
-
-    tickers = c("TUU7", "FVU7", "TYU7", "UXYU7", "USU7", "WNU7", "TUH7", "TUH8"),
-
-    deliveryDates = c(
-      "2017-10-04",
-      "2017-10-04",
-      "2017-09-29",
-      "2017-09-29",
-      "2017-09-29",
-      "2017-09-29",
-      "2017-04-05",
-      "2018-04-04"
-    ),
-
-    notionals = c(2*10^5, 10^5, 10^5, 10^5, 10^5, 10^5, 2*10^5, 2*10^5),
-
-    ctdFiles = c(
-      "fval_data/ctd_tuu7.csv",
-      "fval_data/ctd_fvu7.csv",
-      "fval_data/ctd_tyu7.csv",
-      "fval_data/ctd_uxyu7.csv",
-      "fval_data/ctd_usu7.csv",
-      "fval_data/ctd_wnu7.csv",
-      "fval_data/ctd_tuh7.csv",
-      "fval_data/ctd_tuh8.csv"
-    ),
-
-    histFiles = c(
-      "fval_data/hist_tuu7.csv",
-      "fval_data/hist_fvu7.csv",
-      "fval_data/hist_tyu7.csv",
-      "fval_data/hist_uxyu7.csv",
-      "fval_data/hist_usu7.csv",
-      "fval_data/hist_wnu7.csv",
-      "fval_data/hist_tuh7.csv",
-      "fval_data/hist_tuh8.csv"
-    )
-
-  )
 
 }
 
@@ -921,7 +860,7 @@ getTFutModelAnalytics <- function(fut,
 
 #' Chart historical TFutures pricing model errors for XXU7 contracts
 #'
-#' @param ticker Ticker or its number from futDataList like TYU7 etc
+#' @param ticker Ticker like TYU7 etc
 #' @param ois3 Chart errors for USD OIS 3M as a term repo rate if TRUE
 #' @param ois4 Chart errors for USD OIS 4M as a term repo rate if TRUE
 #'
@@ -932,13 +871,13 @@ demoTFutModelError <- function(ticker, ois3 = FALSE, ois4 = FALSE) {
   cat("ATTENTION: Need demo data files in fval_data folder\n")
 
   fut <- TFutures(ticker)
-  i <- which(futDataList()$tickers == fut$ticker)
+  histFile <- paste0("fval_data/hist_", tolower(ticker), ".csv")
 
   cat("Charting", fut$name, fut$ticker, "...\n")
 
-  analytBloom <- getTFutModelAnalytics(fut, futDataList()$histFiles[i])
-  analytOis3 <- getTFutModelAnalytics(fut, futDataList()$histFiles[i], repoField = "ois3")
-  analytOis4 <- getTFutModelAnalytics(fut, futDataList()$histFiles[i], repoField = "ois4")
+  analytBloom <- getTFutModelAnalytics(fut, histFile)
+  analytOis3 <- getTFutModelAnalytics(fut, histFile, repoField = "ois3")
+  analytOis4 <- getTFutModelAnalytics(fut, histFile, repoField = "ois4")
 
   yRange <-
     c(
@@ -1022,7 +961,7 @@ demoTFutModelError <- function(ticker, ois3 = FALSE, ois4 = FALSE) {
 
 #' Chart ageing of PVBP relative to term repo rate for XXU7 contracts
 #'
-#' @param ticker Ticker or its number from futDataList like TYU7 etc
+#' @param ticker Ticker like TYU7 etc
 #'
 #' @return Chart of PVBP relative to term repo rate over time
 #' @export
@@ -1031,8 +970,7 @@ demoTFutSensToRP <- function(ticker) {
   cat("ATTENTION: Need demo data files in fval_data folder\n")
 
   fut <- TFutures(ticker)
-  i <- which(futDataList()$tickers == fut$ticker)
-  hist <- read.csv(futDataList()$histFiles[i])
+  hist <- read.csv(paste0("fval_data/hist_", tolower(ticker), ".csv"))
   hist$dates <- as.Date(lubridate::parse_date_time(as.character(hist$dates), "ymd"))
 
   pvbprp <- hlpr::KKKV(getPVBPRPofTFutures,

@@ -7,7 +7,7 @@
 demoTFutModelError(ticker, ois3 = FALSE, ois4 = FALSE)
 }
 \arguments{
-\item{ticker}{Ticker or its number from futDataList like TYU7 etc}
+\item{ticker}{Ticker like TYU7 etc}
 
 \item{ois3}{Chart errors for USD OIS 3M as a term repo rate if TRUE}
 

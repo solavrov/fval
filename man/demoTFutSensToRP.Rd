@@ -7,7 +7,7 @@
 demoTFutSensToRP(ticker)
 }
 \arguments{
-\item{ticker}{Ticker or its number from futDataList like TYU7 etc}
+\item{ticker}{Ticker like TYU7 etc}
 }
 \value{
 Chart of PVBP relative to term repo rate over time
