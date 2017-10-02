@@ -23,7 +23,7 @@ dayCounterList <- function() {
 }
 
 
-#' Give next business day using RQuantLib calendars
+#' Return next business day using RQuantLib calendars
 #'
 #' @param date Date
 #' @param calendar RQuantLib calendar name
@@ -42,6 +42,13 @@ nextBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 }
 
 
+#' Return previous business day using RQuantLib calendars
+#'
+#' @param date Date
+#' @param calendar RQuantLib calendar name
+#'
+#' @return Next business day
+#' @export
 prevBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 
   repeat {
@@ -54,6 +61,12 @@ prevBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 }
 
 
+#' Return number of next month
+#'
+#' @param month Number of present month
+#'
+#' @return Number of next month
+#' @export
 nextMonth <- function(month) {
 
   month <- month + 1
@@ -64,13 +77,29 @@ nextMonth <- function(month) {
 }
 
 
+#' Return date of last business day for a given month and year
+#'
+#' @param month Month number
+#' @param year Year
+#' @param calendar RQuantLib calendar name
+#'
+#' @return Date of last business day of a given month and year
+#' @export
 lastBizDay <- function(month, year, calendar = "WeekendsOnly") {
 
   prevBizDay(as.Date(paste0(year, '-', nextMonth(month), '-', '01')), calendar)
 
-}
+  }
 
 
+#' Return date of first business day for a given month and year
+#'
+#' @param month Month number
+#' @param year Year
+#' @param calendar RQuantLib calendar name
+#'
+#' @return Date of first business day of a given month and year
+#' @export
 firstBizDay <- function(month, year, calendar = "WeekendsOnly") {
 
   nextBizDay(prevBizDay(
@@ -496,6 +525,12 @@ futDataList <- function() {
 }
 
 
+#' Return month number for a given month futures code
+#'
+#' @param code Month code
+#'
+#' @return Month number
+#' @export
 getMonthNumberFromMonthCode <- function(code) {
 
   switch(code,
@@ -506,6 +541,12 @@ getMonthNumberFromMonthCode <- function(code) {
 }
 
 
+#' Take expiration month number from futures ticker
+#'
+#' @param ticker Ticker
+#'
+#' @return Expiration month number
+#' @export
 getMonthNumberFromFuturesTicker <- function(ticker) {
 
   code <- substr(ticker, nchar(ticker) - 1, nchar(ticker) - 1)
@@ -516,6 +557,14 @@ getMonthNumberFromFuturesTicker <- function(ticker) {
 }
 
 
+#' Take contract's year from futures ticker
+#'
+#' @param ticker Ticker
+#' @param decade Decade that can be "auto" - default value, "pres" - present decade,
+#' "prev" - previous decade, "next" - next decade
+#'
+#' @return Contract's year
+#' @export
 getYearFromFuturesTicker <- function(ticker, decade = "auto") {
 
   sysYear <- as.numeric(substr(Sys.Date(), 1, 4))
@@ -541,6 +590,12 @@ getYearFromFuturesTicker <- function(ticker, decade = "auto") {
 }
 
 
+#' Take contract type code from futures ticker
+#'
+#' @param ticker Ticker
+#'
+#' @return Contract type code
+#' @export
 getFuturesCodeFromTicker <- function(ticker) {
 
   substr(ticker, 1, nchar(ticker) - 2)
@@ -548,6 +603,12 @@ getFuturesCodeFromTicker <- function(ticker) {
 }
 
 
+#' Return contract type by TFutures ticker
+#'
+#' @param ticker Ticker
+#'
+#' @return Contract type
+#' @export
 getContractType.TFutures <- function(ticker) {
 
   switch(getFuturesCodeFromTicker(ticker),
@@ -563,6 +624,14 @@ getContractType.TFutures <- function(ticker) {
 }
 
 
+#' Return contract name by TFutures ticker
+#'
+#' @param ticker Ticker
+#' @param decade decade that can be "auto" - default value, "pres" - present decade,
+#' "prev" - previous decade, "next" - next decade
+#'
+#' @return Contract name
+#' @export
 getName.TFutures <- function(ticker, decade = "auto") {
 
   name <- NA
@@ -580,6 +649,12 @@ getName.TFutures <- function(ticker, decade = "auto") {
 }
 
 
+#' Return notional amount by TFutures ticker
+#'
+#' @param ticker Ticker
+#'
+#' @return Notional amount
+#' @export
 getNotional.TFutures <- function(ticker) {
 
   switch(getFuturesCodeFromTicker(ticker),
@@ -595,6 +670,14 @@ getNotional.TFutures <- function(ticker) {
 }
 
 
+#' Return model delivery date by TFutures ticker
+#'
+#' @param ticker Ticker
+#' @param decade decade that can be "auto" - default value, "pres" - present decade,
+#' "prev" - previous decade, "next" - next decade
+#'
+#' @return Delivery date
+#' @export
 getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 
 

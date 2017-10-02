@@ -5,7 +5,7 @@
 \title{Return historical data analytics for TFuture pricing model}
 \usage{
 getTFutModelAnalytics(fut, histFile, futField = "futPrices",
-  ctdField = "ctdPrices", repoField = "repoRates", dateFormat = "dmy",
+  ctdField = "ctdPrices", repoField = "repoRates", dateFormat = "ymd",
   sep = ",")
 }
 \arguments{

@@ -4,9 +4,12 @@
 \alias{demoTFutRatesHistory}
 \title{Chart historical interest rates for some period of 2017 related to XXU7 contracts}
 \usage{
-demoTFutRatesHistory(ois3 = FALSE, ois4 = FALSE)
+demoTFutRatesHistory(histFile = "fval_data/hist_tuu7.csv", ois3 = FALSE,
+  ois4 = FALSE)
 }
 \arguments{
+\item{histFile}{History file where function takes interest rate data}
+
 \item{ois3}{Chart USD OIS 3M if TRUE}
 
 \item{ois4}{Chart USD OIS 4M if TRUE}

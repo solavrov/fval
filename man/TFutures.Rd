@@ -4,10 +4,14 @@
 \alias{TFutures}
 \title{Constructor of T-bond-note futures contract}
 \usage{
-TFutures(ticker = NA)
+TFutures(ticker = NA, ctdFileName = "", dateFormat = "mdy")
 }
 \arguments{
-\item{ticker}{Ticker or its number from futDataList like TYU7 etc}
+\item{ticker}{Bloomber ticker like TYU7 etc}
+
+\item{ctdFileName}{name of ctd data file}
+
+\item{dateFormat}{File date format from lubridate package i.e. "dmy", "mdy" etc}
 }
 \value{
 TFutures object
@@ -17,6 +21,6 @@ Attributes:
 $name - name as you wish
 $ticker - ticker like TYU7 etc
 $notionalAmount - notional amount of futures
-$deliveryDate - Delivery date
+$deliveryDate - Last delivery date that is supposed to be an accual delivary date
 $ctd - Ceapest-to-deliver Bond object
 }
