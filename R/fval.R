@@ -1,10 +1,8 @@
 
-#' Return list of RQuantLib day counters
+#' List of RQuantLib day counters
 #'
-#' @return List of day counters
 #' @export
-dayCounterList <- function() {
-  list(
+dayCounter <- list(
     Actual360 = 0,
     Actual360FixEd = 1,
     ActualActual = 2,
@@ -20,7 +18,6 @@ dayCounterList <- function() {
     ActualActual.AFB = 12,
     ActualActual.Euro = 13
   )
-}
 
 
 #' Return next business day using RQuantLib calendars
@@ -182,7 +179,7 @@ getValueOfEurOption <- function(option, price) {
 #' $couponFreq - coupon frequency i.e. 2 for semiannual etc
 #' $issueDate - issue date
 #' $formula - yield formular where STD stands for standard convention, OFZ stands for OFZ convention
-#' $dayCounter - day counter from dayCounterList
+#' $dayCounter - day counter from dayCounter
 #' $cfactor - conversion factor for T-bonds-notes for T-futures
 #' $couponDates - vector of coupon dates
 #' $couponAmounts - vector of coupon amounts
@@ -208,7 +205,7 @@ Bond <- function(file = NA,
   b$couponFreq <- NA
   b$issueDate <- NA
   b$formula <- "STD"
-  b$dayCounter <- dayCounterList()$ActualActual
+  b$dayCounter <- dayCounter$ActualActual
   b$cfactor <- NA
   b$couponDates <- NA
   b$couponAmounts <- NA

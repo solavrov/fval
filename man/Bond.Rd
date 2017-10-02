@@ -25,7 +25,7 @@ $faceAmount - face amount
 $couponFreq - coupon frequency i.e. 2 for semiannual etc
 $issueDate - issue date
 $formula - yield formular where STD stands for standard convention, OFZ stands for OFZ convention
-$dayCounter - day counter from dayCounterList
+$dayCounter - day counter from dayCounter
 $cfactor - conversion factor for T-bonds-notes for T-futures
 $couponDates - vector of coupon dates
 $couponAmounts - vector of coupon amounts
