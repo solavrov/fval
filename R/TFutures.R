@@ -171,7 +171,7 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
 #'
 #' @return Model price of TFutures object
 #' @export
-getPriceOfTFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
+getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
   carry <- getCarryPer100(fut$ctd, ctdPrice, t1, fut$deliveryDate, repoRate)
@@ -191,7 +191,7 @@ getPriceOfTFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) 
 #'
 #' @return Implied repo rate for TFutures object
 #' @export
-getImpliedRepoRate <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
+getIRP.TFututes <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
 
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
 
@@ -225,7 +225,7 @@ getImpliedRepoRate <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) 
 #'
 #' @return PVBP of TFutures object relative to CTD yield change
 #' @export
-getPVBPCTDofTFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
+getPVBP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
   bp <- 10^-4
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
@@ -236,8 +236,8 @@ getPVBPCTDofTFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()
 
   pvbp <-
     (
-      getPriceOfTFutures(fut, bpPlusCTDprice, repoRate, tradeDate) -
-        getPriceOfTFutures(fut, bpMinusCTDprice, repoRate, tradeDate)
+      getPrice.TFutures(fut, bpPlusCTDprice, repoRate, tradeDate) -
+        getPrice.TFutures(fut, bpMinusCTDprice, repoRate, tradeDate)
     ) / 2
 
   return (pvbp)
@@ -254,13 +254,13 @@ getPVBPCTDofTFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()
 #'
 #' @return PVBP of TFutures object relative to CTD repo rate change
 #' @export
-getPVBPRPofTFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
+getPVBPRP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
   bp <- 10^-4
 
   pvbp <- (
-    getPriceOfTFutures(fut, ctdPrice, repoRate + bp, tradeDate) -
-      getPriceOfTFutures(fut, ctdPrice, repoRate - bp, tradeDate)
+    getPrice.TFutures(fut, ctdPrice, repoRate + bp, tradeDate) -
+      getPrice.TFutures(fut, ctdPrice, repoRate - bp, tradeDate)
   ) / 2
 
   return (pvbp)
@@ -292,14 +292,14 @@ getTFutModelAnalytics <- function(fut,
 
   hist$dates <- as.Date(lubridate::parse_date_time(as.character(hist$dates), dateFormat))
 
-  impliedRates <- hlpr::KVVV(getImpliedRepoRate,
+  impliedRates <- hlpr::KVVV(getIRP.TFututes,
                              fut,
                              hist[[futField]],
                              hist[[ctdField]],
                              hist$dates)
 
   modelPrices <-
-    hlpr::KVVV(getPriceOfTFutures, fut, hist[[ctdField]], hist[[repoField]], hist$dates)
+    hlpr::KVVV(getPrice.TFutures, fut, hist[[ctdField]], hist[[repoField]], hist$dates)
 
   errors32nds <- (modelPrices - hist[[futField]]) * 32
 
@@ -433,7 +433,7 @@ demoTFutSensToRP <- function(ticker) {
   hist <- read.csv(paste0("fval_data/hist_", tolower(ticker), ".csv"))
   hist$dates <- as.Date(lubridate::parse_date_time(as.character(hist$dates), "ymd"))
 
-  pvbprp <- hlpr::KKKV(getPVBPRPofTFutures,
+  pvbprp <- hlpr::KKKV(getPVBPRP.TFutures,
                        fut,
                        hist$ctdPrices[1],
                        hist$repoRates[1],
