@@ -29,9 +29,11 @@ dayCounter <- list(
 #' @export
 nextBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 
-  repeat {
-    date <- date + 1
-    if (RQuantLib::isBusinessDay(calendar, date)) break
+  for (i in 1:length(date)) {
+    repeat {
+      date[i] <- date[i] + 1
+      if (RQuantLib::isBusinessDay(calendar, date[i])) break
+    }
   }
 
   return (date)
@@ -48,9 +50,11 @@ nextBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 #' @export
 prevBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 
-  repeat {
-    date <- date - 1
-    if (RQuantLib::isBusinessDay(calendar, date)) break
+  for (i in 1:length(date)) {
+    repeat {
+      date[i] <- date[i] - 1
+      if (RQuantLib::isBusinessDay(calendar, date[i])) break
+    }
   }
 
   return (date)
@@ -66,8 +70,10 @@ prevBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 #' @export
 nextMonth <- function(month) {
 
-  month <- month + 1
-  if (month > 12) month <- 1
+  for (i in 1:length(month)) {
+    month[i] <- month[i] + 1
+    if (month[i] > 12) month[i] <- 1
+  }
 
   return (month)
 
@@ -84,7 +90,7 @@ nextMonth <- function(month) {
 #' @export
 lastBizDay <- function(month, year, calendar = "WeekendsOnly") {
 
-  prevBizDay(as.Date(paste0(year, '-', nextMonth(month), '-', '01')), calendar)
+    prevBizDay(as.Date(paste0(year, '-', nextMonth(month), '-', '01')), calendar)
 
 }
 
