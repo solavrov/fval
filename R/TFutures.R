@@ -7,15 +7,17 @@
 #' @export
 getContractType.TFutures <- function(ticker) {
 
-  switch(getFuturesCodeFromTicker(ticker),
-         TU = "2Y TNote",
-         "3Y" = "3Y TNote",
-         FV = "5Y TNote",
-         TY = "10Y TNote",
-         UXY = "Ultra 10Y TNote",
-         US = "TBond",
-         WN = "Ultra TBond",
-         NA)
+  vectorSwitch(
+    getFuturesCodeFromTicker(ticker),
+    TU = "2Y TNote",
+    "3Y" = "3Y TNote",
+    FV = "5Y TNote",
+    TY = "10Y TNote",
+    UXY = "Ultra 10Y TNote",
+    US = "TBond",
+    WN = "Ultra TBond",
+    NA
+  )
 
 }
 
@@ -34,11 +36,11 @@ getName.TFutures <- function(ticker, decade = "auto") {
 
   type <- getContractType.TFutures(ticker)
 
-  if (!is.na(type)) {
-    month <- month.abb[getMonthNumberFromFuturesTicker(ticker)][1]
-    year <- getYearFromFuturesTicker(ticker, decade)
-    name <- paste0(type, ' ', month, '-', year)
-  }
+  month <- month.abb[getMonthNumberFromFuturesTicker(ticker)]
+  year <- getYearFromFuturesTicker(ticker, decade)
+  name <- paste0(type, ' ', month, '-', year)
+
+  for (i in 1:length(ticker)) if (is.na(type[i])) name[i] <- NA
 
   return (name)
 
@@ -53,7 +55,7 @@ getName.TFutures <- function(ticker, decade = "auto") {
 #' @export
 getNotional.TFutures <- function(ticker) {
 
-  switch(getFuturesCodeFromTicker(ticker),
+  vectorSwitch(getFuturesCodeFromTicker(ticker),
          TU = 2e5,
          "3Y" = 1e5,
          FV = 1e5,
@@ -76,7 +78,6 @@ getNotional.TFutures <- function(ticker) {
 #' @export
 getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 
-
   futuresCode <- getFuturesCodeFromTicker(ticker)
 
   lastMonthBizDay <- lastBizDay(getMonthNumberFromFuturesTicker(ticker),
@@ -88,7 +89,7 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
   for (i in 1:3) thirdNextMonthBizDay <- nextBizDay(thirdNextMonthBizDay,
                                                     calendar = "UnitedStates/GovernmentBond")
 
-  deliveryDate <- switch(
+  deliveryDate <- matrixSwitch(
     futuresCode,
     TU = thirdNextMonthBizDay,
     "3Y" = thirdNextMonthBizDay,
@@ -114,7 +115,7 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 #' $deliveryDate - Last delivery date that is supposed to be an accual delivary date
 #' $ctd - Ceapest-to-deliver Bond object
 #'
-#' @param ticker Bloomber ticker like TYU7 etc
+#' @param ticker Bloomberg ticker like TYU7 etc
 #' @param ctdFileName name of ctd data file
 #' @param dateFormat File date format from lubridate package i.e. "dmy", "mdy" etc
 #'

@@ -4,7 +4,7 @@
 \alias{nextMonth}
 \title{Return number of next month}
 \usage{
-nextMonth(month)
+nextMonth(month, year)
 }
 \arguments{
 \item{month}{Number of present month}

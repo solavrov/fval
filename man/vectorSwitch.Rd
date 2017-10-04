@@ -2,21 +2,22 @@
 % Please edit documentation in R/helper.R
 \name{vectorSwitch}
 \alias{vectorSwitch}
-\title{Common switch that takes vector as an expression argument - helper.R}
+\title{Common switch that takes expression as vector (helper.R)}
 \usage{
 vectorSwitch(expression, ...)
 }
 \arguments{
-\item{expression}{Expression}
+\item{expression}{Expression vector}
 
-\item{...}{Cases}
+\item{...}{Cases and results. Results must be same class}
 }
 \value{
-Case that matches expression
+Result of case that matches expression[i]
 }
 \description{
-Common switch that takes vector as an expression argument - helper.R
+Common switch that takes expression as vector (helper.R)
 }
 \examples{
 vectorSwitch(c("a","c"), a = 1, b = 2, c = 3, 4)
+
 }
