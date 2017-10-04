@@ -68,14 +68,17 @@ prevBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 #'
 #' @return Number of next month
 #' @export
-nextMonth <- function(month) {
+nextMonth <- function(month, year) {
 
   for (i in 1:length(month)) {
     month[i] <- month[i] + 1
-    if (month[i] > 12) month[i] <- 1
+    if (month[i] > 12) {
+      month[i] <- 1
+      year[i] <- year[i] + 1
+    }
   }
 
-  return (month)
+  return (list(month = month, year = year))
 
 }
 
@@ -90,7 +93,15 @@ nextMonth <- function(month) {
 #' @export
 lastBizDay <- function(month, year, calendar = "WeekendsOnly") {
 
-    prevBizDay(as.Date(paste0(year, '-', nextMonth(month), '-', '01')), calendar)
+    prevBizDay(
+      as.Date(
+        paste0(nextMonth(month, year)$year,
+               '-',
+               nextMonth(month, year)$month,
+               '-',
+               '01')
+        ),
+      calendar)
 
 }
 
