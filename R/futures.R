@@ -7,18 +7,10 @@
 #' @export
 getMonthNumberFromMonthCode <- function(code) {
 
-  num <- numeric()
-
-  for (i in 1:length(code)) {
-
-    num[i] <- switch(code[i],
-                     F = 1, G = 2, H = 3, J = 4, K = 5, M = 6,
-                     N = 7, Q = 8, U = 9, V = 10, X = 11, Z = 12,
-                     NA)
-
-  }
-
-  return (num)
+  vectorSwitch(code,
+               F = 1, G = 2, H = 3, J = 4, K = 5, M = 6,
+               N = 7, Q = 8, U = 9, V = 10, X = 11, Z = 12,
+               NA)
 
 }
 
@@ -57,13 +49,11 @@ getYearFromFuturesTicker <- function(ticker, decade = "auto") {
   autoYear <- numeric()
 
   for (i in 1:length(presYear)) {
-
     if (presYear[i] >= sysYear) {
       autoYear[i] <- presYear[i]
     } else {
       autoYear[i] <- presYear[i] + 10
     }
-
   }
 
   year <- switch(decade,
