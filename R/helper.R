@@ -2,7 +2,7 @@
 #' Common switch that takes expression as vector (helper.R)
 #'
 #' @param expression Expression vector
-#' @param ... Cases and results
+#' @param ... Cases and results. Results must be same class
 #'
 #' @return Result of case that matches expression[i]
 #' @export
@@ -12,11 +12,11 @@
 #'
 vectorSwitch <- function(expression, ...) {
 
-  result <- numeric()
+  result <- NA
+  class(result) <- class(list(...)[[1]])
 
-  for (i in 1:length(expression)) {
+  for (i in 1:length(expression))
     result[i] <- switch(expression[i], ...)
-  }
 
   return (result)
 
@@ -26,7 +26,7 @@ vectorSwitch <- function(expression, ...) {
 #' Switch that takes expression and results as vectors (helper.R)
 #'
 #' @param expression Expression vector
-#' @param ... Cases and vectors of results
+#' @param ... Cases and vectors of results. Results must be same class
 #'
 #' @return Result[i] of case that matches expression[i]
 #' @export
@@ -36,18 +36,12 @@ vectorSwitch <- function(expression, ...) {
 #'
 matrixSwitch <- function(expression, ...) {
 
-  result <- numeric()
+  result <- NA
+  class(result) <- class(list(...)[[1]])
 
-  for (i in 1:length(expression)) {
+  for (i in 1:length(expression))
     result[i] <- switch(expression[i], ...)[i]
-  }
 
   return (result)
 
 }
-
-
-
-
-
-
