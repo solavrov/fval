@@ -22,7 +22,7 @@ dayCounter <- list(
 
 #' Return name of day counter
 #'
-#' @param counter Counter as a number
+#' @param counter Counter as a number (can be a vector)
 #'
 #' @return Name
 #' @export
@@ -30,7 +30,7 @@ dayCounter <- list(
 #' @examples
 #' counter(0)
 counterName <- function(counter) {
-  switch(as.character(counter),
+  vectorSwitch(as.character(counter),
          "0" = "Actual360",
          "1" = "Actual360FixEd",
          "2" = "ActualActual",
