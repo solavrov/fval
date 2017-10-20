@@ -203,30 +203,54 @@ getAccruedPer100 <- function(bond, settleDate = nextBizDay()) {
 #'
 #' @return Dirty value of bond object
 #' @export
-getValueOfBond <- function(bond, yield, settleDate = nextBizDay()) {
+getValue.Bond.fval <- function(bond, yield, settleDate = nextBizDay()) {
 
-  spans <- as.numeric(bond$couponDates - settleDate)
+  # start data preparing
+  ly <- length(yield)
+  ld <- length(settleDate)
+  l <- 1
 
-  if (bond$formula == "OFZ") {
+  if (ly > 1 && ld > 1 && ly != ld) stop ("Vector length mismatch")
 
-    factors <- (spans > 0) * 1 / (1 + yield) ^ (spans / 365)
-    payments <- bond$couponAmounts
+  if (ly > 1 && ld > 1 && ly == ld) l <- ly
 
-  } else {
-
-    numOfFutureCoupons <- length(spans[spans > 0])
-
-    factors <-
-      1 / (1 + yield / bond$couponFreq) ^
-      (1:numOfFutureCoupons - getCouponTime(bond, settleDate))
-
-    payments <- tail(bond$couponAmounts, numOfFutureCoupons)
-
+  if (ly > 1 && ld == 1) {
+    l <- ly
+    settleDate <- rep(settleDate, l)
   }
 
-  payments[length(payments)] <- payments[length(payments)] + bond$faceAmount
+  if (ly == 1 && ld > 1) {
+    l <- ld
+    yield <- rep(yield, l)
+  }
+  # end
 
-  value <- sum(payments * factors)
+  value <- numeric()
+
+  for (i in 1:l) {
+
+    spans <- as.numeric(bond$couponDates - settleDate[i])
+
+    if (bond$formula == "OFZ") {
+      factors <- (spans > 0) * 1 / (1 + yield[i]) ^ (spans / 365)
+      payments <- bond$couponAmounts + bond$faceAmounts
+
+    } else {
+
+      numOfFutureCoupons <- length(spans[spans > 0])
+
+      factors <-
+        1 / (1 + yield[i] / bond$couponFreq) ^
+        (1:numOfFutureCoupons - getCouponTime(bond, settleDate[i]))
+
+      payments <-
+        tail(bond$couponAmounts + bond$faceAmounts, numOfFutureCoupons)
+
+    }
+
+    value[i] <- sum(payments * factors)
+
+  }
 
   return (value)
 
