@@ -1,7 +1,7 @@
 
 #' Return contract type by TFutures ticker
 #'
-#' @param ticker Ticker
+#' @param ticker Ticker (can be a vector)
 #'
 #' @return Contract type
 #' @export
@@ -24,7 +24,7 @@ getContractType.TFutures <- function(ticker) {
 
 #' Return contract name by TFutures ticker
 #'
-#' @param ticker Ticker
+#' @param ticker Ticker (can be a vector)
 #' @param decade decade that can be "auto" - default value, "pres" - present decade,
 #' "prev" - previous decade, "next" - next decade
 #'
@@ -49,7 +49,7 @@ getName.TFutures <- function(ticker, decade = "auto") {
 
 #' Return notional amount by TFutures ticker
 #'
-#' @param ticker Ticker
+#' @param ticker Ticker (can be a vector)
 #'
 #' @return Notional amount
 #' @export
@@ -70,7 +70,7 @@ getNotional.TFutures <- function(ticker) {
 
 #' Return model delivery date by TFutures ticker
 #'
-#' @param ticker Ticker
+#' @param ticker Ticker (can be a vector)
 #' @param decade decade that can be "auto" - default value, "pres" - present decade,
 #' "prev" - previous decade, "next" - next decade
 #'
@@ -166,9 +166,9 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
 #' Calculate model price of TFutures object for 100 notional
 #'
 #' @param fut TFutures object
-#' @param ctdPrice CTD bond clean price
-#' @param repoRate Term CTD repo rate
-#' @param tradeDate Calculation date
+#' @param ctdPrice CTD bond clean price (can be a vector)
+#' @param repoRate Term CTD repo rate (can be a vector)
+#' @param tradeDate Calculation date (can be a vector)
 #'
 #' @return Model price of TFutures object
 #' @export

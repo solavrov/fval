@@ -22,7 +22,7 @@ dayCounter <- list(
 
 #' Return next business day using RQuantLib calendars
 #'
-#' @param date Date
+#' @param date Date (can be a vector)
 #' @param calendar RQuantLib calendar name
 #'
 #' @return Next business day
@@ -43,7 +43,7 @@ nextBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 
 #' Return previous business day using RQuantLib calendars
 #'
-#' @param date Date
+#' @param date Date (can be a vector)
 #' @param calendar RQuantLib calendar name
 #'
 #' @return Next business day
@@ -64,9 +64,10 @@ prevBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 
 #' Return number of next month
 #'
-#' @param month Number of present month
+#' @param month Number of present month (can be a vector)
+#' @param year Year (can be a vector)
 #'
-#' @return Number of next month
+#' @return List where $month is next month and $year is year of next month
 #' @export
 nextMonth <- function(month, year) {
 
@@ -85,8 +86,8 @@ nextMonth <- function(month, year) {
 
 #' Return date of last business day for a given month and year
 #'
-#' @param month Month number
-#' @param year Year
+#' @param month Month number (can be a vector)
+#' @param year Year (can be a vector)
 #' @param calendar RQuantLib calendar name
 #'
 #' @return Date of last business day of a given month and year
@@ -108,8 +109,8 @@ lastBizDay <- function(month, year, calendar = "WeekendsOnly") {
 
 #' Return date of first business day for a given month and year
 #'
-#' @param month Month number
-#' @param year Year
+#' @param month Month number (can be a vector)
+#' @param year Year (can be a vector)
 #' @param calendar RQuantLib calendar name
 #'
 #' @return Date of first business day of a given month and year
