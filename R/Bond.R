@@ -84,7 +84,7 @@ print.Bond.fval <- function(bond) {
   cat("couponFreq:   ", bond$couponFreq, "\n")
   cat("issueDate:    ", as.character(bond$issueDate), "\n")
   cat("formula:      ", bond$formula, "\n")
-  cat("dayCounter:   ", bond$dayCounter, "\n")
+  cat("dayCounter:   ", counterName(bond$dayCounter), "\n")
   cat("cfactor:      ", bond$cfactor, "\n\n")
   print(data.frame(
     couponDates = bond$couponDates,

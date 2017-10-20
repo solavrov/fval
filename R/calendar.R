@@ -20,6 +20,35 @@ dayCounter <- list(
 )
 
 
+#' Return name of day counter
+#'
+#' @param counter Counter as a number
+#'
+#' @return Name
+#' @export
+#'
+#' @examples
+#' counter(0)
+counterName <- function(counter) {
+  switch(as.character(counter),
+         "0" = "Actual360",
+         "1" = "Actual360FixEd",
+         "2" = "ActualActual",
+         "3" = "ActualBusiness252",
+         "4" = "OneDayCounter",
+         "5" = "SimpleDayCounter",
+         "6" = "Thirty360",
+         "7" = "Actual365NoLeap",
+         "8" = "ActualActual.ISMA",
+         "9" = "ActualActual.Bond",
+         "10" = "ActualActual.ISDA",
+         "11" = "ActualActual.Historical",
+         "12" = "ActualActual.AFB",
+         "13" = "ActualActual.Euro",
+         NA)
+}
+
+
 #' Return next business day using RQuantLib calendars
 #'
 #' @param date Date (can be a vector)
