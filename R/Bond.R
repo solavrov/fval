@@ -134,6 +134,26 @@ getCouponTime <- function(bond, settleDate = nextBizDay()) {
 }
 
 
+#' Return current face amount
+#'
+#' @param bond Bond object
+#' @param settleDate Calculation date (can be a vector)
+#'
+#' @return Current face amount
+#' @export
+getCurrentFace <- function(bond, settleDate = nextBizDay()) {
+
+  face <- numeric()
+
+  for (i in 1:length(settleDate)) {
+    face[i] <- sum(bond$faceAmounts[bond$couponDates > settleDate[i]])
+  }
+
+  return (face)
+
+}
+
+
 #' Calculate accrued interest for Bond object
 #'
 #' @param bond Bond object
@@ -168,10 +188,10 @@ getAccrued <- function(bond, settleDate = nextBizDay()) {
 #' @param bond Bond object
 #' @param settleDate Calculation date
 #'
-#' @return Accrued interest per 100 of face
+#' @return Accrued interest per 100 of initial face
 #' @export
 getAccruedPer100 <- function(bond, settleDate = nextBizDay()) {
-  getAccrued(bond, settleDate) / bond$faceAmount * 100
+  getAccrued(bond, settleDate) / bond$initialFace * 100
 }
 
 

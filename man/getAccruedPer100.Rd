@@ -12,7 +12,7 @@ getAccruedPer100(bond, settleDate = nextBizDay())
 \item{settleDate}{Calculation date}
 }
 \value{
-Accrued interest per 100 of face
+Accrued interest per 100 of initial face
 }
 \description{
 Calculate accrued interest for Bond object per 100 of face
