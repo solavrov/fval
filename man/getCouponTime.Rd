@@ -9,7 +9,7 @@ getCouponTime(bond, settleDate = nextBizDay())
 \arguments{
 \item{bond}{Bond object}
 
-\item{settleDate}{Calculation date}
+\item{settleDate}{Calculation date (can be a vector)}
 }
 \value{
 Coupon time for Bond object

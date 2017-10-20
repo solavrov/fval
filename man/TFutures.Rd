@@ -7,7 +7,7 @@
 TFutures(ticker = NA, ctdFileName = "", dateFormat = "mdy")
 }
 \arguments{
-\item{ticker}{Bloomber ticker like TYU7 etc}
+\item{ticker}{Bloomberg ticker like TYU7 etc}
 
 \item{ctdFileName}{name of ctd data file}
 

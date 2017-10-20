@@ -7,7 +7,7 @@
 getNotional.TFutures(ticker)
 }
 \arguments{
-\item{ticker}{Ticker}
+\item{ticker}{Ticker (can be a vector)}
 }
 \value{
 Notional amount

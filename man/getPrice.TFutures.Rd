@@ -9,11 +9,11 @@ getPrice.TFutures(fut, ctdPrice, repoRate, tradeDate = Sys.Date())
 \arguments{
 \item{fut}{TFutures object}
 
-\item{ctdPrice}{CTD bond clean price}
+\item{ctdPrice}{CTD bond clean price (can be a vector)}
 
-\item{repoRate}{Term CTD repo rate}
+\item{repoRate}{Term CTD repo rate (can be a vector)}
 
-\item{tradeDate}{Calculation date}
+\item{tradeDate}{Calculation date (can be a vector)}
 }
 \value{
 Model price of TFutures object

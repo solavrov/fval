@@ -7,9 +7,9 @@
 firstBizDay(month, year, calendar = "WeekendsOnly")
 }
 \arguments{
-\item{month}{Month number}
+\item{month}{Month number (can be a vector)}
 
-\item{year}{Year}
+\item{year}{Year (can be a vector)}
 
 \item{calendar}{RQuantLib calendar name}
 }
