@@ -31,6 +31,7 @@ Bond <- function(file = NA,
   b$name <- NA
   b$isin <- NA
   b$currency <- NA
+  b$initialFace <- NA
   b$couponFreq <- NA
   b$issueDate <- NA
   b$formula <- "STD"
@@ -62,7 +63,11 @@ Bond <- function(file = NA,
       b$couponDates <- as.Date(lubridate::parse_date_time(as.character(df$couponDates), dateFormat))
 
     if (!is.null(df$couponAmounts)) b$couponAmounts <- df$couponAmounts
-    if (!is.null(df$faceAmounts)) b$faceAmounts <- df$faceAmounts
+
+    if (!is.null(df$faceAmounts)) {
+      b$faceAmounts <- df$faceAmounts
+      b$initialFace <- sum(df$faceAmounts)
+    }
 
   }
 
@@ -81,6 +86,7 @@ print.Bond.fval <- function(bond) {
   cat("name:         ", bond$name, "\n")
   cat("isin:         ", bond$isin, "\n")
   cat("currency:     ", bond$currency, "\n")
+  cat("initialFace:  ", bond$initialFace, "\n")
   cat("couponFreq:   ", bond$couponFreq, "\n")
   cat("issueDate:    ", as.character(bond$issueDate), "\n")
   cat("formula:      ", bond$formula, "\n")
@@ -137,13 +143,19 @@ getCouponTime <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getAccrued <- function(bond, settleDate = nextBizDay()) {
 
-  nextPaymentIndex <- which(bond$couponDates > settleDate)[1]
-  coupon <- bond$couponAmounts[nextPaymentIndex]
-  accrued <- coupon * getCouponTime(bond, settleDate)
+  accrued <- numeric()
 
-  if (bond$formula == "OFZ") {
-    accrued <- round(accrued / bond$faceAmount * 1000, digits = 2) *
-      bond$faceAmount / 1000
+  for (i in 1:length(settleDate)) {
+
+    nextPaymentIndex <- which(bond$couponDates > settleDate[i])[1]
+    coupon <- bond$couponAmounts[nextPaymentIndex]
+    accrued[i] <- coupon * getCouponTime(bond, settleDate[i])
+
+    if (bond$formula == "OFZ") {
+      accrued[i] <- round(accrued[i] / bond$initialFace * 1000, digits = 2) *
+        bond$initialFace / 1000
+    }
+
   }
 
   return (accrued)
