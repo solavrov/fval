@@ -31,14 +31,15 @@ Bond <- function(file = NA,
   b$name <- NA
   b$isin <- NA
   b$currency <- NA
-  b$faceAmount <- NA
   b$couponFreq <- NA
   b$issueDate <- NA
   b$formula <- "STD"
   b$dayCounter <- dayCounter$ActualActual
   b$cfactor <- NA
+
   b$couponDates <- NA
   b$couponAmounts <- NA
+  b$faceAmounts <- NA
 
 
   if (!is.na(file)) {
@@ -48,7 +49,6 @@ Bond <- function(file = NA,
     if (!is.null(df$name)) b$name <- as.character(df$name[1])
     if (!is.null(df$isin)) b$isin <- as.character(df$isin[1])
     if (!is.null(df$currency)) b$currency <- as.character(df$currency[1])
-    if (!is.null(df$faceAmount)) b$faceAmount <- df$faceAmount[1]
     if (!is.null(df$couponFreq)) b$couponFreq <- df$couponFreq[1]
 
     if (!is.null(df$issueDate))
@@ -62,6 +62,7 @@ Bond <- function(file = NA,
       b$couponDates <- as.Date(lubridate::parse_date_time(as.character(df$couponDates), dateFormat))
 
     if (!is.null(df$couponAmounts)) b$couponAmounts <- df$couponAmounts
+    if (!is.null(df$faceAmounts)) b$faceAmounts <- df$faceAmounts
 
   }
 
@@ -80,7 +81,6 @@ print.Bond.fval <- function(bond) {
   cat("name:         ", bond$name, "\n")
   cat("isin:         ", bond$isin, "\n")
   cat("currency:     ", bond$currency, "\n")
-  cat("faceAmount:   ", bond$faceAmount, "\n")
   cat("couponFreq:   ", bond$couponFreq, "\n")
   cat("issueDate:    ", as.character(bond$issueDate), "\n")
   cat("formula:      ", bond$formula, "\n")
@@ -88,7 +88,8 @@ print.Bond.fval <- function(bond) {
   cat("cfactor:      ", bond$cfactor, "\n\n")
   print(data.frame(
     couponDates = bond$couponDates,
-    couponAmounts = bond$couponAmounts
+    couponAmounts = bond$couponAmounts,
+    faceAmounts = bond$faceAmounts
   ))
 }
 
@@ -96,7 +97,7 @@ print.Bond.fval <- function(bond) {
 #' Calculate coupon time i.e. days passed over days in coupon period for Bond object
 #'
 #' @param bond Bond object
-#' @param settleDate Calculation date
+#' @param settleDate Calculation date (can be a vector)
 #'
 #' @return Coupon time for Bond object
 #' @export
