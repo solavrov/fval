@@ -9,9 +9,9 @@ getValue.Bond.fval(bond, yield, settleDate = nextBizDay())
 \arguments{
 \item{bond}{Bond object}
 
-\item{yield}{Bond yield}
+\item{yield}{Bond yield (can be a vector)}
 
-\item{settleDate}{Calculation date}
+\item{settleDate}{Calculation date (can be a vector)}
 }
 \value{
 Dirty value of bond object

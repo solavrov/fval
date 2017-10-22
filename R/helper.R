@@ -47,30 +47,35 @@ matrixSwitch <- function(expression, ...) {
 }
 
 
-#' Normalize arguments converting elementary variables to vectors with rep(var, length)
+#' Stretch elementary argument to reach length of others
 #'
-#' @param ... Elementary variables and vectors of the same length
+#' @param a Argument to stretch
+#' @param ... Other arguments
 #'
-#' @return Nothing, the function alters arguments directly
+#' @return Stretched argument with rep(argument, length of others)
 #' @export
 #'
 #' @examples
 #' x <- 1
 #' y <- c("a", "b")
-#' normalize(x, y)
-normalize <- function(...) {
+#' z <- "c"
+#' x <- stretch(x, y, z)
+#' y <- stretch(y, x, z)
+#' z <- stretch(z, y, x)
+#'
+stretch <- function(a, ...) {
 
-  params <- list(...)
+  params <- append(list(...), a)
+
   lens <- lengths(params)
-  strings <- c(sapply(substitute(list(...)), deparse))[-1]
-  env <- parent.env(environment())
 
   if (all(lens == 1 | lens == max(lens))) {
-    for (i in 1:length(params))
-      if (lens[i] == 1) assign(strings[i], rep(params[[i]], max(lens)), envir = env)
+    if (length(a) == 1) a <- rep(a, max(lens))
   } else {
-    stop ("Vector length mismatch")
+    stop("Vector length mismatch")
   }
+
+  return (a)
 
 }
 

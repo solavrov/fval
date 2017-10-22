@@ -198,36 +198,20 @@ getAccruedPer100 <- function(bond, settleDate = nextBizDay()) {
 #' Calculate value of Bond object
 #'
 #' @param bond Bond object
-#' @param yield Bond yield
-#' @param settleDate Calculation date
+#' @param yield Bond yield (can be a vector)
+#' @param settleDate Calculation date (can be a vector)
 #'
 #' @return Dirty value of bond object
 #' @export
 getValue.Bond.fval <- function(bond, yield, settleDate = nextBizDay()) {
 
-  # start data preparing
-  ly <- length(yield)
-  ld <- length(settleDate)
-  l <- 1
-
-  if (ly > 1 && ld > 1 && ly != ld) stop ("Vector length mismatch")
-
-  if (ly > 1 && ld > 1 && ly == ld) l <- ly
-
-  if (ly > 1 && ld == 1) {
-    l <- ly
-    settleDate <- rep(settleDate, l)
-  }
-
-  if (ly == 1 && ld > 1) {
-    l <- ld
-    yield <- rep(yield, l)
-  }
-  # end
+  yield <- stretch(yield, settleDate)
+  settleDate <- stretch(settleDate, yield)
+  len <- length(yield)
 
   value <- numeric()
 
-  for (i in 1:l) {
+  for (i in 1:len) {
 
     spans <- as.numeric(bond$couponDates - settleDate[i])
 
