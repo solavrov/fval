@@ -107,7 +107,7 @@ print.Bond.fval <- function(bond) {
 #'
 #' @return Coupon time for Bond object
 #' @export
-getCouponTime <- function(bond, settleDate = nextBizDay()) {
+getCouponTime.Bond.fval <- function(bond, settleDate = nextBizDay()) {
 
   time <- numeric()
 
@@ -141,7 +141,7 @@ getCouponTime <- function(bond, settleDate = nextBizDay()) {
 #'
 #' @return Current face amount
 #' @export
-getCurrentFace <- function(bond, settleDate = nextBizDay()) {
+getCurrentFace.Bond.fval <- function(bond, settleDate = nextBizDay()) {
 
   face <- numeric()
 
@@ -157,11 +157,11 @@ getCurrentFace <- function(bond, settleDate = nextBizDay()) {
 #' Calculate accrued interest for Bond object
 #'
 #' @param bond Bond object
-#' @param settleDate Calculation date
+#' @param settleDate Calculation date (can be a vector)
 #'
 #' @return Accrued interest
 #' @export
-getAccrued <- function(bond, settleDate = nextBizDay()) {
+getAccrued.Bond.fval <- function(bond, settleDate = nextBizDay()) {
 
   accrued <- numeric()
 
@@ -169,7 +169,7 @@ getAccrued <- function(bond, settleDate = nextBizDay()) {
 
     nextPaymentIndex <- which(bond$couponDates > settleDate[i])[1]
     coupon <- bond$couponAmounts[nextPaymentIndex]
-    accrued[i] <- coupon * getCouponTime(bond, settleDate[i])
+    accrued[i] <- coupon * getCouponTime.Bond.fval(bond, settleDate[i])
 
     if (bond$formula == "OFZ") {
       accrued[i] <- round(accrued[i] / bond$initialFace * 1000, digits = 2) *
@@ -183,15 +183,15 @@ getAccrued <- function(bond, settleDate = nextBizDay()) {
 }
 
 
-#' Calculate accrued interest for Bond object per 100 of face
+#' Calculate accrued interest for price of Bond
 #'
 #' @param bond Bond object
-#' @param settleDate Calculation date
+#' @param settleDate Calculation date (can be a vector)
 #'
-#' @return Accrued interest per 100 of initial face
+#' @return Accrued interest in percentage of current face
 #' @export
-getAccruedPer100 <- function(bond, settleDate = nextBizDay()) {
-  getAccrued(bond, settleDate) / bond$initialFace * 100
+getAccruedForPrice.Bond.fval <- function(bond, settleDate = nextBizDay()) {
+  getAccrued.Bond.fval(bond, settleDate) / getCurrentFace.Bond.fval(bond, settleDate)
 }
 
 
@@ -225,7 +225,7 @@ getValue.Bond.fval <- function(bond, yield, settleDate = nextBizDay()) {
 
       factors <-
         1 / (1 + yield[i] / bond$couponFreq) ^
-        (1:numOfFutureCoupons - getCouponTime(bond, settleDate[i]))
+        (1:numOfFutureCoupons - getCouponTime.Bond.fval(bond, settleDate[i]))
 
       payments <-
         tail(bond$couponAmounts + bond$faceAmounts, numOfFutureCoupons)
@@ -241,19 +241,19 @@ getValue.Bond.fval <- function(bond, yield, settleDate = nextBizDay()) {
 }
 
 
-#' Calculate clean price of Bond object for 100 face
+#' Calculate clean price of Bond
 #'
 #' @param bond Bond object
-#' @param yield Bond yield
-#' @param settleDate Calculation date
+#' @param yield Bond yield (can be a vector)
+#' @param settleDate Calculation date (can be a vector)
 #'
-#' @return Clean price of a Bond object
+#' @return Clean price of Bond object where 1 is 100%
 #' @export
-getPriceOfBond <- function(bond, yield, settleDate = nextBizDay()) {
+getPrice.Bond.fval <- function(bond, yield, settleDate = nextBizDay()) {
 
   price <-
-    (getValueOfBond(bond, yield, settleDate) - getAccrued(bond, settleDate)) /
-    bond$faceAmount * 100
+    (getValueOfBond(bond, yield, settleDate) - getAccrued.Bond.fval(bond, settleDate)) /
+    getCurrentFace.Bond.fval(bond, settleDate)
 
   return (price)
 
@@ -263,21 +263,30 @@ getPriceOfBond <- function(bond, yield, settleDate = nextBizDay()) {
 #' Calculate yield of Bond object
 #'
 #' @param bond Bond object
-#' @param price Bond clean price for 100 face
-#' @param settleDate Calculation date
+#' @param price Bond clean price where 1 is 100% (can be a vector)
+#' @param settleDate Calculation date (can be a vector)
 #' @param digits Accuracy as a number of digits after point
 #'
 #' @return Bond yield
 #' @export
-getYieldOfBond <- function(bond,
-                           price,
-                           settleDate = nextBizDay(),
-                           digits = 4) {
+getYield.Bond.fval <- function(bond,
+                               price,
+                               settleDate = nextBizDay(),
+                               digits = 6) {
 
   yieldRange <- c(-0.9, 0.9)
-  f <- function(x) (getPriceOfBond(bond, x, settleDate) - price)
-  solution <- uniroot(f, yieldRange, tol = 10 ^ (-digits - 1))
-  yield <- round(solution$root, digits)
+
+  yield <- numeric()
+
+  price <- stretch(price, settleDate)
+  settleDate <- stretch(settleDate, price)
+  len <- length(price)
+
+  for (i in 1:len) {
+    f <- function(x) (getPrice.Bond.fval(bond, x, settleDate[i]) - price[i])
+    solution <- uniroot(f, yieldRange, tol = 10 ^ (-digits - 1))
+    yield[i] <- round(solution$root, digits)
+  }
 
   return (yield)
 
@@ -287,18 +296,18 @@ getYieldOfBond <- function(bond,
 #' Calculate PVBP of Bond object
 #'
 #' @param bond Bond object
-#' @param price Clean price of Bond object for 100 face
-#' @param settleDate Calculation date
+#' @param price Clean price of Bond object for 100 face (can be a vector)
+#' @param settleDate Calculation date (can be a vector)
 #'
 #' @return PVBP of Bond object
 #' @export
-getPVBPofBond <- function(bond, price, settleDate = nextBizDay()) {
+getPVBP.Bond.fval <- function(bond, price, settleDate = nextBizDay()) {
 
   bp <- 10^-4
-  yield <- getYieldOfBond(bond, price, settleDate)
+  yield <- getYield.Bond.fval(bond, price, settleDate)
 
-  pvbp <- (getPriceOfBond(bond, yield + bp) -
-             getPriceOfBond(bond, yield - bp)) / 2
+  pvbp <- (getPrice.Bond.fval(bond, yield + bp) -
+             getPrice.Bond.fval(bond, yield - bp)) / 2
 
   return (pvbp)
 
@@ -308,30 +317,44 @@ getPVBPofBond <- function(bond, price, settleDate = nextBizDay()) {
 #' Calculate carry for Bond object for 100 face
 #'
 #' @param bond Bond object
-#' @param price Clean price of Bond object for 100 face
-#' @param settleDate1 Start date
-#' @param settleDate2 End date
-#' @param repoRate Funding term repo rate
+#' @param price Clean price of Bond object for 100 face (can be a vector)
+#' @param settleDate1 Start date (can be a vector)
+#' @param settleDate2 End date (can be a vector)
+#' @param repoRate Funding term repo rate (can be a vector)
 #'
 #' @return Carry for Bond object
 #' @export
-getCarryPer100 <- function(bond,
-                           price,
-                           settleDate1,
-                           settleDate2,
-                           repoRate) {
+getCarryForPrice.Bond.fval <- function(bond,
+                                       price,
+                                       settleDate1,
+                                       settleDate2,
+                                       repoRate) {
 
-  inPlay <- which(bond$couponDates > settleDate1 & bond$couponDates <= settleDate2)
+  price <- stretch(price, settleDate1, settleDate2, repoRate)
+  settleDate1 <- stretch(settleDate1, price, settleDate2, repoRate)
+  settleDate2 <- stretch(settleDate2, price, settleDate1, repoRate)
+  repoRate <- stretch(repoRate, price, settleDate1, settleDate2)
+  len <- length(price)
 
-  couponAmounts <- bond$couponAmounts[inPlay] / bond$faceAmount * 100
+  carry <- numeric()
 
-  couponDates <- bond$couponDates[inPlay]
+  for (i in 1:len) {
 
-  carry <-
-    getAccruedPer100(bond, settleDate2) -  getAccruedPer100(bond, settleDate1) +
-    sum(couponAmounts * (1 + repoRate * as.numeric(settleDate2 - couponDates) / 360)) -
-    (price + getAccruedPer100(bond, settleDate1)) *
-    repoRate * as.numeric(settleDate2 - settleDate1) / 360
+    inPlay <- which(bond$couponDates > settleDate1[i] & bond$couponDates <= settleDate2[i])
+
+    couponAmounts <- bond$couponAmounts[inPlay] / bond$faceAmount * 100
+
+    couponDates <- bond$couponDates[inPlay]
+
+    carry <-
+      getAccruedForPrice.Bond.fval(bond, settleDate2) -  getAccruedForPrice.Bond.fval(bond, settleDate1) +
+      sum(couponAmounts * (1 + repoRate * as.numeric(settleDate2 - couponDates) / 360)) -
+      (price + getAccruedForPrice.Bond.fval(bond, settleDate1)) *
+      repoRate * as.numeric(settleDate2 - settleDate1) / 360
+
+  }
+
+
 
   return (carry)
 
