@@ -13,7 +13,8 @@
 #' $couponDates - vector of coupon dates
 #' $couponAmounts - vector of coupon amounts
 #'
-#' @param file Name of csv file that contains bond attributes. Heads should have names of attributes
+#' @param file Name of csv file that contains bond attributes. Heads should have names of attributes.
+#' File should be located in fval_data folder. Just a name without extension
 #' @param dateFormat File date format from lubridate package i.e. "dmy", "mdy" etc
 #' @param sep Separator i.e. comma, semicolon or else
 #'
@@ -40,6 +41,8 @@ FIBond <- function(file = NA,
   b$couponDates <- NA
   b$couponAmounts <- NA
   b$faceAmounts <- NA
+
+  file <- paste0("fval_data/", file, ".csv")
 
   if (!is.na(file)) {
     df <- read.csv(file, sep = sep)
