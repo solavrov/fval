@@ -285,7 +285,7 @@ getPrice.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 getYield.FIBond <- function(bond,
                             price,
                             settleDate = nextBizDay(),
-                            digits = 6) {
+                            digits = 5) {
 
   yieldRange <- c(-0.9, 0.9)
 
