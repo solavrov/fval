@@ -9,11 +9,11 @@ getPVBPRP.TFutures(fut, ctdPrice, repoRate, tradeDate = Sys.Date())
 \arguments{
 \item{fut}{TFutures object}
 
-\item{ctdPrice}{CTD bond clean price for 100 face}
+\item{ctdPrice}{CTD bond clean price (can be a vector)}
 
-\item{repoRate}{CTD repo rate}
+\item{repoRate}{CTD repo rate (can be a vector)}
 
-\item{tradeDate}{Calculation date}
+\item{tradeDate}{Calculation date (can be a vector)}
 }
 \value{
 PVBP of TFutures object relative to CTD repo rate change
