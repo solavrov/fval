@@ -204,7 +204,7 @@ getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
 #'
 #' @return Accrued interest in percentage of current face where 1 is 100\%
 #' @export
-getAccruedForPrice.FIBond <- function(bond, settleDate = nextBizDay()) {
+getAccruedPrice.FIBond <- function(bond, settleDate = nextBizDay()) {
     getAccrued.FIBond(bond, settleDate) / getCurrentFace.FIBond(bond, settleDate)
   }
 
@@ -389,7 +389,7 @@ getCarry.FIBond <- function(bond,
 #'
 #' @return Carry for FIBond object in percentage of current face where 1 is 100\%
 #' @export
-getCarryForPrice.FIBond <- function(bond,
+getCarryPrice.FIBond <- function(bond,
                                     price,
                                     settleDate1,
                                     settleDate2,
