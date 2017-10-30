@@ -33,7 +33,7 @@ EurOption <- function() {
 #' Black-Scholes
 #'
 #' @param option option object
-#' @param price price of underlying
+#' @param price price of underlying (can be a vector)
 #'
 #' @return value of option
 #' @export
