@@ -14,7 +14,7 @@
 EurOption <- function() {
 
   op <- list()
-  class(op) <- "EurOption.fval"
+  class(op) <- "EurOption"
 
   # default attributes
   op$type <- NA
@@ -37,7 +37,7 @@ EurOption <- function() {
 #'
 #' @return value of option
 #' @export
-getValueOfEurOption <- function(option, price) {
+getValue.EurOption <- function(option, price) {
 
   d1 <-  1 / option$vol / sqrt(option$time) *
     (log(price / option$strike) +
