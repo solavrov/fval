@@ -1,7 +1,7 @@
 
 #' Return month number for a given month futures code
 #'
-#' @param code Month code
+#' @param code Month code (can be a vector)
 #'
 #' @return Month number
 #' @export
@@ -17,7 +17,7 @@ getMonthNumberFromMonthCode <- function(code) {
 
 #' Take expiration month number from futures ticker
 #'
-#' @param ticker Ticker
+#' @param ticker Ticker (can be a vector)
 #'
 #' @return Expiration month number
 #' @export
@@ -33,7 +33,7 @@ getMonthNumberFromFuturesTicker <- function(ticker) {
 
 #' Take contract's year from futures ticker
 #'
-#' @param ticker Ticker
+#' @param ticker Ticker (can be a vector)
 #' @param decade Decade that can be "auto" - default value, "pres" - present decade,
 #' "prev" - previous decade, "next" - next decade
 #'
@@ -70,7 +70,7 @@ getYearFromFuturesTicker <- function(ticker, decade = "auto") {
 
 #' Take contract type code from futures ticker
 #'
-#' @param ticker Ticker
+#' @param ticker Ticker (can be a vector)
 #'
 #' @return Contract type code
 #' @export
