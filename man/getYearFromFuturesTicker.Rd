@@ -7,7 +7,7 @@
 getYearFromFuturesTicker(ticker, decade = "auto")
 }
 \arguments{
-\item{ticker}{Ticker}
+\item{ticker}{Ticker (can be a vector)}
 
 \item{decade}{Decade that can be "auto" - default value, "pres" - present decade,
 "prev" - previous decade, "next" - next decade}

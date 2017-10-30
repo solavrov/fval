@@ -143,10 +143,10 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
       fut$notionalAmount <- getNotional.TFutures(ticker)
 
       if (ctdFileName == "") {
-        ctdFileName <- paste0("fval_data/ctd_", tolower(ticker), ".csv")
-        if (!file.exists(ctdFileName)) {
+        ctdFileName <- paste0("ctd_", tolower(ticker))
+        if (!file.exists(paste0("fval_data/", ctdFileName, ".csv"))) {
           ctdFileName <- ""
-          cat("Can't find CTD's file", ctdFileName, "\nPlease, set up CTD manually...\n\n")
+          cat("Can't find CTD's file in fval_data", ctdFileName, "\nPlease, set up CTD manually...\n\n")
         }
       }
 
@@ -156,7 +156,7 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
 
   }
 
-  if (ctdFileName != "") fut$ctd <- Bond(ctdFileName, dateFormat)
+  if (ctdFileName != "") fut$ctd <- FIBond(ctdFileName, dateFormat)
 
   return (fut)
 
