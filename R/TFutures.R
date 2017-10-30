@@ -163,19 +163,19 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
 }
 
 
-#' Calculate model price of TFutures object for 100 notional
+#' Calculate model price of TFutures object
 #'
 #' @param fut TFutures object
 #' @param ctdPrice CTD bond clean price (can be a vector)
 #' @param repoRate Term CTD repo rate (can be a vector)
 #' @param tradeDate Calculation date (can be a vector)
 #'
-#' @return Model price of TFutures object
+#' @return Model price of TFutures object where 1 is 100\% of notional
 #' @export
 getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
-  carry <- getCarryPer100(fut$ctd, ctdPrice, t1, fut$deliveryDate, repoRate)
+  carry <- getCarryPrice.FIBond(fut$ctd, ctdPrice, t1, fut$deliveryDate, repoRate)
   price <- (ctdPrice - carry) / fut$ctd$cfactor
 
   return (price)
@@ -186,9 +186,9 @@ getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 #' Calculate implied repo rate for TFutures object
 #'
 #' @param fut TFutures object
-#' @param futPrice TFutures price for 100 notional
-#' @param ctdPrice CTD bond clean price
-#' @param tradeDate Calculation date
+#' @param futPrice TFutures price (can be a vector)
+#' @param ctdPrice CTD bond clean price (can be a vector)
+#' @param tradeDate Calculation date (can be a vector)
 #'
 #' @return Implied repo rate for TFutures object
 #' @export
@@ -198,18 +198,17 @@ getIRP.TFututes <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
 
   inPlay <- which(fut$ctd$couponDates > t1 & fut$ctd$couponDates <= fut$deliveryDate)
 
-  couponAmounts <- fut$ctd$couponAmounts[inPlay] / fut$ctd$faceAmount * 100
+  couponAmounts <- fut$ctd$couponAmounts[inPlay] / fut$ctd$initialFace
   couponDates <- fut$ctd$couponDates[inPlay]
 
   irp <-
     (
-      fut$ctd$cfactor * futPrice + getAccruedPer100(fut$ctd, fut$deliveryDate) + sum(couponAmounts) -
-        ctdPrice - getAccruedPer100(fut$ctd, t1)
+      fut$ctd$cfactor * futPrice + getAccruedPrice.FIBond(fut$ctd, fut$deliveryDate)
+      + sum(couponAmounts) - ctdPrice - getAccruedPrice.FIBond(fut$ctd, t1)
     ) /
-    ((ctdPrice + getAccruedPer100(fut$ctd, t1)) * as.numeric(fut$deliveryDate - t1) / 360 -
-       sum(
-         couponAmounts * as.numeric(fut$deliveryDate - couponDates) / 360
-       )
+    (
+      (ctdPrice + getAccruedPrice.FIBond(fut$ctd, t1)) * as.numeric(fut$deliveryDate - t1) / 360 -
+       sum(couponAmounts * as.numeric(fut$deliveryDate - couponDates) / 360)
     )
 
   return (irp)
@@ -220,20 +219,20 @@ getIRP.TFututes <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
 #' Calculate PVBP of TFutures object relative to CTD yield change
 #'
 #' @param fut TFutures object
-#' @param ctdPrice CTD bond clean price for 100 face
-#' @param repoRate CTD repo rate
-#' @param tradeDate Calculation date
+#' @param ctdPrice CTD bond clean price (can be a vector)
+#' @param repoRate CTD repo rate (can be a vector)
+#' @param tradeDate Calculation date (can be a vector)
 #'
 #' @return PVBP of TFutures object relative to CTD yield change
 #' @export
 getPVBP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
-  bp <- 10^-4
+  bp <- 1e-4
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
-  ctdYield <- getYieldOfBond(fut$ctd, ctdPrice, t1)
+  ctdYield <- getYield.FIBond(fut$ctd, ctdPrice, t1)
 
-  bpPlusCTDprice <- getPriceOfBond(fut$ctd, ctdYield + bp, t1)
-  bpMinusCTDprice <- getPriceOfBond(fut$ctd, ctdYield - bp, t1)
+  bpPlusCTDprice <- getPrice.FIBond(fut$ctd, ctdYield + bp, t1)
+  bpMinusCTDprice <- getPrice.FIBond(fut$ctd, ctdYield - bp, t1)
 
   pvbp <-
     (
@@ -249,15 +248,15 @@ getPVBP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 #' Calculate PVBP of TFutures object relative to CTD repo rate change
 #'
 #' @param fut TFutures object
-#' @param ctdPrice CTD bond clean price for 100 face
-#' @param repoRate CTD repo rate
-#' @param tradeDate Calculation date
+#' @param ctdPrice CTD bond clean price (can be a vector)
+#' @param repoRate CTD repo rate (can be a vector)
+#' @param tradeDate Calculation date (can be a vector)
 #'
 #' @return PVBP of TFutures object relative to CTD repo rate change
 #' @export
 getPVBPRP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
-  bp <- 10^-4
+  bp <- 1e-4
 
   pvbp <- (
     getPrice.TFutures(fut, ctdPrice, repoRate + bp, tradeDate) -

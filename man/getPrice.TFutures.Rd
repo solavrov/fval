@@ -2,7 +2,7 @@
 % Please edit documentation in R/TFutures.R
 \name{getPrice.TFutures}
 \alias{getPrice.TFutures}
-\title{Calculate model price of TFutures object for 100 notional}
+\title{Calculate model price of TFutures object}
 \usage{
 getPrice.TFutures(fut, ctdPrice, repoRate, tradeDate = Sys.Date())
 }
@@ -16,8 +16,8 @@ getPrice.TFutures(fut, ctdPrice, repoRate, tradeDate = Sys.Date())
 \item{tradeDate}{Calculation date (can be a vector)}
 }
 \value{
-Model price of TFutures object
+Model price of TFutures object where 1 is 100\% of notional
 }
 \description{
-Calculate model price of TFutures object for 100 notional
+Calculate model price of TFutures object
 }
