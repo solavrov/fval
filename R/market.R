@@ -6,6 +6,19 @@
 #' @return Data frame of market data
 #' @export
 loadMarket <- function(file = "market") {
-  read.csv(paste0("fval_data/", file, ".csv"))
+
+  file <- paste0("fval_data/", file, ".csv")
+
+  m <- NA
+
+  if (file.exists(file)) {
+    m <- read.csv(file)
+    m$DATE <- as.Date(m$DATE)
+  } else {
+    cat("Cannot find file...\n")
+  }
+
+  return (m)
+
 }
 
