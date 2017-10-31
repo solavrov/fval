@@ -9,13 +9,13 @@ getCarry.FIBond(bond, price, settleDate1, settleDate2, repoRate)
 \arguments{
 \item{bond}{FIBond object}
 
-\item{price}{FIBond clean price where 1 is 100\% (can be a vector)}
+\item{price}{FIBond clean price in percentage (can be a vector)}
 
 \item{settleDate1}{Start date (can be a vector)}
 
 \item{settleDate2}{End date (can be a vector)}
 
-\item{repoRate}{Funding term repo rate (can be a vector)}
+\item{repoRate}{Funding term repo rate in percentage (can be a vector)}
 }
 \value{
 Carry for FIBond object

@@ -9,7 +9,7 @@ getValue.FIBond(bond, yield, settleDate = nextBizDay())
 \arguments{
 \item{bond}{FIBond object}
 
-\item{yield}{FIBond yield (can be a vector)}
+\item{yield}{FIBond yield in percentage (can be a vector)}
 
 \item{settleDate}{Calculation date (can be a vector)}
 }

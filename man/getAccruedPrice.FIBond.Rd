@@ -12,7 +12,7 @@ getAccruedPrice.FIBond(bond, settleDate = nextBizDay())
 \item{settleDate}{Calculation date (can be a vector)}
 }
 \value{
-Accrued interest in percentage of current face where 1 is 100\%
+Accrued interest in percentage of current face
 }
 \description{
 Calculate accrued interest in percentage of current face

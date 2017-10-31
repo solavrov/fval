@@ -8,3 +8,4 @@
 loadMarket <- function(file = "market") {
   read.csv(paste0("fval_data/", file, ".csv"))
 }
+

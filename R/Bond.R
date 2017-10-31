@@ -202,17 +202,17 @@ getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @param bond FIBond object
 #' @param settleDate Calculation date (can be a vector)
 #'
-#' @return Accrued interest in percentage of current face where 1 is 100\%
+#' @return Accrued interest in percentage of current face
 #' @export
 getAccruedPrice.FIBond <- function(bond, settleDate = nextBizDay()) {
-    getAccrued.FIBond(bond, settleDate) / getCurrentFace.FIBond(bond, settleDate)
+    getAccrued.FIBond(bond, settleDate) / getCurrentFace.FIBond(bond, settleDate) * 100
   }
 
 
 #' Calculate value of FIBond object
 #'
 #' @param bond FIBond object
-#' @param yield FIBond yield (can be a vector)
+#' @param yield FIBond yield in percentage (can be a vector)
 #' @param settleDate Calculation date (can be a vector)
 #'
 #' @return Dirty value of bond object
@@ -229,14 +229,14 @@ getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
       spans <- as.numeric(bond$couponDates - settleDate[i])
 
       if (bond$formula == "OFZ") {
-        factors <- (spans > 0) * 1 / (1 + yield[i]) ^ (spans / 365)
+        factors <- (spans > 0) * 1 / (1 + yield[i] / 100) ^ (spans / 365)
         payments <- bond$couponAmounts + bond$faceAmounts
 
       } else {
         numOfFutureCoupons <- length(spans[spans > 0])
 
         factors <-
-          1 / (1 + yield[i] / bond$couponFreq) ^
+          1 / (1 + yield[i] / 100 / bond$couponFreq) ^
           (1:numOfFutureCoupons - getCouponTime.FIBond(bond, settleDate[i]))
 
         payments <-
@@ -257,16 +257,16 @@ getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 #' Calculate clean price of FIBond
 #'
 #' @param bond FIBond object
-#' @param yield FIBond yield (can be a vector)
+#' @param yield FIBond yield in percentage (can be a vector)
 #' @param settleDate Calculation date (can be a vector)
 #'
-#' @return Clean price of FIBond object where 1 is 100\%
+#' @return Clean price of FIBond object in percentage
 #' @export
 getPrice.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
     price <-
       (getValue.FIBond(bond, yield, settleDate) - getAccrued.FIBond(bond, settleDate)) /
-      getCurrentFace.FIBond(bond, settleDate)
+      getCurrentFace.FIBond(bond, settleDate) * 100
 
     return (price)
 
@@ -276,18 +276,17 @@ getPrice.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 #' Calculate yield of FIBond object
 #'
 #' @param bond FIBond object
-#' @param price FIBond clean price where 1 is 100\% (can be a vector)
+#' @param price FIBond clean price in percentage (can be a vector)
 #' @param settleDate Calculation date (can be a vector)
 #' @param digits Accuracy as a number of digits after point
 #'
-#' @return FIBond yield
+#' @return FIBond yield in percentage
 #' @export
 getYield.FIBond <- function(bond,
                             price,
                             settleDate = nextBizDay(),
-                            digits = 5) {
-
-  yieldRange <- c(-0.9, 0.9)
+                            digits = 3,
+                            yieldRange = c(-90, 90)) {
 
   yield <- numeric()
 
@@ -311,14 +310,14 @@ getYield.FIBond <- function(bond,
 #' Calculate PVBP of FIBond object
 #'
 #' @param bond FIBond object
-#' @param price FIBond clean price where 1 is 100\% (can be a vector)
+#' @param price FIBond clean price in percentage (can be a vector)
 #' @param settleDate Calculation date (can be a vector)
 #'
-#' @return PVBP of FIBond object
+#' @return PVBP of FIBond object in percentage
 #' @export
 getPVBP.FIBond <- function(bond, price, settleDate = nextBizDay()) {
 
-  bp <- 1e-4
+  bp <- 0.01
   yield <- getYield.FIBond(bond, price, settleDate)
 
   pvbp <- (getPrice.FIBond(bond, yield + bp) -
@@ -332,10 +331,10 @@ getPVBP.FIBond <- function(bond, price, settleDate = nextBizDay()) {
 #' Calculate carry for FIBond object
 #'
 #' @param bond FIBond object
-#' @param price FIBond clean price where 1 is 100\% (can be a vector)
+#' @param price FIBond clean price in percentage (can be a vector)
 #' @param settleDate1 Start date (can be a vector)
 #' @param settleDate2 End date (can be a vector)
-#' @param repoRate Funding term repo rate (can be a vector)
+#' @param repoRate Funding term repo rate in percentage (can be a vector)
 #'
 #' @return Carry for FIBond object
 #' @export
@@ -366,12 +365,12 @@ getCarry.FIBond <- function(bond,
 
     carry[i] <-
       getAccrued.FIBond(bond, settleDate2[i]) -  getAccrued.FIBond(bond, settleDate1[i]) +
-      sum(payments * (1 + repoRate[i] * as.numeric(settleDate2[i] - couponDates) / 360)) -
+      sum(payments * (1 + repoRate[i] / 100 * as.numeric(settleDate2[i] - couponDates) / 360)) -
       (
-        price[i] * getCurrentFace.FIBond(bond, settleDate1[i]) +
+        price[i] / 100 * getCurrentFace.FIBond(bond, settleDate1[i]) +
           getAccrued.FIBond(bond, settleDate1[i])
       ) *
-      repoRate[i] * as.numeric(settleDate2[i] - settleDate1[i]) / 360
+      repoRate[i] / 100 * as.numeric(settleDate2[i] - settleDate1[i]) / 360
 
   }
 
@@ -383,12 +382,12 @@ getCarry.FIBond <- function(bond,
 #' Calculate carry for FIBond object in percentage of current face
 #'
 #' @param bond FIBond object
-#' @param price FIBond clean price where 1 is 100\% (can be a vector)
+#' @param price FIBond clean price in percentage (can be a vector)
 #' @param settleDate1 Start date (can be a vector)
 #' @param settleDate2 End date (can be a vector)
-#' @param repoRate Funding term repo rate (can be a vector)
+#' @param repoRate Funding term repo rate in percentage (can be a vector)
 #'
-#' @return Carry for FIBond object in percentage of current face where 1 is 100\%
+#' @return Carry for FIBond object in percentage of current face
 #' @export
 getCarryPrice.FIBond <- function(bond,
                                  price,
@@ -397,6 +396,6 @@ getCarryPrice.FIBond <- function(bond,
                                  repoRate) {
 
   getCarry.FIBond(bond, price, settleDate1, settleDate2, repoRate) /
-    getCurrentFace.FIBond(bond, settleDate1)
+    getCurrentFace.FIBond(bond, settleDate1) * 100
 
 }

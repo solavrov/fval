@@ -9,12 +9,12 @@ getPVBP.FIBond(bond, price, settleDate = nextBizDay())
 \arguments{
 \item{bond}{FIBond object}
 
-\item{price}{FIBond clean price where 1 is 100\% (can be a vector)}
+\item{price}{FIBond clean price in percentage (can be a vector)}
 
 \item{settleDate}{Calculation date (can be a vector)}
 }
 \value{
-PVBP of FIBond object
+PVBP of FIBond object in percentage
 }
 \description{
 Calculate PVBP of FIBond object

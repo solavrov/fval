@@ -9,14 +9,14 @@ getPrice.TFutures(fut, ctdPrice, repoRate, tradeDate = Sys.Date())
 \arguments{
 \item{fut}{TFutures object}
 
-\item{ctdPrice}{CTD bond clean price (can be a vector)}
+\item{ctdPrice}{CTD bond clean price in percentage (can be a vector)}
 
-\item{repoRate}{Term CTD repo rate (can be a vector)}
+\item{repoRate}{Term CTD repo rate in percentage (can be a vector)}
 
 \item{tradeDate}{Calculation date (can be a vector)}
 }
 \value{
-Model price of TFutures object where 1 is 100\% of notional
+Model price of TFutures object in percentage of notional
 }
 \description{
 Calculate model price of TFutures object

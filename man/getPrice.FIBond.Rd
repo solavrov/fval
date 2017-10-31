@@ -9,12 +9,12 @@ getPrice.FIBond(bond, yield, settleDate = nextBizDay())
 \arguments{
 \item{bond}{FIBond object}
 
-\item{yield}{FIBond yield (can be a vector)}
+\item{yield}{FIBond yield in percentage (can be a vector)}
 
 \item{settleDate}{Calculation date (can be a vector)}
 }
 \value{
-Clean price of FIBond object where 1 is 100\%
+Clean price of FIBond object in percentage
 }
 \description{
 Calculate clean price of FIBond
