@@ -136,6 +136,7 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
   time <- numeric()
 
   for (i in 1:length(settleDate)) {
+
     nextPaymentIndex <- which(bond$couponDates > settleDate[i])[1]
     nextDay <- bond$couponDates[nextPaymentIndex]
 

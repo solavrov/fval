@@ -173,7 +173,7 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
 #'
 #' @return Carry in percentage of FIBond face
 #' @export
-getCarry.TFututes <- function(fut, bondPrice, repoRate, tradeDate = Sys.Date(), bond = fut$ctd) {
+getCarryPrice.TFututes <- function(fut, bondPrice, repoRate, tradeDate = Sys.Date(), bond = fut$ctd) {
 
   getCarryPrice.FIBond(bond,
                        bondPrice,
@@ -194,7 +194,7 @@ getCarry.TFututes <- function(fut, bondPrice, repoRate, tradeDate = Sys.Date(), 
 #' @return Model price of TFutures object in percentage of notional
 #' @export
 getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
-  (ctdPrice - getCarry.TFututes(fut, ctdPrice, repoRate, tradeDate)) / fut$ctd$cfactor
+  (ctdPrice - getCarryPrice.TFututes(fut, ctdPrice, repoRate, tradeDate)) / fut$ctd$cfactor
 }
 
 
@@ -315,7 +315,7 @@ getNetBasis.TFutures <- function(fut,
                                  bond = fut$ctd) {
 
   getBasis.TFutures(fut, futPrice, bondPrice) -
-    getCarry.TFututes(fut, bondPrice, repoRate, tradeDate, bond)
+    getCarryPrice.TFututes(fut, bondPrice, repoRate, tradeDate, bond)
 
 }
 
