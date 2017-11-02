@@ -23,6 +23,7 @@
 FIBond <- function(file = NA,
                    dateFormat = "mdy",
                    sep = ",") {
+
   b <- list()
   class(b) <- "FIBond"
 
@@ -294,7 +295,7 @@ getPrice.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 getYield.FIBond <- function(bond,
                             price,
                             settleDate = nextBizDay(),
-                            digits = 3,
+                            digits = 4,
                             yieldRange = c(-90, 90)) {
 
   yield <- numeric()
@@ -373,7 +374,7 @@ getCarry.FIBond <- function(bond,
     couponDates <- bond$couponDates[inPlay]
 
     carry[i] <-
-      getAccrued.FIBond(bond, settleDate2[i]) -  getAccrued.FIBond(bond, settleDate1[i]) +
+      getAccrued.FIBond(bond, settleDate2[i]) - getAccrued.FIBond(bond, settleDate1[i]) +
       sum(payments * (1 + repoRate[i] / 100 * as.numeric(settleDate2[i] - couponDates) / 360)) -
       (
         price[i] / 100 * getCurrentFace.FIBond(bond, settleDate1[i]) +
