@@ -23,7 +23,6 @@
 FIBond <- function(file = NA,
                    dateFormat = "mdy",
                    sep = ",") {
-
   b <- list()
   class(b) <- "FIBond"
 
@@ -45,38 +44,48 @@ FIBond <- function(file = NA,
   file <- paste0("fval_data/", file, ".csv")
 
   if (!is.na(file)) {
-    df <- read.csv(file, sep = sep)
 
-    if (!is.null(df$name))
-      b$name <- as.character(df$name[1])
-    if (!is.null(df$isin))
-      b$isin <- as.character(df$isin[1])
-    if (!is.null(df$currency))
-      b$currency <- as.character(df$currency[1])
-    if (!is.null(df$couponFreq))
-      b$couponFreq <- df$couponFreq[1]
+    if (file.exists(file)) {
 
-    if (!is.null(df$issueDate))
-      b$issueDate <-
-        as.Date(lubridate::parse_date_time(as.character(df$issueDate[1]), dateFormat))
+      df <- read.csv(file, sep = sep)
 
-    if (!is.null(df$formula))
-      b$formula <- as.character(df$formula[1])
-    if (!is.null(df$dayCounter))
-      b$dayCounter <- df$dayCounter[1]
-    if (!is.null(df$cfactor))
-      b$cfactor <- df$cfactor[1]
+      if (!is.null(df$name))
+        b$name <- as.character(df$name[1])
+      if (!is.null(df$isin))
+        b$isin <- as.character(df$isin[1])
+      if (!is.null(df$currency))
+        b$currency <- as.character(df$currency[1])
+      if (!is.null(df$couponFreq))
+        b$couponFreq <- df$couponFreq[1]
 
-    if (!is.null(df$couponDates))
-      b$couponDates <-
-        as.Date(lubridate::parse_date_time(as.character(df$couponDates), dateFormat))
+      if (!is.null(df$issueDate))
+        b$issueDate <-
+          as.Date(lubridate::parse_date_time(as.character(df$issueDate[1]), dateFormat))
 
-    if (!is.null(df$couponAmounts))
-      b$couponAmounts <- df$couponAmounts
+      if (!is.null(df$formula))
+        b$formula <- as.character(df$formula[1])
+      if (!is.null(df$dayCounter))
+        b$dayCounter <- df$dayCounter[1]
+      if (!is.null(df$cfactor))
+        b$cfactor <- df$cfactor[1]
 
-    if (!is.null(df$faceAmounts)) {
-      b$faceAmounts <- df$faceAmounts
-      b$initialFace <- sum(df$faceAmounts)
+      if (!is.null(df$couponDates))
+        b$couponDates <-
+          as.Date(lubridate::parse_date_time(as.character(df$couponDates), dateFormat))
+
+      if (!is.null(df$couponAmounts))
+        b$couponAmounts <- df$couponAmounts
+
+      if (!is.null(df$faceAmounts)) {
+        b$faceAmounts <- df$faceAmounts
+        b$initialFace <- sum(df$faceAmounts)
+
+      }
+
+    }  else {
+
+      cat("Cannot find Bond file in fval_data...\n")
+
     }
 
   }
