@@ -4,7 +4,7 @@
 \alias{getYield.FIBond}
 \title{Calculate yield of FIBond object}
 \usage{
-getYield.FIBond(bond, price, settleDate = nextBizDay(), digits = 3,
+getYield.FIBond(bond, price, settleDate = nextBizDay(), digits = 4,
   yieldRange = c(-90, 90))
 }
 \arguments{

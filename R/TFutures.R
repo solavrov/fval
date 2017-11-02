@@ -163,6 +163,27 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
 }
 
 
+#' Return Carry of FIBond till delivery date of TFutures
+#'
+#' @param fut TFutures object
+#' @param bondPrice FIBond price in percentage (can be a vector)
+#' @param repoRate FIBond repo rate in percentage (can be a vector)
+#' @param tradeDate Trade date (can be a vector)
+#' @param bond FIBond object
+#'
+#' @return Carry in percentage of FIBond face
+#' @export
+getCarry.TFututes <- function(fut, bondPrice, repoRate, tradeDate = Sys.Date(), bond = fut$ctd) {
+
+  getCarryPrice.FIBond(bond,
+                       bondPrice,
+                       nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond"),
+                       fut$deliveryDate,
+                       repoRate)
+
+}
+
+
 #' Calculate model price of TFutures object
 #'
 #' @param fut TFutures object
@@ -173,13 +194,7 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
 #' @return Model price of TFutures object in percentage of notional
 #' @export
 getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
-
-  t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
-  carry <- getCarryPrice.FIBond(fut$ctd, ctdPrice, t1, fut$deliveryDate, repoRate)
-  price <- (ctdPrice - carry) / fut$ctd$cfactor
-
-  return (price)
-
+  (ctdPrice - getCarry.TFututes(fut, ctdPrice, repoRate, tradeDate)) / fut$ctd$cfactor
 }
 
 
@@ -266,4 +281,46 @@ getPVBPRP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) 
   return (pvbp)
 
 }
+
+
+#' Return Basis for TFutures object and given FIBond
+#'
+#' @param fut TFutures object
+#' @param futPrice TFutures price in percentage (can be a vector)
+#' @param bondPrice FIBond price in percentage (can be a vector)
+#'
+#' @return Basis in percentage of FIBond face
+#' @export
+getBasis.TFutures <- function(fut, futPrice, bondPrice) {
+  bondPrice - fut$ctd$cfactor * futPrice
+}
+
+
+#' Return Net Basis for TFutures object and given FIBond
+#'
+#' @param fut TFutures object
+#' @param futPrice TFutures price in percentage (can be a vector)
+#' @param bondPrice FIBond price in percentage (can be a vector)
+#' @param repoRate FIBond repo rate in percentage (can be a vector)
+#' @param bond FIBond object
+#' @param tradeDate Trade date (can be a vector)
+#'
+#' @return Net Basis in percentage of FIBond face
+#' @export
+getNetBasis.TFutures <- function(fut,
+                                 futPrice,
+                                 bondPrice,
+                                 repoRate,
+                                 tradeDate = Sys.Date(),
+                                 bond = fut$ctd) {
+
+  getBasis.TFutures(fut, futPrice, bondPrice) -
+    getCarry.TFututes(fut, bondPrice, repoRate, tradeDate, bond)
+
+}
+
+
+
+
+
 
