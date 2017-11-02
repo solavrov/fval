@@ -88,7 +88,7 @@ stretch <- function(a, ...) {
 #'
 #' @return 1 if date within range and NA otherwise
 #' @export
-checkDate <- function(date, earliestDate = -1e6, latestDate = 1e6) {
+checkDate <- function(date, earliestDate = -Inf, latestDate = Inf) {
 
   check <- 1 * (date >= earliestDate) * (date <= latestDate)
   check[check == 0] <- NA
