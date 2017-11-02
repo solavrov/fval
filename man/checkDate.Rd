@@ -4,7 +4,7 @@
 \alias{checkDate}
 \title{Return 1 if date within range and NA otherwise}
 \usage{
-checkDate(date, earliestDate = -1e+06, latestDate = 1e+06)
+checkDate(date, earliestDate = -Inf, latestDate = Inf)
 }
 \arguments{
 \item{date}{Date (can be a vector)}

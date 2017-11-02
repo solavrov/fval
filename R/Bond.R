@@ -140,17 +140,25 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
     nextPaymentIndex <- which(bond$couponDates > settleDate[i])[1]
     nextDay <- bond$couponDates[nextPaymentIndex]
 
-    if (nextPaymentIndex >= 2) {
-      prevDay <- bond$couponDates[nextPaymentIndex - 1]
+    if (is.na(nextPaymentIndex)) {
+
+      time[i] <- NA
+
     } else {
-      prevDay <- bond$issueDate
+
+      if (nextPaymentIndex >= 2) {
+        prevDay <- bond$couponDates[nextPaymentIndex - 1]
+      } else {
+        prevDay <- bond$issueDate
+      }
+
+      period <- RQuantLib::dayCount(prevDay, nextDay, bond$dayCounter)
+      daysPassed <-
+        RQuantLib::dayCount(prevDay, settleDate[i], bond$dayCounter)
+
+      time[i] <- daysPassed / period
+
     }
-
-    period <- RQuantLib::dayCount(prevDay, nextDay, bond$dayCounter)
-    daysPassed <-
-      RQuantLib::dayCount(prevDay, settleDate[i], bond$dayCounter)
-
-    time[i] <- daysPassed / period
 
   }
 
