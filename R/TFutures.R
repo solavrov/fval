@@ -163,6 +163,20 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
 }
 
 
+#' Return value of TFutures position
+#'
+#' @param fut TFutures object
+#' @param futPrice TFutures price in percentage
+#' @param settlePrice TFutures settlement price in percentage
+#' @param numOfContracts Numbe of contracts (negative is short)
+#'
+#' @return Value in dollars
+#' @export
+getValue.TFutures <- function(fut, futPrice, settlePrice, numOfContracts = 1) {
+  numOfContracts * fut$notionalAmount * (futPrice - settlePrice) / 100
+}
+
+
 #' Return Carry of FIBond till delivery date of TFutures
 #'
 #' @param fut TFutures object
