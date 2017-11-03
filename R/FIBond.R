@@ -254,8 +254,8 @@ getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
-  yield <- stretch(yield, settleDate)
-  settleDate <- stretch(settleDate, yield)
+  yield <- hlpr::stretch(yield, settleDate)
+  settleDate <- hlpr::stretch(settleDate, yield)
   len <- length(yield)
 
   value <- numeric()
@@ -336,8 +336,8 @@ getYield.FIBond <- function(bond,
 
   yield <- numeric()
 
-  price <- stretch(price, settleDate)
-  settleDate <- stretch(settleDate, price)
+  price <- hlpr::stretch(price, settleDate)
+  settleDate <- hlpr::stretch(settleDate, price)
   len <- length(price)
 
   for (i in 1:len) {
@@ -399,10 +399,10 @@ getCarryValue.FIBond <- function(bond,
                                  repoRate) {
 
 
-  price <- stretch(price, settleDate1, settleDate2, repoRate)
-  settleDate1 <- stretch(settleDate1, price, settleDate2, repoRate)
-  settleDate2 <- stretch(settleDate2, price, settleDate1, repoRate)
-  repoRate <- stretch(repoRate, price, settleDate1, settleDate2)
+  price <- hlpr::stretch(price, settleDate1, settleDate2, repoRate)
+  settleDate1 <- hlpr::stretch(settleDate1, price, settleDate2, repoRate)
+  settleDate2 <- hlpr::stretch(settleDate2, price, settleDate1, repoRate)
+  repoRate <- hlpr::stretch(repoRate, price, settleDate1, settleDate2)
   len <- length(price)
 
   carry <- numeric()

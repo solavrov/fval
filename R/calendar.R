@@ -30,7 +30,7 @@ dayCounter <- list(
 #' @examples
 #' counter(0)
 counterName <- function(counter) {
-  vectorSwitch(as.character(counter),
+  hlpr::vectorSwitch(as.character(counter),
          "0" = "Actual360",
          "1" = "Actual360FixEd",
          "2" = "ActualActual",

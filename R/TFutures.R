@@ -7,7 +7,7 @@
 #' @export
 getContractType.TFutures <- function(ticker) {
 
-  vectorSwitch(
+  hlpr::vectorSwitch(
     getFuturesCodeFromTicker(ticker),
     TU = "2Y TNote",
     "3Y" = "3Y TNote",
@@ -55,7 +55,7 @@ getName.TFutures <- function(ticker, decade = "auto") {
 #' @export
 getNotional.TFutures <- function(ticker) {
 
-  vectorSwitch(getFuturesCodeFromTicker(ticker),
+  hlpr::vectorSwitch(getFuturesCodeFromTicker(ticker),
          TU = 2e5,
          "3Y" = 1e5,
          FV = 1e5,
@@ -89,7 +89,7 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
   for (i in 1:3) thirdNextMonthBizDay <- nextBizDay(thirdNextMonthBizDay,
                                                     calendar = "UnitedStates/GovernmentBond")
 
-  deliveryDate <- matrixSwitch(
+  deliveryDate <- hlpr::matrixSwitch(
     futuresCode,
     TU = thirdNextMonthBizDay,
     "3Y" = thirdNextMonthBizDay,
@@ -232,9 +232,9 @@ getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 #' @export
 getIRP.TFututes <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
 
-  futPrice <- stretch(futPrice, ctdPrice, tradeDate)
-  ctdPrice <- stretch(ctdPrice, futPrice, tradeDate)
-  tradeDate <- stretch(tradeDate, futPrice, ctdPrice)
+  futPrice <- hlpr::stretch(futPrice, ctdPrice, tradeDate)
+  ctdPrice <- hlpr::stretch(ctdPrice, futPrice, tradeDate)
+  tradeDate <- hlpr::stretch(tradeDate, futPrice, ctdPrice)
   len <- length(futPrice)
 
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
