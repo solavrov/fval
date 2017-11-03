@@ -163,17 +163,22 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
 }
 
 
-#' Return value of TFutures position
+#' Return value of TFutures contract
 #'
 #' @param fut TFutures object
 #' @param futPrice TFutures price in percentage
 #' @param settlePrice TFutures settlement price in percentage
-#' @param numOfContracts Numbe of contracts (negative is short)
+#' @param side Side - "long" or "short"
 #'
-#' @return Value in dollars
+#' @return Value in dollars of one contract
 #' @export
-getValue.TFutures <- function(fut, futPrice, settlePrice, numOfContracts = 1) {
-  numOfContracts * fut$notionalAmount * (futPrice - settlePrice) / 100
+getValue.TFutures <- function(fut, futPrice, settlePrice, side = "long") {
+
+  value <- fut$notionalAmount * (futPrice - settlePrice) / 100
+  if (side != "long") value <- -value
+
+  return (value)
+
 }
 
 
