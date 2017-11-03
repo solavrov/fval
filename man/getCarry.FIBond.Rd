@@ -2,7 +2,7 @@
 % Please edit documentation in R/FIBond.R
 \name{getCarry.FIBond}
 \alias{getCarry.FIBond}
-\title{Calculate carry for FIBond object}
+\title{Calculate carry for FIBond object in percentage of current face}
 \usage{
 getCarry.FIBond(bond, price, settleDate1, settleDate2, repoRate)
 }
@@ -18,8 +18,8 @@ getCarry.FIBond(bond, price, settleDate1, settleDate2, repoRate)
 \item{repoRate}{Funding term repo rate in percentage (can be a vector)}
 }
 \value{
-Carry for FIBond object
+Carry for FIBond object in percentage of current face
 }
 \description{
-Calculate carry for FIBond object
+Calculate carry for FIBond object in percentage of current face
 }

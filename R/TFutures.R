@@ -192,13 +192,15 @@ getValue.TFutures <- function(fut, futPrice, settlePrice, side = "long") {
 #'
 #' @return Carry in percentage of FIBond face
 #' @export
-getCarryPrice.TFututes <- function(fut, bondPrice, repoRate, tradeDate = Sys.Date(), bond = fut$ctd) {
+getCarry.TFututes <- function(fut, bondPrice, repoRate, tradeDate = Sys.Date(), bond = fut$ctd) {
 
-  getCarryPrice.FIBond(bond,
-                       bondPrice,
-                       nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond"),
-                       fut$deliveryDate,
-                       repoRate) * checkDate(tradeDate, latestDate = fut$deliveryDate)
+  getCarry.FIBond(
+    bond,
+    bondPrice,
+    nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond"),
+    fut$deliveryDate,
+    repoRate
+  ) * checkDate(tradeDate, latestDate = fut$deliveryDate)
 
 }
 
@@ -214,7 +216,7 @@ getCarryPrice.TFututes <- function(fut, bondPrice, repoRate, tradeDate = Sys.Dat
 #' @export
 getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
-  (ctdPrice - getCarryPrice.TFututes(fut, ctdPrice, repoRate, tradeDate)) / fut$ctd$cfactor
+  (ctdPrice - getCarry.TFututes(fut, ctdPrice, repoRate, tradeDate)) / fut$ctd$cfactor
 
 }
 
@@ -248,11 +250,11 @@ getIRP.TFututes <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
 
     irp[i] <-
       (
-        fut$ctd$cfactor * futPrice[i] + getAccruedPrice.FIBond(fut$ctd, fut$deliveryDate)
-        + sum(couponAmounts) - ctdPrice[i] - getAccruedPrice.FIBond(fut$ctd, t1[i])
+        fut$ctd$cfactor * futPrice[i] + getAccrued.FIBond(fut$ctd, fut$deliveryDate)
+        + sum(couponAmounts) - ctdPrice[i] - getAccrued.FIBond(fut$ctd, t1[i])
       ) /
       (
-        (ctdPrice[i] + getAccruedPrice.FIBond(fut$ctd, t1[i])) *
+        (ctdPrice[i] + getAccrued.FIBond(fut$ctd, t1[i])) *
           as.numeric(fut$deliveryDate - t1[i]) / 360 -
           sum(couponAmounts * as.numeric(fut$deliveryDate - couponDates) / 360)
       ) * 100
@@ -348,11 +350,8 @@ getNetBasis.TFutures <- function(fut,
                                  bond = fut$ctd) {
 
   getBasis.TFutures(fut, futPrice, bondPrice) -
-    getCarryPrice.TFututes(fut, bondPrice, repoRate, tradeDate, bond)
+    getCarry.TFututes(fut, bondPrice, repoRate, tradeDate, bond)
 
 }
 
-
-
-\
 

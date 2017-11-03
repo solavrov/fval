@@ -2,7 +2,7 @@
 % Please edit documentation in R/FIBond.R
 \name{getAccrued.FIBond}
 \alias{getAccrued.FIBond}
-\title{Calculate accrued interest for FIBond object}
+\title{Calculate accrued interest in percentage of current face}
 \usage{
 getAccrued.FIBond(bond, settleDate = nextBizDay())
 }
@@ -12,8 +12,8 @@ getAccrued.FIBond(bond, settleDate = nextBizDay())
 \item{settleDate}{Calculation date (can be a vector)}
 }
 \value{
-Accrued interest
+Accrued interest in percentage of current face
 }
 \description{
-Calculate accrued interest for FIBond object
+Calculate accrued interest in percentage of current face
 }
