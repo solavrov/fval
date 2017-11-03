@@ -25,6 +25,7 @@ $currency - currency i.e. USD, RUB...
 $faceAmount - face amount
 $couponFreq - coupon frequency i.e. 2 for semiannual etc
 $issueDate - issue date
+$maturity - maturity date
 $formula - yield formular where STD stands for standard convention, OFZ stands for OFZ convention
 $dayCounter - day counter from dayCounter
 $cfactor - conversion factor for T-bonds-notes for T-futures
