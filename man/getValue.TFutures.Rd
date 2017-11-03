@@ -2,9 +2,9 @@
 % Please edit documentation in R/TFutures.R
 \name{getValue.TFutures}
 \alias{getValue.TFutures}
-\title{Return value of TFutures position}
+\title{Return value of TFutures contract}
 \usage{
-getValue.TFutures(fut, futPrice, settlePrice, numOfContracts = 1)
+getValue.TFutures(fut, futPrice, settlePrice, side = "long")
 }
 \arguments{
 \item{fut}{TFutures object}
@@ -13,11 +13,11 @@ getValue.TFutures(fut, futPrice, settlePrice, numOfContracts = 1)
 
 \item{settlePrice}{TFutures settlement price in percentage}
 
-\item{numOfContracts}{Numbe of contracts (negative is short)}
+\item{side}{Side - "long" or "short"}
 }
 \value{
-Value in dollars
+Value in dollars of one contract
 }
 \description{
-Return value of TFutures position
+Return value of TFutures contract
 }

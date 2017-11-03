@@ -182,7 +182,7 @@ getValue.TFutures <- function(fut, futPrice, settlePrice, side = "long") {
 }
 
 
-#' Return Carry of FIBond till delivery date of TFutures
+#' Return percentage carry of FIBond till delivery date of TFutures
 #'
 #' @param fut TFutures object
 #' @param bondPrice FIBond price in percentage (can be a vector)
@@ -198,7 +198,7 @@ getCarryPrice.TFututes <- function(fut, bondPrice, repoRate, tradeDate = Sys.Dat
                        bondPrice,
                        nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond"),
                        fut$deliveryDate,
-                       repoRate)
+                       repoRate) * checkDate(tradeDate, latestDate = fut$deliveryDate)
 
 }
 
@@ -213,7 +213,9 @@ getCarryPrice.TFututes <- function(fut, bondPrice, repoRate, tradeDate = Sys.Dat
 #' @return Model price of TFutures object in percentage of notional
 #' @export
 getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
+
   (ctdPrice - getCarryPrice.TFututes(fut, ctdPrice, repoRate, tradeDate)) / fut$ctd$cfactor
+
 }
 
 
@@ -228,22 +230,34 @@ getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 #' @export
 getIRP.TFututes <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
 
+  futPrice <- stretch(futPrice, ctdPrice, tradeDate)
+  ctdPrice <- stretch(ctdPrice, futPrice, tradeDate)
+  tradeDate <- stretch(tradeDate, futPrice, ctdPrice)
+  len <- length(futPrice)
+
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
 
-  inPlay <- which(fut$ctd$couponDates > t1 & fut$ctd$couponDates <= fut$deliveryDate)
+  irp <- numeric()
 
-  couponAmounts <- fut$ctd$couponAmounts[inPlay] / fut$ctd$initialFace * 100
-  couponDates <- fut$ctd$couponDates[inPlay]
+  for (i in 1:len) {
 
-  irp <-
-    (
-      fut$ctd$cfactor * futPrice + getAccruedPrice.FIBond(fut$ctd, fut$deliveryDate)
-      + sum(couponAmounts) - ctdPrice - getAccruedPrice.FIBond(fut$ctd, t1)
-    ) /
-    (
-      (ctdPrice + getAccruedPrice.FIBond(fut$ctd, t1)) * as.numeric(fut$deliveryDate - t1) / 360 -
-       sum(couponAmounts * as.numeric(fut$deliveryDate - couponDates) / 360)
-    ) * 100
+    inPlay <- which(fut$ctd$couponDates > t1[i] & fut$ctd$couponDates <= fut$deliveryDate)
+
+    couponAmounts <- fut$ctd$couponAmounts[inPlay] / fut$ctd$initialFace * 100
+    couponDates <- fut$ctd$couponDates[inPlay]
+
+    irp[i] <-
+      (
+        fut$ctd$cfactor * futPrice[i] + getAccruedPrice.FIBond(fut$ctd, fut$deliveryDate)
+        + sum(couponAmounts) - ctdPrice[i] - getAccruedPrice.FIBond(fut$ctd, t1[i])
+      ) /
+      (
+        (ctdPrice[i] + getAccruedPrice.FIBond(fut$ctd, t1[i])) *
+          as.numeric(fut$deliveryDate - t1[i]) / 360 -
+          sum(couponAmounts * as.numeric(fut$deliveryDate - couponDates) / 360)
+      ) * 100
+
+  }
 
   return (irp)
 
@@ -340,6 +354,5 @@ getNetBasis.TFutures <- function(fut,
 
 
 
-
-
+\
 

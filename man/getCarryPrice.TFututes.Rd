@@ -2,7 +2,7 @@
 % Please edit documentation in R/TFutures.R
 \name{getCarryPrice.TFututes}
 \alias{getCarryPrice.TFututes}
-\title{Return Carry of FIBond till delivery date of TFutures}
+\title{Return percentage carry of FIBond till delivery date of TFutures}
 \usage{
 getCarryPrice.TFututes(fut, bondPrice, repoRate, tradeDate = Sys.Date(),
   bond = fut$ctd)
@@ -22,5 +22,5 @@ getCarryPrice.TFututes(fut, bondPrice, repoRate, tradeDate = Sys.Date(),
 Carry in percentage of FIBond face
 }
 \description{
-Return Carry of FIBond till delivery date of TFutures
+Return percentage carry of FIBond till delivery date of TFutures
 }
