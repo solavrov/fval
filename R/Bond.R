@@ -137,14 +137,10 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 
   for (i in 1:length(settleDate)) {
 
-    nextPaymentIndex <- which(bond$couponDates > settleDate[i])[1]
-    nextDay <- bond$couponDates[nextPaymentIndex]
+    if (settleDate[i] >= bond$issueDate && settleDate[i] <= tail(bond$couponDates, 1)) {
 
-    if (is.na(nextPaymentIndex)) {
-
-      time[i] <- NA
-
-    } else {
+      nextPaymentIndex <- which(bond$couponDates > settleDate[i])[1]
+      nextDay <- bond$couponDates[nextPaymentIndex]
 
       if (nextPaymentIndex >= 2) {
         prevDay <- bond$couponDates[nextPaymentIndex - 1]
@@ -157,6 +153,10 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
         RQuantLib::dayCount(prevDay, settleDate[i], bond$dayCounter)
 
       time[i] <- daysPassed / period
+
+    } else {
+
+      time[i] <- NA
 
     }
 
@@ -179,7 +179,17 @@ getCurrentFace.FIBond <- function(bond, settleDate = nextBizDay()) {
   face <- numeric()
 
   for (i in 1:length(settleDate)) {
-    face[i] <- sum(bond$faceAmounts[bond$couponDates > settleDate[i]])
+
+    if (settleDate[i] >= bond$issueDate && settleDate[i] <= tail(bond$couponDates, 1)) {
+
+      face[i] <- sum(bond$faceAmounts[bond$couponDates > settleDate[i]])
+
+    } else {
+
+      face[i] <- NA
+
+    }
+
   }
 
   return (face)
@@ -199,6 +209,9 @@ getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
   accrued <- numeric()
 
   for (i in 1:length(settleDate)) {
+
+    if (settleDate[i] >= bond$issueDate && settleDate[i] <= tail(bond$couponDates, 1)) {
+
     nextPaymentIndex <- which(bond$couponDates > settleDate[i])[1]
     coupon <- bond$couponAmounts[nextPaymentIndex]
     accrued[i] <- coupon * getCouponTime.FIBond(bond, settleDate[i])
@@ -207,6 +220,12 @@ getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
       accrued[i] <-
         round(accrued[i] / bond$initialFace * 1000, digits = 2) *
         bond$initialFace / 1000
+    }
+
+    } else {
+
+      accrued[i] <- NA
+
     }
 
   }
@@ -238,20 +257,25 @@ getAccruedPrice.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
-    yield <- stretch(yield, settleDate)
-    settleDate <- stretch(settleDate, yield)
-    len <- length(yield)
+  yield <- stretch(yield, settleDate)
+  settleDate <- stretch(settleDate, yield)
+  len <- length(yield)
 
-    value <- numeric()
+  value <- numeric()
 
-    for (i in 1:len) {
+  for (i in 1:len) {
+
+    if (settleDate[i] >= bond$issueDate && settleDate[i] <= tail(bond$couponDates, 1)) {
+
       spans <- as.numeric(bond$couponDates - settleDate[i])
 
       if (bond$formula == "OFZ") {
+
         factors <- (spans > 0) * 1 / (1 + yield[i] / 100) ^ (spans / 365)
         payments <- bond$couponAmounts + bond$faceAmounts
 
       } else {
+
         numOfFutureCoupons <- length(spans[spans > 0])
 
         factors <-
@@ -266,11 +290,17 @@ getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
       value[i] <- sum(payments * factors)
 
+    } else {
+
+      value[i] <- NA
+
     }
 
-    return (value)
-
   }
+
+  return (value)
+
+}
 
 
 #' Calculate clean price of FIBond
@@ -314,11 +344,19 @@ getYield.FIBond <- function(bond,
   len <- length(price)
 
   for (i in 1:len) {
-    f <-
-      function(x)
-        (getPrice.FIBond(bond, x, settleDate[i]) - price[i])
-    solution <- uniroot(f, yieldRange, tol = 10 ^ (-digits - 1))
-    yield[i] <- round(solution$root, digits)
+
+    if (settleDate[i] >= bond$issueDate && settleDate[i] <= tail(bond$couponDates, 1)) {
+
+      f <- function(x) (getPrice.FIBond(bond, x, settleDate[i]) - price[i])
+      solution <- uniroot(f, yieldRange, tol = 10 ^ (-digits - 1))
+      yield[i] <- round(solution$root, digits)
+
+    } else {
+
+      yield[i] <- NA
+
+    }
+
   }
 
   return (yield)
@@ -373,12 +411,9 @@ getCarry.FIBond <- function(bond,
 
   for (i in 1:len) {
 
-    inPlay <-
-      which(bond$couponDates > settleDate1[i] &
-              bond$couponDates <= settleDate2[i])
+    inPlay <- which(bond$couponDates > settleDate1[i] & bond$couponDates <= settleDate2[i])
 
-    payments <-
-      bond$couponAmounts[inPlay] + bond$faceAmounts[inPlay]
+    payments <- bond$couponAmounts[inPlay] + bond$faceAmounts[inPlay]
 
     couponDates <- bond$couponDates[inPlay]
 
