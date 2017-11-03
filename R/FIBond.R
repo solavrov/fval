@@ -42,9 +42,9 @@ FIBond <- function(file = NA,
   b$couponAmounts <- NA
   b$faceAmounts <- NA
 
-  file <- paste0("fval_data/", file, ".csv")
-
   if (!is.na(file)) {
+
+    file <- paste0("fval_data/", file, ".csv")
 
     if (file.exists(file)) {
 
@@ -396,10 +396,11 @@ getPVBP.FIBond <- function(bond, price, settleDate = nextBizDay()) {
 #' @return Carry for FIBond object
 #' @export
 getCarryValue.FIBond <- function(bond,
-                            price,
-                            settleDate1,
-                            settleDate2,
-                            repoRate) {
+                                 price,
+                                 settleDate1,
+                                 settleDate2,
+                                 repoRate) {
+
 
   price <- stretch(price, settleDate1, settleDate2, repoRate)
   settleDate1 <- stretch(settleDate1, price, settleDate2, repoRate)
@@ -444,10 +445,11 @@ getCarryValue.FIBond <- function(bond,
 #' @return Carry for FIBond object in percentage of current face
 #' @export
 getCarry.FIBond <- function(bond,
-                                 price,
-                                 settleDate1,
-                                 settleDate2,
-                                 repoRate) {
+                            price,
+                            settleDate1,
+                            settleDate2,
+                            repoRate) {
+
 
   getCarryValue.FIBond(bond, price, settleDate1, settleDate2, repoRate) /
     getCurrentFace.FIBond(bond, settleDate1) * 100
