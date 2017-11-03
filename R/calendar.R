@@ -153,3 +153,22 @@ firstBizDay <- function(month, year, calendar = "WeekendsOnly") {
 
 }
 
+
+#' Return 1 if date within range and NA otherwise
+#'
+#' @param date Date (can be a vector)
+#' @param earliestDate Earliest date, default value is minus infinity (-1e6)
+#' @param latestDate Latest date, default value is plus infinity (1e6)
+#'
+#' @return 1 if date within range and NA otherwise
+#' @export
+checkDate <- function(date, earliestDate = -Inf, latestDate = Inf) {
+
+  check <- 1 * (date >= earliestDate) * (date <= latestDate)
+  check[check == 0] <- NA
+
+  return (check)
+
+}
+
+
