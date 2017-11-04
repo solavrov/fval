@@ -144,14 +144,15 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
 
       if (ctdFileName == "") {
         ctdFileName <- paste0("ctd_", tolower(ticker))
-        if (!file.exists(paste0("fval_data/", ctdFileName, ".csv"))) {
+        file <- paste0("fval_data/", ctdFileName, ".csv")
+        if (!file.exists(file)) {
           ctdFileName <- ""
-          cat("Can't find CTD's file in fval_data", ctdFileName, "\nPlease, set up CTD manually...\n\n")
+          cat("WARNING!", file, "is not found\n")
         }
       }
 
     } else {
-      cat("Ticker is wrong. Default contract was created\n")
+      cat("ERROR! Ticker", ticker, "is wrong!\n")
     }
 
   }

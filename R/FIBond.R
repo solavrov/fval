@@ -80,7 +80,7 @@ FIBond <- function(file = NA,
 
     }  else {
 
-      cat("Cannot find Bond file in fval_data...\n")
+      cat("ERROR!", file, "is not found\n")
 
     }
 

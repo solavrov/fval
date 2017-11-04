@@ -15,7 +15,7 @@ loadMarket <- function(file = "market") {
     m <- read.csv(file)
     m$DATE <- as.Date(m$DATE)
   } else {
-    cat("Cannot find Market file in fval_data...\n")
+    cat("ERROR!", file, "is not found\n")
   }
 
   return (m)
