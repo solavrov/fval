@@ -54,8 +54,7 @@ FIBond <- function(file = NA,
 
       if (!is.null(df$name)) b$name <- as.character(df$name[1])
       if (!is.null(df$isin)) b$isin <- as.character(df$isin[1])
-      #if (!is.null(df$currency)) b$currency <- as.character(df$currency[1])
-      if (!is.null(df$couponFreq)) b$couponFreq <- df$couponFreq[1]
+      if (!is.null(df$currency)) b$currency <- as.character(df$currency[1])
 
       if (!is.null(df$issueDate)) b$issueDate <-
           as.Date(lubridate::parse_date_time(as.character(df$issueDate[1]), dateFormat))
