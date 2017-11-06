@@ -253,21 +253,19 @@ getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
-  yield <- hlpr::stretch(yield, settleDate)
-  settleDate <- hlpr::stretch(settleDate, yield)
-  len <- length(yield)
+  len <- hlpr::checkParams(yield, settleDate)
 
   value <- numeric()
 
   for (i in 1:len) {
 
-    if (settleDate[i] >= bond$issueDate && settleDate[i] <= bond$maturity) {
+    if (e(settleDate, i) >= bond$issueDate && e(settleDate, i) <= bond$maturity) {
 
-      spans <- as.numeric(bond$couponDates - settleDate[i])
+      spans <- as.numeric(bond$couponDates - e(settleDate, i))
 
       if (bond$formula == "OFZ") {
 
-        factors <- (spans > 0) * 1 / (1 + yield[i] / 100) ^ (spans / 365)
+        factors <- (spans > 0) * 1 / (1 + e(yield, i) / 100) ^ (spans / 365)
         payments <- bond$couponAmounts + bond$faceAmounts
 
       } else {
@@ -275,8 +273,8 @@ getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
         numOfFutureCoupons <- length(spans[spans > 0])
 
         factors <-
-          1 / (1 + yield[i] / 100 / bond$couponFreq) ^
-          (1:numOfFutureCoupons - getCouponTime.FIBond(bond, settleDate[i]))
+          1 / (1 + e(yield, i) / 100 / bond$couponFreq) ^
+          (1:numOfFutureCoupons - getCouponTime.FIBond(bond, e(settleDate, i)))
 
         payments <-
           tail(bond$couponAmounts + bond$faceAmounts,
@@ -335,15 +333,13 @@ getYield.FIBond <- function(bond,
 
   yield <- numeric()
 
-  price <- hlpr::stretch(price, settleDate)
-  settleDate <- hlpr::stretch(settleDate, price)
-  len <- length(price)
+  len <- hlpr::checkParams(price, settleDate)
 
   for (i in 1:len) {
 
-    if (settleDate[i] >= bond$issueDate && settleDate[i] <= bond$maturity) {
+    if (e(settleDate, i) >= bond$issueDate && e(settleDate, i) <= bond$maturity) {
 
-      f <- function(x) (getPrice.FIBond(bond, x, settleDate[i]) - price[i])
+      f <- function(x) (getPrice.FIBond(bond, x, e(settleDate, i)) - e(price, i))
       solution <- uniroot(f, yieldRange, tol = 10 ^ (-digits - 1))
       yield[i] <- round(solution$root, digits)
 
@@ -397,31 +393,26 @@ getCarryValue.FIBond <- function(bond,
                                  settleDate2,
                                  repoRate) {
 
-
-  price <- hlpr::stretch(price, settleDate1, settleDate2, repoRate)
-  settleDate1 <- hlpr::stretch(settleDate1, price, settleDate2, repoRate)
-  settleDate2 <- hlpr::stretch(settleDate2, price, settleDate1, repoRate)
-  repoRate <- hlpr::stretch(repoRate, price, settleDate1, settleDate2)
-  len <- length(price)
+  len <- hlpr::checkParams(price, settleDate1, settleDate2, repoRate)
 
   carry <- numeric()
 
   for (i in 1:len) {
 
-    inPlay <- which(bond$couponDates > settleDate1[i] & bond$couponDates <= settleDate2[i])
+    inPlay <- which(bond$couponDates > e(settleDate1, i) & bond$couponDates <= e(settleDate2, i))
 
     payments <- bond$couponAmounts[inPlay] + bond$faceAmounts[inPlay]
 
     couponDates <- bond$couponDates[inPlay]
 
     carry[i] <-
-      getAccruedValue.FIBond(bond, settleDate2[i]) - getAccruedValue.FIBond(bond, settleDate1[i]) +
-      sum(payments * (1 + repoRate[i] / 100 * as.numeric(settleDate2[i] - couponDates) / 360)) -
+      getAccruedValue.FIBond(bond, e(settleDate2, i)) - getAccruedValue.FIBond(bond, e(settleDate1, i)) +
+      sum(payments * (1 + e(repoRate, i) / 100 * as.numeric(e(settleDate2, i) - couponDates) / 360)) -
       (
-        price[i] / 100 * getCurrentFace.FIBond(bond, settleDate1[i]) +
-          getAccruedValue.FIBond(bond, settleDate1[i])
+        e(price, i) / 100 * getCurrentFace.FIBond(bond, e(settleDate1, i)) +
+          getAccruedValue.FIBond(bond, e(settleDate1, i))
       ) *
-      repoRate[i] / 100 * as.numeric(settleDate2[i] - settleDate1[i]) / 360
+      e(repoRate, i) / 100 * as.numeric(e(settleDate2, i) - e(settleDate1, i)) / 360
 
   }
 
