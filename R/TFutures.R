@@ -233,10 +233,7 @@ getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 #' @export
 getIRP.TFututes <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
 
-  futPrice <- hlpr::stretch(futPrice, ctdPrice, tradeDate)
-  ctdPrice <- hlpr::stretch(ctdPrice, futPrice, tradeDate)
-  tradeDate <- hlpr::stretch(tradeDate, futPrice, ctdPrice)
-  len <- length(futPrice)
+  len <- hlpr::checkParams(futPrice, ctdPrice, tradeDate)
 
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
 
@@ -244,19 +241,19 @@ getIRP.TFututes <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
 
   for (i in 1:len) {
 
-    inPlay <- which(fut$ctd$couponDates > t1[i] & fut$ctd$couponDates <= fut$deliveryDate)
+    inPlay <- which(fut$ctd$couponDates > e(t1, i) & fut$ctd$couponDates <= fut$deliveryDate)
 
     couponAmounts <- fut$ctd$couponAmounts[inPlay] / fut$ctd$initialFace * 100
     couponDates <- fut$ctd$couponDates[inPlay]
 
     irp[i] <-
       (
-        fut$ctd$cfactor * futPrice[i] + getAccrued.FIBond(fut$ctd, fut$deliveryDate)
-        + sum(couponAmounts) - ctdPrice[i] - getAccrued.FIBond(fut$ctd, t1[i])
+        fut$ctd$cfactor * e(futPrice, i) + getAccrued.FIBond(fut$ctd, fut$deliveryDate)
+        + sum(couponAmounts) - e(ctdPrice, i) - getAccrued.FIBond(fut$ctd, e(t1, i))
       ) /
       (
-        (ctdPrice[i] + getAccrued.FIBond(fut$ctd, t1[i])) *
-          as.numeric(fut$deliveryDate - t1[i]) / 360 -
+        (e(ctdPrice, i) + getAccrued.FIBond(fut$ctd, e(t1, i))) *
+          as.numeric(fut$deliveryDate - e(t1, i)) / 360 -
           sum(couponAmounts * as.numeric(fut$deliveryDate - couponDates) / 360)
       ) * 100
 
