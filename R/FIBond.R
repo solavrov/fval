@@ -14,7 +14,8 @@
 #' $couponDates - vector of coupon dates
 #' $couponAmounts - vector of coupon amounts
 #'
-#' @param file Name of csv file that contains bond attributes. Heads should have names of attributes.
+#' @param file Name of csv file that contains bond attributes (can be a vector).
+#' Heads should have names of attributes.
 #' File should be located in fval_data folder. Just name without extension
 #' @param dateFormat File date format from lubridate package i.e. "dmy", "mdy" etc
 #' @param sep Separator i.e. comma, semicolon or else
