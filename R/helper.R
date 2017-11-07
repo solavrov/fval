@@ -5,7 +5,8 @@
 #' @param i Index of value
 #'
 #' @return Value with index i
+#' @export
 e <- function(a, i) {
-  hlpr::getByIndex(a, i)
+  hlpr::getByIndex(a, i, c("FIBond", "TFutures", "EurOption"))
 }
 
