@@ -7,7 +7,7 @@
 getCouponTime.FIBond(bond, settleDate = nextBizDay())
 }
 \arguments{
-\item{bond}{FIBond object (can be a list with class name FIBond)}
+\item{bond}{FIBond object (can be a list)}
 
 \item{settleDate}{Calculation date (can be a vector)}
 }

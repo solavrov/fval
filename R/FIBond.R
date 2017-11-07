@@ -27,7 +27,6 @@ FIBond <- function(file = NA,
                    sep = ",") {
 
   p <- list()
-  class(b) <- "FIBond"
 
   for (i in 1:length(file)) {
 
@@ -136,14 +135,14 @@ print.FIBond <- function(bond) {
 
 #' Calculate coupon time i.e. days passed over days in coupon period for FIBond object
 #'
-#' @param bond FIBond object (can be a list with class name FIBond)
+#' @param bond FIBond object (can be a list)
 #' @param settleDate Calculation date (can be a vector)
 #'
 #' @return Coupon time for FIBond object
 #' @export
 getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 
-  len <- hlpr::checkParams(bond, settleDate)
+  len <- checkParams(bond, settleDate)
 
   time <- numeric()
 
@@ -183,20 +182,25 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 
 #' Return current face amount
 #'
-#' @param bond FIBond object
+#' @param bond FIBond object (can be a list)
 #' @param settleDate Calculation date (can be a vector)
 #'
 #' @return Current face amount
 #' @export
 getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 
+  len <- checkParams(bond, settleDate)
+
   face <- numeric()
 
-  for (i in 1:length(settleDate)) {
+  for (i in 1:len) {
 
-    if (settleDate[i] >= bond$issueDate && settleDate[i] <= bond$maturity) {
+    b <- e(bond, i)
+    date <- e(settleDate, i)
 
-      face[i] <- sum(bond$faceAmounts[bond$couponDates > settleDate[i]])
+    if (date >= b$issueDate && date <= b$maturity) {
+
+      face[i] <- sum(b$faceAmounts[b$couponDates > date])
 
     } else {
 
@@ -213,28 +217,32 @@ getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 
 #' Calculate accrued interest for FIBond object
 #'
-#' @param bond FIBond object
+#' @param bond FIBond object (can be a list)
 #' @param settleDate Calculation date (can be a vector)
 #'
 #' @return Accrued interest
 #' @export
 getAccruedValue.FIBond <- function(bond, settleDate = nextBizDay()) {
 
+  len <- checkParams(bond, settleDate)
+
   accrued <- numeric()
 
   for (i in 1:length(settleDate)) {
 
-    if (settleDate[i] >= bond$issueDate && settleDate[i] <= bond$maturity) {
+    b <- e(bond, i)
+    date <- e(settleDate, i)
 
-    nextPaymentIndex <- which(bond$couponDates > settleDate[i])[1]
-    coupon <- bond$couponAmounts[nextPaymentIndex]
-    accrued[i] <- coupon * getCouponTime.FIBond(bond, settleDate[i])
+    if (date >= b$issueDate && date <= b$maturity) {
 
-    if (bond$formula == "OFZ") {
-      accrued[i] <-
-        round(accrued[i] / bond$initialFace * 1000, digits = 2) *
-        bond$initialFace / 1000
-    }
+      nextPaymentIndex <- which(b$couponDates > date)[1]
+      coupon <- b$couponAmounts[nextPaymentIndex]
+      accrued[i] <- coupon * getCouponTime.FIBond(b, date)
+
+      if (b$formula == "OFZ") {
+        accrued[i] <-
+          round(accrued[i] / b$initialFace * 1000, digits = 2) * b$initialFace / 1000
+      }
 
     } else {
 
@@ -271,7 +279,7 @@ getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
-  len <- hlpr::checkParams(yield, settleDate)
+  len <- checkParams(yield, settleDate)
 
   value <- numeric()
 
@@ -351,7 +359,7 @@ getYield.FIBond <- function(bond,
 
   yield <- numeric()
 
-  len <- hlpr::checkParams(price, settleDate)
+  len <- checkParams(price, settleDate)
 
   for (i in 1:len) {
 
@@ -411,7 +419,7 @@ getCarryValue.FIBond <- function(bond,
                                  settleDate2,
                                  repoRate) {
 
-  len <- hlpr::checkParams(price, settleDate1, settleDate2, repoRate)
+  len <- checkParams(price, settleDate1, settleDate2, repoRate)
 
   carry <- numeric()
 

@@ -233,7 +233,7 @@ getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 #' @export
 getIRP.TFututes <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
 
-  len <- hlpr::checkParams(futPrice, ctdPrice, tradeDate)
+  len <- checkParams(futPrice, ctdPrice, tradeDate)
 
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
 
