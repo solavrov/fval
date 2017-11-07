@@ -15,7 +15,7 @@
 #' $couponAmounts - vector of coupon amounts
 #'
 #' @param file Name of csv file that contains bond attributes. Heads should have names of attributes.
-#' File should be located in fval_data folder. Just a name without extension
+#' File should be located in fval_data folder. Just name without extension
 #' @param dateFormat File date format from lubridate package i.e. "dmy", "mdy" etc
 #' @param sep Separator i.e. comma, semicolon or else
 #'
@@ -25,68 +25,81 @@ FIBond <- function(file = NA,
                    dateFormat = "mdy",
                    sep = ",") {
 
-  b <- list()
+  p <- list()
   class(b) <- "FIBond"
 
-  #default attributes
-  b$name <- NA
-  b$isin <- NA
-  b$currency <- NA
-  b$initialFace <- NA
-  b$couponFreq <- NA
-  b$issueDate <- NA
-  b$maturity <- NA
-  b$formula <- "STD"
-  b$dayCounter <- dayCounter$ActualActual
-  b$cfactor <- NA
+  for (i in 1:length(file)) {
 
-  b$couponDates <- NA
-  b$couponAmounts <- NA
-  b$faceAmounts <- NA
+    b <- list()
+    class(b) <- "FIBond"
 
-  if (!is.na(file)) {
+    #default attributes
+    b$name <- NA
+    b$isin <- NA
+    b$currency <- NA
+    b$initialFace <- NA
+    b$couponFreq <- NA
+    b$issueDate <- NA
+    b$maturity <- NA
+    b$formula <- "STD"
+    b$dayCounter <- dayCounter$ActualActual
+    b$cfactor <- NA
 
-    file <- paste0("fval_data/", file, ".csv")
+    b$couponDates <- NA
+    b$couponAmounts <- NA
+    b$faceAmounts <- NA
 
-    if (file.exists(file)) {
+    if (!is.na(file[i])) {
 
-      df <- read.csv(file, sep = sep)
+      file[i] <- paste0("fval_data/", file[i], ".csv")
 
-      if (!is.null(df$name)) b$name <- as.character(df$name[1])
-      if (!is.null(df$isin)) b$isin <- as.character(df$isin[1])
-      if (!is.null(df$currency)) b$currency <- as.character(df$currency[1])
+      if (file.exists(file[i])) {
 
-      if (!is.null(df$issueDate)) b$issueDate <-
-          as.Date(lubridate::parse_date_time(as.character(df$issueDate[1]), dateFormat))
+        df <- read.csv(file[i], sep = sep)
 
-      if (!is.null(df$formula)) b$formula <- as.character(df$formula[1])
-      if (!is.null(df$dayCounter)) b$dayCounter <- df$dayCounter[1]
-      if (!is.null(df$cfactor)) b$cfactor <- df$cfactor[1]
+        if (!is.null(df$name)) b$name <- as.character(df$name[1])
+        if (!is.null(df$isin)) b$isin <- as.character(df$isin[1])
+        if (!is.null(df$currency)) b$currency <- as.character(df$currency[1])
 
-      if (!is.null(df$couponDates)) {
-        b$couponDates <-
-          as.Date(lubridate::parse_date_time(as.character(df$couponDates), dateFormat))
-        b$maturity <- tail(b$couponDates, 1)
-        b$couponFreq <-
-          round(length(b$couponDates) / as.numeric(b$maturity - b$issueDate) * 365)
+        if (!is.null(df$issueDate)) b$issueDate <-
+            as.Date(lubridate::parse_date_time(as.character(df$issueDate[1]), dateFormat))
+
+        if (!is.null(df$formula)) b$formula <- as.character(df$formula[1])
+        if (!is.null(df$dayCounter)) b$dayCounter <- df$dayCounter[1]
+        if (!is.null(df$cfactor)) b$cfactor <- df$cfactor[1]
+
+        if (!is.null(df$couponDates)) {
+          b$couponDates <-
+            as.Date(lubridate::parse_date_time(as.character(df$couponDates), dateFormat))
+          b$maturity <- tail(b$couponDates, 1)
+          b$couponFreq <-
+            round(length(b$couponDates) / as.numeric(b$maturity - b$issueDate) * 365)
+        }
+
+        if (!is.null(df$couponAmounts)) b$couponAmounts <- df$couponAmounts
+
+        if (!is.null(df$faceAmounts)) {
+          b$faceAmounts <- df$faceAmounts
+          b$initialFace <- sum(df$faceAmounts)
+        }
+
+      }  else {
+
+        cat("ERROR!", file[i], "is not found\n")
+
       }
-
-      if (!is.null(df$couponAmounts)) b$couponAmounts <- df$couponAmounts
-
-      if (!is.null(df$faceAmounts)) {
-        b$faceAmounts <- df$faceAmounts
-        b$initialFace <- sum(df$faceAmounts)
-      }
-
-    }  else {
-
-      cat("ERROR!", file, "is not found\n")
 
     }
 
+    p[[i]] <- b
+    if (!is.na(b$name)) names(p)[i] <- b$name
+
   }
 
-  return (b)
+  if (length(p) == 1)
+    return (p[[1]])
+  else
+    return (p)
 
 }
 
