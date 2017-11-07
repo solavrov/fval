@@ -184,7 +184,7 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 #'
 #' @return Current face amount
 #' @export
-getCurrentFace.FIBond <- function(bond, settleDate = nextBizDay()) {
+getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 
   face <- numeric()
 
@@ -253,7 +253,7 @@ getAccruedValue.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @return Accrued interest in percentage of current face
 #' @export
 getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
-    getAccruedValue.FIBond(bond, settleDate) / getCurrentFace.FIBond(bond, settleDate) * 100
+    getAccruedValue.FIBond(bond, settleDate) / getFace.FIBond(bond, settleDate) * 100
   }
 
 
@@ -323,7 +323,7 @@ getPrice.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
     price <-
       (getValue.FIBond(bond, yield, settleDate) - getAccruedValue.FIBond(bond, settleDate)) /
-      getCurrentFace.FIBond(bond, settleDate) * 100
+      getFace.FIBond(bond, settleDate) * 100
 
     return (price)
 
@@ -423,7 +423,7 @@ getCarryValue.FIBond <- function(bond,
       getAccruedValue.FIBond(bond, e(settleDate2, i)) - getAccruedValue.FIBond(bond, e(settleDate1, i)) +
       sum(payments * (1 + e(repoRate, i) / 100 * as.numeric(e(settleDate2, i) - couponDates) / 360)) -
       (
-        e(price, i) / 100 * getCurrentFace.FIBond(bond, e(settleDate1, i)) +
+        e(price, i) / 100 * getFace.FIBond(bond, e(settleDate1, i)) +
           getAccruedValue.FIBond(bond, e(settleDate1, i))
       ) *
       e(repoRate, i) / 100 * as.numeric(e(settleDate2, i) - e(settleDate1, i)) / 360
@@ -453,6 +453,6 @@ getCarry.FIBond <- function(bond,
 
 
   getCarryValue.FIBond(bond, price, settleDate1, settleDate2, repoRate) /
-    getCurrentFace.FIBond(bond, settleDate1) * 100
+    getFace.FIBond(bond, settleDate1) * 100
 
 }
