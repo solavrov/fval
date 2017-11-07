@@ -136,31 +136,35 @@ print.FIBond <- function(bond) {
 
 #' Calculate coupon time i.e. days passed over days in coupon period for FIBond object
 #'
-#' @param bond FIBond object
+#' @param bond FIBond object (can be a list with class name FIBond)
 #' @param settleDate Calculation date (can be a vector)
 #'
 #' @return Coupon time for FIBond object
 #' @export
 getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 
+  len <- hlpr::checkParams(bond, settleDate)
+
   time <- numeric()
 
-  for (i in 1:length(settleDate)) {
+  for (i in 1:len) {
 
-    if (settleDate[i] >= bond$issueDate && settleDate[i] <= bond$maturity) {
+    b <- e(bond, i)
+    date <- e(settleDate, i)
 
-      nextPaymentIndex <- which(bond$couponDates > settleDate[i])[1]
-      nextDay <- bond$couponDates[nextPaymentIndex]
+    if (date >= b$issueDate && date <= b$maturity) {
+
+      nextPaymentIndex <- which(b$couponDates > date)[1]
+      nextDay <- b$couponDates[nextPaymentIndex]
 
       if (nextPaymentIndex >= 2) {
-        prevDay <- bond$couponDates[nextPaymentIndex - 1]
+        prevDay <- b$couponDates[nextPaymentIndex - 1]
       } else {
-        prevDay <- bond$issueDate
+        prevDay <- b$issueDate
       }
 
-      period <- RQuantLib::dayCount(prevDay, nextDay, bond$dayCounter)
-      daysPassed <-
-        RQuantLib::dayCount(prevDay, settleDate[i], bond$dayCounter)
+      period <- RQuantLib::dayCount(prevDay, nextDay, b$dayCounter)
+      daysPassed <- RQuantLib::dayCount(prevDay, date, b$dayCounter)
 
       time[i] <- daysPassed / period
 
