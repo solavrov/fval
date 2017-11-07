@@ -7,6 +7,19 @@
 #' @return Value with index i
 #' @export
 e <- function(a, i) {
-  hlpr::getByIndex(a, i, c("FIBond", "TFutures", "EurOption"))
+  hlpr::getByIndex(a, i, atoms = c("FIBond", "TFutures", "EurOption"))
 }
+
+
+#' Check that all params have length = 1 or same length > 1
+#'
+#' @param ...
+#'
+#' @return
+#' @export Maximum length of params
+checkParams <- function(...) {
+  hlpr::checkParams(..., atoms = c("FIBond", "TFutures", "EurOption"))
+}
+
+
 
