@@ -18,7 +18,7 @@ e <- function(a, i) {
 #' @return Maximum length of params
 #' @export
 checkParams <- function(...) {
-  hlpr::checkParams(..., atoms = c("FIBond", "TFutures", "EurOption"))
+  hlpr::getLength(..., atoms = c("FIBond", "TFutures", "EurOption"))
 }
 
 
