@@ -133,6 +133,26 @@ print.FIBond <- function(bond) {
 }
 
 
+#' Return cfactor of FIBond object
+#'
+#' @param bond FIBond object (can be a list)
+#'
+#' @return CFactor (can be a vector)
+#' @export
+takeCFactor.FIBond <- function(bond) {
+
+  len <- checkParams(bond)
+
+  cf <- numeric()
+
+  for (i in 1:len) {
+    cf[i] <- e(bond, i)$cfactor
+  }
+
+  return (cf)
+
+}
+
 #' Calculate coupon time i.e. days passed over days in coupon period for FIBond object
 #'
 #' @param bond FIBond object (can be a list)
