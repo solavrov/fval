@@ -26,7 +26,7 @@ FIBond <- function(file = NA,
                    dateFormat = "mdy",
                    sep = ",") {
 
-  p <- list()
+  l <- list()
 
   for (i in 1:length(file)) {
 
@@ -91,15 +91,15 @@ FIBond <- function(file = NA,
 
     }
 
-    p[[i]] <- b
-    if (!is.na(b$name)) names(p)[i] <- b$name
+    l[[i]] <- b
+    if (!is.na(b$name)) names(l)[i] <- b$name
 
   }
 
-  if (length(p) == 1)
-    return (p[[1]])
+  if (length(l) == 1)
+    return (l[[1]])
   else
-    return (p)
+    return (l)
 
 }
 
