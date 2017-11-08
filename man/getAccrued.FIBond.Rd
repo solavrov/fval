@@ -7,7 +7,7 @@
 getAccrued.FIBond(bond, settleDate = nextBizDay())
 }
 \arguments{
-\item{bond}{FIBond object}
+\item{bond}{FIBond object (can be a list)}
 
 \item{settleDate}{Calculation date (can be a vector)}
 }

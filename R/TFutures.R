@@ -152,7 +152,7 @@ TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
       }
 
     } else {
-      cat("ERROR! Ticker", ticker, "is wrong!\n")
+      cat("WARNING! Ticker", ticker, "is wrong!\n")
     }
 
   }
@@ -231,9 +231,9 @@ getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 #'
 #' @return Implied repo rate for TFutures object in percentage
 #' @export
-getIRP.TFututes <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
+getIRP.TFututes <- function(fut, futPrice, bondPrice, tradeDate = Sys.Date(), bond = fut$ctd) {
 
-  len <- checkParams(futPrice, ctdPrice, tradeDate)
+  len <- checkParams(futPrice, bondPrice, tradeDate, bond)
 
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
 
@@ -241,19 +241,24 @@ getIRP.TFututes <- function(fut, futPrice, ctdPrice, tradeDate = Sys.Date()) {
 
   for (i in 1:len) {
 
-    inPlay <- which(fut$ctd$couponDates > e(t1, i) & fut$ctd$couponDates <= fut$deliveryDate)
+    fprice <- e(futPrice, i)
+    bprice <- e(bondPrice, i)
+    date <- e(t1, i)
+    b <- e(bond, i)
 
-    couponAmounts <- fut$ctd$couponAmounts[inPlay] / fut$ctd$initialFace * 100
-    couponDates <- fut$ctd$couponDates[inPlay]
+    inPlay <- which(b$couponDates > date & b$couponDates <= fut$deliveryDate)
+
+    couponAmounts <- b$couponAmounts[inPlay] / b$initialFace * 100
+    couponDates <- b$couponDates[inPlay]
 
     irp[i] <-
       (
-        fut$ctd$cfactor * e(futPrice, i) + getAccrued.FIBond(fut$ctd, fut$deliveryDate)
-        + sum(couponAmounts) - e(ctdPrice, i) - getAccrued.FIBond(fut$ctd, e(t1, i))
+        b$cfactor * fprice + getAccrued.FIBond(b, fut$deliveryDate)
+        + sum(couponAmounts) - bprice - getAccrued.FIBond(b, date)
       ) /
       (
-        (e(ctdPrice, i) + getAccrued.FIBond(fut$ctd, e(t1, i))) *
-          as.numeric(fut$deliveryDate - e(t1, i)) / 360 -
+        (bprice + getAccrued.FIBond(b, date)) *
+          as.numeric(fut$deliveryDate - date) / 360 -
           sum(couponAmounts * as.numeric(fut$deliveryDate - couponDates) / 360)
       ) * 100
 

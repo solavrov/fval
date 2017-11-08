@@ -7,7 +7,7 @@
 getCarryValue.FIBond(bond, price, settleDate1, settleDate2, repoRate)
 }
 \arguments{
-\item{bond}{FIBond object}
+\item{bond}{FIBond object (can be a list)}
 
 \item{price}{FIBond clean price in percentage (can be a vector)}
 
