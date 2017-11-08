@@ -284,7 +284,7 @@ getCarry.TFututes <- function(fut,
 
 #' Calculate model price of TFutures object
 #'
-#' @param fut TFutures object
+#' @param fut TFutures object (can be a list)
 #' @param ctdPrice CTD bond clean price in percentage (can be a vector)
 #' @param repoRate Term CTD repo rate in percentage (can be a vector)
 #' @param tradeDate Calculation date (can be a vector)
@@ -292,9 +292,8 @@ getCarry.TFututes <- function(fut,
 #' @return Model price of TFutures object in percentage of notional
 #' @export
 getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
-
-  (ctdPrice - getCarry.TFututes(fut, ctdPrice, repoRate, tradeDate)) / fut$ctd$cfactor
-
+  (ctdPrice - getCarry.TFututes(fut, ctdPrice, repoRate, tradeDate)) /
+    takeCFactor.FIBond(getCTD.TFutures(fut))
 }
 
 
