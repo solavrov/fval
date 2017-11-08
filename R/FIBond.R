@@ -259,7 +259,7 @@ getAccruedValue.FIBond <- function(bond, settleDate = nextBizDay()) {
 
 #' Calculate accrued interest in percentage of current face
 #'
-#' @param bond FIBond object
+#' @param bond FIBond object (can be a list)
 #' @param settleDate Calculation date (can be a vector)
 #'
 #' @return Accrued interest in percentage of current face
@@ -271,7 +271,7 @@ getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
 
 #' Calculate value of FIBond object
 #'
-#' @param bond FIBond object
+#' @param bond FIBond object (can be a list)
 #' @param yield FIBond yield in percentage (can be a vector)
 #' @param settleDate Calculation date (can be a vector)
 #'
@@ -326,7 +326,7 @@ getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
 #' Calculate clean price of FIBond
 #'
-#' @param bond FIBond object
+#' @param bond FIBond object (can be a list)
 #' @param yield FIBond yield in percentage (can be a vector)
 #' @param settleDate Calculation date (can be a vector)
 #'
@@ -345,7 +345,7 @@ getPrice.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
 #' Calculate yield of FIBond object
 #'
-#' @param bond FIBond object
+#' @param bond FIBond object (can be a list)
 #' @param price FIBond clean price in percentage (can be a vector)
 #' @param settleDate Calculation date (can be a vector)
 #' @param digits Accuracy as a number of digits after point
@@ -389,7 +389,7 @@ getYield.FIBond <- function(bond,
 
 #' Calculate PVBP of FIBond object
 #'
-#' @param bond FIBond object
+#' @param bond FIBond object (can be a list)
 #' @param price FIBond clean price in percentage (can be a vector)
 #' @param settleDate Calculation date (can be a vector)
 #'
@@ -410,7 +410,7 @@ getPVBP.FIBond <- function(bond, price, settleDate = nextBizDay()) {
 
 #' Calculate carry for FIBond object
 #'
-#' @param bond FIBond object
+#' @param bond FIBond object (can be a list)
 #' @param price FIBond clean price in percentage (can be a vector)
 #' @param settleDate1 Start date (can be a vector)
 #' @param settleDate2 End date (can be a vector)
@@ -460,7 +460,7 @@ getCarryValue.FIBond <- function(bond,
 
 #' Calculate carry for FIBond object in percentage of current face
 #'
-#' @param bond FIBond object
+#' @param bond FIBond object (can be a list)
 #' @param price FIBond clean price in percentage (can be a vector)
 #' @param settleDate1 Start date (can be a vector)
 #' @param settleDate2 End date (can be a vector)
