@@ -181,6 +181,31 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
 }
 
 
+#' Return CTD of TFutures object
+#'
+#' @param fut TFutures object (can be a list)
+#'
+#' @return FIBond object of CTD (can be a list)
+#' @export
+getCTD.TFutures <- function(fut) {
+
+  len <- checkParams(fut)
+
+  ctd <- list()
+
+  for (i in 1:len) {
+    ctd[[i]] <- e(fut, i)$ctd
+    if (!is.na(ctd[[i]]$name)) names(ctd)[i] <- ctd[[i]]$name
+  }
+
+  if (length(ctd) == 1)
+    return (ctd[[1]])
+  else
+    return (ctd)
+
+}
+
+
 #' Return value of TFutures contract
 #'
 #' @param fut TFutures object
@@ -215,7 +240,7 @@ getValue.TFutures <- function(fut, futPrice, settlePrice, side = "long") {
 
 #' Return percentage carry of FIBond till delivery date of TFutures
 #'
-#' @param fut TFutures object
+#' @param fut TFutures object (can be a list)
 #' @param bondPrice FIBond price in percentage (can be a vector)
 #' @param repoRate FIBond repo rate in percentage (can be a vector)
 #' @param tradeDate Trade date (can be a vector)
@@ -223,15 +248,36 @@ getValue.TFutures <- function(fut, futPrice, settlePrice, side = "long") {
 #'
 #' @return Carry in percentage of FIBond face
 #' @export
-getCarry.TFututes <- function(fut, bondPrice, repoRate, tradeDate = Sys.Date(), bond = fut$ctd) {
+getCarry.TFututes <- function(fut,
+                              bondPrice,
+                              repoRate,
+                              tradeDate = Sys.Date(),
+                              bond = getCTD.TFutures(fut)) {
 
-  getCarry.FIBond(
-    bond,
-    bondPrice,
-    nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond"),
-    fut$deliveryDate,
-    repoRate
-  ) * checkDate(tradeDate, latestDate = fut$deliveryDate)
+  len <- checkParams(fut, bondPrice, repoRate, tradeDate, bond)
+
+  carry <- numeric()
+
+  for (i in 1:len) {
+
+    fut.i <- e(fut, i)
+    bondPrice.i <- e(bondPrice, i)
+    repoRate.i <- e(repoRate, i)
+    tradeDate.i <- e(tradeDate, i)
+    bond.i <- e(bond, i)
+
+    carry[i] <-
+      getCarry.FIBond(
+        bond.i,
+        bondPrice.i,
+        nextBizDay(tradeDate.i, calendar = "UnitedStates/GovernmentBond"),
+        fut.i$deliveryDate,
+        repoRate.i
+      ) * checkDate(tradeDate.i, latestDate = fut.i$deliveryDate)
+
+  }
+
+  return (carry)
 
 }
 
