@@ -185,15 +185,28 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
 #'
 #' @param fut TFutures object
 #' @param futPrice TFutures price in percentage
-#' @param settlePrice TFutures settlement price in percentage
+#' @param settlePrice TFutures last settlement price in percentage
 #' @param side Side - "long" or "short"
 #'
 #' @return Value in dollars of one contract
 #' @export
 getValue.TFutures <- function(fut, futPrice, settlePrice, side = "long") {
 
-  value <- fut$notionalAmount * (futPrice - settlePrice) / 100
-  if (side != "long") value <- -value
+  len <- checkParams(fut, futPrice, settlePrice, side)
+
+  value <- numeric()
+
+  for (i in 1:len) {
+
+    fut.i <- e(fut, i)
+    futPrice.i <- e(futPrice, i)
+    settlePrice.i <- e(settlePrice, i)
+    side.i <- e(side, i)
+
+    value[i] <- fut.i$notionalAmount * (futPrice.i - settlePrice.i) / 100
+    if (side.i != "long") value[i] <- -value[i]
+
+  }
 
   return (value)
 
