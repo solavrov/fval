@@ -187,7 +187,7 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
 #'
 #' @return FIBond object of CTD (can be a list)
 #' @export
-getCTD.TFutures <- function(fut) {
+takeCTD.TFutures <- function(fut) {
 
   len <- checkParams(fut)
 
@@ -293,7 +293,7 @@ getCarry.TFututes <- function(fut,
 #' @export
 getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
   (ctdPrice - getCarry.TFututes(fut, ctdPrice, repoRate, tradeDate)) /
-    takeCFactor.FIBond(getCTD.TFutures(fut))
+    takeCFactor.FIBond(takeCTD.TFutures(fut))
 }
 
 
