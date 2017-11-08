@@ -116,50 +116,67 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 #' $ctd - Ceapest-to-deliver Bond object
 #'
 #' @param ticker Bloomberg ticker like TYU7 etc
-#' @param ctdFileName name of ctd data file
+#' @param ctdFile name of ctd data file
 #' @param dateFormat File date format from lubridate package i.e. "dmy", "mdy" etc
 #'
 #' @return TFutures object
 #' @export
-TFutures <- function(ticker = NA, ctdFileName = "", dateFormat = "mdy") {
+TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy") {
 
-  fut <- list()
-  class(fut) <- "TFutures"
+  l <- list()
 
-  #default attributes
-  fut$name <- NA
-  fut$ticker <- NA
-  fut$notionalAmount <- NA
-  fut$deliveryDate <- NA
-  fut$ctd <- NA
+  len <- checkParams(ticker, ctdFile)
 
-  #attributes by ticker
-  if (!is.na(ticker))  {
+  for (i in 1:len) {
 
-    if (!is.na(fut$name <- getName.TFutures(ticker))) {
+    tkr <- e(ticker, i)
+    file <- e(ctdFile, i)
 
-      fut$ticker <- ticker
-      fut$deliveryDate <- getDeliveryDate.TFutures(ticker)
-      fut$notionalAmount <- getNotional.TFutures(ticker)
+    f <- list()
+    class(f) <- "TFutures"
 
-      if (ctdFileName == "") {
-        ctdFileName <- paste0("ctd_", tolower(ticker))
-        file <- paste0("fval_data/", ctdFileName, ".csv")
-        if (!file.exists(file)) {
-          ctdFileName <- ""
-          cat("WARNING!", file, "is not found\n")
+    #default attributes
+    f$name <- NA
+    f$ticker <- NA
+    f$notionalAmount <- NA
+    f$deliveryDate <- NA
+    f$ctd <- NA
+
+    #attributes by ticker
+    if (!is.na(tkr))  {
+
+      if (!is.na(f$name <- getName.TFutures(tkr))) {
+
+        f$ticker <- tkr
+        f$deliveryDate <- getDeliveryDate.TFutures(tkr)
+        f$notionalAmount <- getNotional.TFutures(tkr)
+
+        if (file == "") {
+          file <- paste0("ctd_", tolower(tkr))
+          path <- paste0("fval_data/", file, ".csv")
+          if (!file.exists(path)) {
+            file <- ""
+            cat("WARNING!", path, "is not found\n")
+          }
         }
+
+      } else {
+        cat("WARNING! Ticker", tkr, "is wrong!\n")
       }
 
-    } else {
-      cat("WARNING! Ticker", ticker, "is wrong!\n")
     }
+
+    if (file != "") f$ctd <- FIBond(file, dateFormat)
+
+    l[[i]] <- f
+    if (!is.na(f$ticker)) names(l)[i] <- f$ticker
 
   }
 
-  if (ctdFileName != "") fut$ctd <- FIBond(ctdFileName, dateFormat)
-
-  return (fut)
+  if (length(l) == 1)
+    return (l[[1]])
+  else
+    return (l)
 
 }
 

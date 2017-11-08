@@ -4,12 +4,12 @@
 \alias{TFutures}
 \title{Constructor of T-bond-note futures contract}
 \usage{
-TFutures(ticker = NA, ctdFileName = "", dateFormat = "mdy")
+TFutures(ticker = NA, ctdFile = "", dateFormat = "mdy")
 }
 \arguments{
 \item{ticker}{Bloomberg ticker like TYU7 etc}
 
-\item{ctdFileName}{name of ctd data file}
+\item{ctdFile}{name of ctd data file}
 
 \item{dateFormat}{File date format from lubridate package i.e. "dmy", "mdy" etc}
 }
