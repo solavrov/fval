@@ -26,28 +26,28 @@ FIBond <- function(file = NA,
                    dateFormat = "mdy",
                    sep = ",") {
 
-  l <- list()
+  list <- list()
 
   for (i in 1:length(file)) {
 
-    b <- list()
-    class(b) <- "FIBond"
+    bond <- list()
+    class(bond) <- "FIBond"
 
     #default attributes
-    b$name <- NA
-    b$isin <- NA
-    b$currency <- NA
-    b$initialFace <- NA
-    b$couponFreq <- NA
-    b$issueDate <- NA
-    b$maturity <- NA
-    b$formula <- "STD"
-    b$dayCounter <- dayCounter$ActualActual
-    b$cfactor <- NA
+    bond$name <- NA
+    bond$isin <- NA
+    bond$currency <- NA
+    bond$initialFace <- NA
+    bond$couponFreq <- NA
+    bond$issueDate <- NA
+    bond$maturity <- NA
+    bond$formula <- "STD"
+    bond$dayCounter <- dayCounter$ActualActual
+    bond$cfactor <- NA
 
-    b$couponDates <- NA
-    b$couponAmounts <- NA
-    b$faceAmounts <- NA
+    bond$couponDates <- NA
+    bond$couponAmounts <- NA
+    bond$faceAmounts <- NA
 
     if (!is.na(file[i])) {
 
@@ -57,30 +57,30 @@ FIBond <- function(file = NA,
 
         df <- read.csv(file[i], sep = sep)
 
-        if (!is.null(df$name)) b$name <- as.character(df$name[1])
-        if (!is.null(df$isin)) b$isin <- as.character(df$isin[1])
-        if (!is.null(df$currency)) b$currency <- as.character(df$currency[1])
+        if (!is.null(df$name)) bond$name <- as.character(df$name[1])
+        if (!is.null(df$isin)) bond$isin <- as.character(df$isin[1])
+        if (!is.null(df$currency)) bond$currency <- as.character(df$currency[1])
 
-        if (!is.null(df$issueDate)) b$issueDate <-
+        if (!is.null(df$issueDate)) bond$issueDate <-
             as.Date(lubridate::parse_date_time(as.character(df$issueDate[1]), dateFormat))
 
-        if (!is.null(df$formula)) b$formula <- as.character(df$formula[1])
-        if (!is.null(df$dayCounter)) b$dayCounter <- df$dayCounter[1]
-        if (!is.null(df$cfactor)) b$cfactor <- df$cfactor[1]
+        if (!is.null(df$formula)) bond$formula <- as.character(df$formula[1])
+        if (!is.null(df$dayCounter)) bond$dayCounter <- df$dayCounter[1]
+        if (!is.null(df$cfactor)) bond$cfactor <- df$cfactor[1]
 
         if (!is.null(df$couponDates)) {
-          b$couponDates <-
+          bond$couponDates <-
             as.Date(lubridate::parse_date_time(as.character(df$couponDates), dateFormat))
-          b$maturity <- tail(b$couponDates, 1)
-          b$couponFreq <-
-            round(length(b$couponDates) / as.numeric(b$maturity - b$issueDate) * 365)
+          bond$maturity <- tail(bond$couponDates, 1)
+          bond$couponFreq <-
+            round(length(bond$couponDates) / as.numeric(bond$maturity - bond$issueDate) * 365)
         }
 
-        if (!is.null(df$couponAmounts)) b$couponAmounts <- df$couponAmounts
+        if (!is.null(df$couponAmounts)) bond$couponAmounts <- df$couponAmounts
 
         if (!is.null(df$faceAmounts)) {
-          b$faceAmounts <- df$faceAmounts
-          b$initialFace <- sum(df$faceAmounts)
+          bond$faceAmounts <- df$faceAmounts
+          bond$initialFace <- sum(df$faceAmounts)
         }
 
       }  else {
@@ -91,15 +91,15 @@ FIBond <- function(file = NA,
 
     }
 
-    l[[i]] <- b
-    if (!is.na(b$name)) names(l)[i] <- b$name
+    list[[i]] <- bond
+    if (!is.na(bond$name)) names(list)[i] <- bond$name
 
   }
 
-  if (length(l) == 1)
-    return (l[[1]])
+  if (length(list) == 1)
+    return (list[[1]])
   else
-    return (l)
+    return (list)
 
 }
 
@@ -148,22 +148,22 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 
   for (i in 1:len) {
 
-    b <- e(bond, i)
-    date <- e(settleDate, i)
+    bond.i <- e(bond, i)
+    settleDate.i <- e(settleDate, i)
 
-    if (date >= b$issueDate && date <= b$maturity) {
+    if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
 
-      nextPaymentIndex <- which(b$couponDates > date)[1]
-      nextDay <- b$couponDates[nextPaymentIndex]
+      nextPaymentIndex <- which(bond.i$couponDates > settleDate.i)[1]
+      nextDay <- bond.i$couponDates[nextPaymentIndex]
 
       if (nextPaymentIndex >= 2) {
-        prevDay <- b$couponDates[nextPaymentIndex - 1]
+        prevDay <- bond.i$couponDates[nextPaymentIndex - 1]
       } else {
-        prevDay <- b$issueDate
+        prevDay <- bond.i$issueDate
       }
 
-      period <- RQuantLib::dayCount(prevDay, nextDay, b$dayCounter)
-      daysPassed <- RQuantLib::dayCount(prevDay, date, b$dayCounter)
+      period <- RQuantLib::dayCount(prevDay, nextDay, bond.i$dayCounter)
+      daysPassed <- RQuantLib::dayCount(prevDay, settleDate.i, bond.i$dayCounter)
 
       time[i] <- daysPassed / period
 
@@ -195,12 +195,12 @@ getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 
   for (i in 1:len) {
 
-    b <- e(bond, i)
-    date <- e(settleDate, i)
+    bond.i <- e(bond, i)
+    settleDate.i <- e(settleDate, i)
 
-    if (date >= b$issueDate && date <= b$maturity) {
+    if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
 
-      face[i] <- sum(b$faceAmounts[b$couponDates > date])
+      face[i] <- sum(bond.i$faceAmounts[bond.i$couponDates > settleDate.i])
 
     } else {
 
@@ -230,18 +230,18 @@ getAccruedValue.FIBond <- function(bond, settleDate = nextBizDay()) {
 
   for (i in 1:len) {
 
-    b <- e(bond, i)
-    date <- e(settleDate, i)
+    bond.i <- e(bond, i)
+    settleDate.i <- e(settleDate, i)
 
-    if (date >= b$issueDate && date <= b$maturity) {
+    if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
 
-      nextPaymentIndex <- which(b$couponDates > date)[1]
-      coupon <- b$couponAmounts[nextPaymentIndex]
-      accrued[i] <- coupon * getCouponTime.FIBond(b, date)
+      nextPaymentIndex <- which(bond.i$couponDates > settleDate.i)[1]
+      coupon <- bond.i$couponAmounts[nextPaymentIndex]
+      accrued[i] <- coupon * getCouponTime.FIBond(bond.i, settleDate.i)
 
-      if (b$formula == "OFZ") {
+      if (bond.i$formula == "OFZ") {
         accrued[i] <-
-          round(accrued[i] / b$initialFace * 1000, digits = 2) * b$initialFace / 1000
+          round(accrued[i] / bond.i$initialFace * 1000, digits = 2) * bond.i$initialFace / 1000
       }
 
     } else {
@@ -285,27 +285,27 @@ getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
   for (i in 1:len) {
 
-    b <- e(bond, i)
-    y <- e(yield, i)
-    date <- e(settleDate, i)
+    bond.i <- e(bond, i)
+    yield.i <- e(yield, i)
+    settleDate.i <- e(settleDate, i)
 
-    if (date >= b$issueDate && date <= b$maturity) {
+    if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
 
-      spans <- as.numeric(b$couponDates - date)
+      spans <- as.numeric(bond.i$couponDates - settleDate.i)
 
-      if (b$formula == "OFZ") {
+      if (bond.i$formula == "OFZ") {
 
-        factors <- (spans > 0) * 1 / (1 + y / 100) ^ (spans / 365)
-        payments <- b$couponAmounts + b$faceAmounts
+        factors <- (spans > 0) * 1 / (1 + yield.i / 100) ^ (spans / 365)
+        payments <- bond.i$couponAmounts + bond.i$faceAmounts
 
       } else {
 
         numOfFutureCoupons <- length(spans[spans > 0])
 
-        factors <- 1 / (1 + y / 100 / b$couponFreq) ^
-          (1:numOfFutureCoupons - getCouponTime.FIBond(b, date))
+        factors <- 1 / (1 + yield.i / 100 / bond.i$couponFreq) ^
+          (1:numOfFutureCoupons - getCouponTime.FIBond(bond.i, settleDate.i))
 
-        payments <- tail(b$couponAmounts + b$faceAmounts, numOfFutureCoupons)
+        payments <- tail(bond.i$couponAmounts + bond.i$faceAmounts, numOfFutureCoupons)
 
       }
 
@@ -364,13 +364,13 @@ getYield.FIBond <- function(bond,
 
   for (i in 1:len) {
 
-    b <- e(bond, i)
-    p <- e(price, i)
-    date <- e(settleDate, i)
+    bond.i <- e(bond, i)
+    price.i <- e(price, i)
+    settleDate.i <- e(settleDate, i)
 
-    if (date >= b$issueDate && date <= b$maturity) {
+    if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
 
-      f <- function(x) (getPrice.FIBond(b, x, date) - p)
+      f <- function(x) (getPrice.FIBond(bond.i, x, settleDate.i) - price.i)
       solution <- uniroot(f, yieldRange, tol = 10 ^ (-digits - 1))
       yield[i] <- round(solution$root, digits)
 
@@ -430,26 +430,26 @@ getCarryValue.FIBond <- function(bond,
 
   for (i in 1:len) {
 
-    b <- e(bond, i)
-    p <- e(price, i)
-    date1 <- e(settleDate1, i)
-    date2 <- e(settleDate2, i)
-    rp <- e(repoRate, i)
+    bond.i <- e(bond, i)
+    price.i <- e(price, i)
+    settleDate1.i <- e(settleDate1, i)
+    settleDate2.i <- e(settleDate2, i)
+    repoRate.i <- e(repoRate, i)
 
-    inPlay <- which(b$couponDates > date1 & b$couponDates <= date2)
+    inPlay <- which(bond.i$couponDates > settleDate1.i & bond.i$couponDates <= settleDate2.i)
 
-    payments <- b$couponAmounts[inPlay] + b$faceAmounts[inPlay]
+    payments <- bond.i$couponAmounts[inPlay] + bond.i$faceAmounts[inPlay]
 
-    couponDates <- b$couponDates[inPlay]
+    couponDates <- bond.i$couponDates[inPlay]
 
     carry[i] <-
-      getAccruedValue.FIBond(b, date2) - getAccruedValue.FIBond(b, date1) +
-      sum(payments * (1 + rp / 100 * as.numeric(date2 - couponDates) / 360)) -
+      getAccruedValue.FIBond(bond.i, settleDate2.i) - getAccruedValue.FIBond(bond.i, settleDate1.i) +
+      sum(payments * (1 + repoRate.i / 100 * as.numeric(settleDate2.i - couponDates) / 360)) -
       (
-        p / 100 * getFace.FIBond(b, date1) +
-          getAccruedValue.FIBond(b, date1)
+        price.i / 100 * getFace.FIBond(bond.i, settleDate1.i) +
+          getAccruedValue.FIBond(bond.i, settleDate1.i)
       ) *
-      rp / 100 * as.numeric(date2 - date1) / 360
+      repoRate.i / 100 * as.numeric(settleDate2.i - settleDate1.i) / 360
 
   }
 

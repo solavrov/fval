@@ -123,60 +123,60 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 #' @export
 TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "auto") {
 
-  l <- list()
+  list <- list()
 
   len <- checkParams(ticker, ctdFile)
 
   for (i in 1:len) {
 
-    tkr <- e(ticker, i)
-    file <- e(ctdFile, i)
+    ticker.i <- e(ticker, i)
+    ctdFile.i <- e(ctdFile, i)
 
-    f <- list()
-    class(f) <- "TFutures"
+    fut <- list()
+    class(fut) <- "TFutures"
 
     #default attributes
-    f$name <- NA
-    f$ticker <- NA
-    f$notionalAmount <- NA
-    f$deliveryDate <- NA
-    f$ctd <- NA
+    fut$name <- NA
+    fut$ticker <- NA
+    fut$notionalAmount <- NA
+    fut$deliveryDate <- NA
+    fut$ctd <- NA
 
     #attributes by ticker
-    if (!is.na(tkr))  {
+    if (!is.na(ticker.i))  {
 
-      if (!is.na(f$name <- getName.TFutures(tkr, decade))) {
+      if (!is.na(fut$name <- getName.TFutures(ticker.i, decade))) {
 
-        f$ticker <- tkr
-        f$deliveryDate <- getDeliveryDate.TFutures(tkr, decade)
-        f$notionalAmount <- getNotional.TFutures(tkr)
+        fut$ticker <- ticker.i
+        fut$deliveryDate <- getDeliveryDate.TFutures(ticker.i, decade)
+        fut$notionalAmount <- getNotional.TFutures(ticker.i)
 
-        if (file == "") {
-          file <- paste0("ctd_", tolower(tkr))
-          path <- paste0("fval_data/", file, ".csv")
+        if (ctdFile.i == "") {
+          ctdFile.i <- paste0("ctd_", tolower(ticker.i))
+          path <- paste0("fval_data/", ctdFile.i, ".csv")
           if (!file.exists(path)) {
-            file <- ""
+            ctdFile.i <- ""
             cat("WARNING!", path, "is not found\n")
           }
         }
 
       } else {
-        cat("WARNING! Ticker", tkr, "is wrong!\n")
+        cat("WARNING! Ticker", ticker.i, "is wrong!\n")
       }
 
     }
 
-    if (file != "") f$ctd <- FIBond(file, dateFormat)
+    if (ctdFile.i != "") fut$ctd <- FIBond(ctdFile.i, dateFormat)
 
-    l[[i]] <- f
-    if (!is.na(f$ticker)) names(l)[i] <- f$ticker
+    list[[i]] <- fut
+    if (!is.na(fut$ticker)) names(list)[i] <- fut$ticker
 
   }
 
-  if (length(l) == 1)
-    return (l[[1]])
+  if (length(list) == 1)
+    return (list[[1]])
   else
-    return (l)
+    return (list)
 
 }
 

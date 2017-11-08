@@ -11,7 +11,7 @@ getValue.TFutures(fut, futPrice, settlePrice, side = "long")
 
 \item{futPrice}{TFutures price in percentage}
 
-\item{settlePrice}{TFutures settlement price in percentage}
+\item{settlePrice}{TFutures last settlement price in percentage}
 
 \item{side}{Side - "long" or "short"}
 }
