@@ -49,11 +49,10 @@ getYearFromFuturesTicker <- function(ticker, decade = "auto") {
   autoYear <- numeric()
 
   for (i in 1:length(presYear)) {
-    if (presYear[i] >= sysYear) {
+    if (presYear[i] >= sysYear)
       autoYear[i] <- presYear[i]
-    } else {
+    else
       autoYear[i] <- presYear[i] + 10
-    }
   }
 
   year <- switch(decade,

@@ -86,8 +86,8 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 
   thirdNextMonthBizDay <- lastMonthBizDay
 
-  for (i in 1:3) thirdNextMonthBizDay <- nextBizDay(thirdNextMonthBizDay,
-                                                    calendar = "UnitedStates/GovernmentBond")
+  for (i in 1:3) thirdNextMonthBizDay <-
+    nextBizDay(thirdNextMonthBizDay, calendar = "UnitedStates/GovernmentBond")
 
   deliveryDate <- hlpr::matrixSwitch(
     futuresCode,
@@ -121,7 +121,7 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 #'
 #' @return TFutures object
 #' @export
-TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy") {
+TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "auto") {
 
   l <- list()
 
@@ -145,10 +145,10 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy") {
     #attributes by ticker
     if (!is.na(tkr))  {
 
-      if (!is.na(f$name <- getName.TFutures(tkr))) {
+      if (!is.na(f$name <- getName.TFutures(tkr, decade))) {
 
         f$ticker <- tkr
-        f$deliveryDate <- getDeliveryDate.TFutures(tkr)
+        f$deliveryDate <- getDeliveryDate.TFutures(tkr, decade)
         f$notionalAmount <- getNotional.TFutures(tkr)
 
         if (file == "") {
