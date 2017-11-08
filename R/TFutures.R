@@ -226,8 +226,9 @@ getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 #'
 #' @param fut TFutures object
 #' @param futPrice TFutures price in percentage (can be a vector)
-#' @param ctdPrice CTD bond clean price in percentage (can be a vector)
+#' @param bondPrice CTD bond clean price in percentage (can be a vector)
 #' @param tradeDate Calculation date (can be a vector)
+#' @param bond FIBond object (can be a list)
 #'
 #' @return Implied repo rate for TFutures object in percentage
 #' @export
