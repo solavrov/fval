@@ -115,8 +115,8 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 #' $deliveryDate - Last delivery date that is supposed to be an accual delivary date
 #' $ctd - Ceapest-to-deliver Bond object
 #'
-#' @param ticker Bloomberg ticker like TYU7 etc
-#' @param ctdFile name of ctd data file
+#' @param ticker Bloomberg ticker like TYU7 etc (can be a vector)
+#' @param ctdFile Name of ctd data file (can be a vector)
 #' @param dateFormat File date format from lubridate package i.e. "dmy", "mdy" etc
 #'
 #' @return TFutures object
