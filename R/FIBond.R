@@ -279,32 +279,33 @@ getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
-  len <- checkParams(yield, settleDate)
+  len <- checkParams(bond, yield, settleDate)
 
   value <- numeric()
 
   for (i in 1:len) {
 
-    if (e(settleDate, i) >= bond$issueDate && e(settleDate, i) <= bond$maturity) {
+    b <- e(bond, i)
+    y <- e(yield, i)
+    date <- e(settleDate, i)
 
-      spans <- as.numeric(bond$couponDates - e(settleDate, i))
+    if (date >= b$issueDate && date <= b$maturity) {
 
-      if (bond$formula == "OFZ") {
+      spans <- as.numeric(b$couponDates - date)
 
-        factors <- (spans > 0) * 1 / (1 + e(yield, i) / 100) ^ (spans / 365)
-        payments <- bond$couponAmounts + bond$faceAmounts
+      if (b$formula == "OFZ") {
+
+        factors <- (spans > 0) * 1 / (1 + y / 100) ^ (spans / 365)
+        payments <- b$couponAmounts + b$faceAmounts
 
       } else {
 
         numOfFutureCoupons <- length(spans[spans > 0])
 
-        factors <-
-          1 / (1 + e(yield, i) / 100 / bond$couponFreq) ^
-          (1:numOfFutureCoupons - getCouponTime.FIBond(bond, e(settleDate, i)))
+        factors <- 1 / (1 + y / 100 / b$couponFreq) ^
+          (1:numOfFutureCoupons - getCouponTime.FIBond(b, date))
 
-        payments <-
-          tail(bond$couponAmounts + bond$faceAmounts,
-               numOfFutureCoupons)
+        payments <- tail(b$couponAmounts + b$faceAmounts, numOfFutureCoupons)
 
       }
 
@@ -359,13 +360,17 @@ getYield.FIBond <- function(bond,
 
   yield <- numeric()
 
-  len <- checkParams(price, settleDate)
+  len <- checkParams(bond, price, settleDate)
 
   for (i in 1:len) {
 
-    if (e(settleDate, i) >= bond$issueDate && e(settleDate, i) <= bond$maturity) {
+    b <- e(bond, i)
+    p <- e(price, i)
+    date <- e(settleDate, i)
 
-      f <- function(x) (getPrice.FIBond(bond, x, e(settleDate, i)) - e(price, i))
+    if (date >= b$issueDate && date <= b$maturity) {
+
+      f <- function(x) (getPrice.FIBond(b, x, date) - p)
       solution <- uniroot(f, yieldRange, tol = 10 ^ (-digits - 1))
       yield[i] <- round(solution$root, digits)
 
@@ -419,26 +424,32 @@ getCarryValue.FIBond <- function(bond,
                                  settleDate2,
                                  repoRate) {
 
-  len <- checkParams(price, settleDate1, settleDate2, repoRate)
+  len <- checkParams(bond, price, settleDate1, settleDate2, repoRate)
 
   carry <- numeric()
 
   for (i in 1:len) {
 
-    inPlay <- which(bond$couponDates > e(settleDate1, i) & bond$couponDates <= e(settleDate2, i))
+    b <- e(bond, i)
+    p <- e(price, i)
+    date1 <- e(settleDate1, i)
+    date2 <- e(settleDate2, i)
+    rp <- e(repoRate, i)
 
-    payments <- bond$couponAmounts[inPlay] + bond$faceAmounts[inPlay]
+    inPlay <- which(b$couponDates > date1 & b$couponDates <= date2)
 
-    couponDates <- bond$couponDates[inPlay]
+    payments <- b$couponAmounts[inPlay] + b$faceAmounts[inPlay]
+
+    couponDates <- b$couponDates[inPlay]
 
     carry[i] <-
-      getAccruedValue.FIBond(bond, e(settleDate2, i)) - getAccruedValue.FIBond(bond, e(settleDate1, i)) +
-      sum(payments * (1 + e(repoRate, i) / 100 * as.numeric(e(settleDate2, i) - couponDates) / 360)) -
+      getAccruedValue.FIBond(b, date2) - getAccruedValue.FIBond(b, date1) +
+      sum(payments * (1 + rp / 100 * as.numeric(date2 - couponDates) / 360)) -
       (
-        e(price, i) / 100 * getFace.FIBond(bond, e(settleDate1, i)) +
-          getAccruedValue.FIBond(bond, e(settleDate1, i))
+        p / 100 * getFace.FIBond(b, date1) +
+          getAccruedValue.FIBond(b, date1)
       ) *
-      e(repoRate, i) / 100 * as.numeric(e(settleDate2, i) - e(settleDate1, i)) / 360
+      rp / 100 * as.numeric(date2 - date1) / 360
 
   }
 
