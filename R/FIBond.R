@@ -228,7 +228,7 @@ getAccruedValue.FIBond <- function(bond, settleDate = nextBizDay()) {
 
   accrued <- numeric()
 
-  for (i in 1:length(settleDate)) {
+  for (i in 1:len) {
 
     b <- e(bond, i)
     date <- e(settleDate, i)
