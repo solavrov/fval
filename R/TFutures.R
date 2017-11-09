@@ -252,7 +252,7 @@ getCarry.TFututes <- function(fut,
                               bondPrice,
                               repoRate,
                               tradeDate = Sys.Date(),
-                              bond = getCTD.TFutures(fut)) {
+                              bond = takeCTD.TFutures(fut)) {
 
   len <- checkParams(fut, bondPrice, repoRate, tradeDate, bond)
 
@@ -299,7 +299,7 @@ getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
 #' Calculate implied repo rate for TFutures object
 #'
-#' @param fut TFutures object
+#' @param fut TFutures object (can be a list)
 #' @param futPrice TFutures price in percentage (can be a vector)
 #' @param bondPrice CTD bond clean price in percentage (can be a vector)
 #' @param tradeDate Calculation date (can be a vector)
@@ -311,9 +311,9 @@ getIRP.TFututes <- function(fut,
                             futPrice,
                             bondPrice,
                             tradeDate = Sys.Date(),
-                            bond = fut$ctd) {
+                            bond = takeCTD.TFutures(fut)) {
 
-  len <- checkParams(futPrice, bondPrice, tradeDate, bond)
+  len <- checkParams(fut, futPrice, bondPrice, tradeDate, bond)
 
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
 
@@ -321,25 +321,26 @@ getIRP.TFututes <- function(fut,
 
   for (i in 1:len) {
 
+    fut.i <- e(fut, i)
     furPrice.i <- e(futPrice, i)
     bondPrice.i <- e(bondPrice, i)
     t1.i <- e(t1, i)
     bond.i <- e(bond, i)
 
-    inPlay <- which(bond.i$couponDates > t1.i & bond.i$couponDates <= fut$deliveryDate)
+    inPlay <- which(bond.i$couponDates > t1.i & bond.i$couponDates <= fut.i$deliveryDate)
 
     couponAmounts <- bond.i$couponAmounts[inPlay] / bond.i$initialFace * 100
     couponDates <- bond.i$couponDates[inPlay]
 
     irp[i] <-
       (
-        bond.i$cfactor * furPrice.i + getAccrued.FIBond(bond.i, fut$deliveryDate)
+        bond.i$cfactor * furPrice.i + getAccrued.FIBond(bond.i, fut.i$deliveryDate)
         + sum(couponAmounts) - bondPrice.i - getAccrued.FIBond(bond.i, t1.i)
       ) /
       (
         (bondPrice.i + getAccrued.FIBond(bond.i, t1.i)) *
-          as.numeric(fut$deliveryDate - t1.i) / 360 -
-          sum(couponAmounts * as.numeric(fut$deliveryDate - couponDates) / 360)
+          as.numeric(fut.i$deliveryDate - t1.i) / 360 -
+          sum(couponAmounts * as.numeric(fut.i$deliveryDate - couponDates) / 360)
       ) * 100
 
   }

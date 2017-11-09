@@ -5,7 +5,7 @@
 \title{Return percentage carry of FIBond till delivery date of TFutures}
 \usage{
 getCarry.TFututes(fut, bondPrice, repoRate, tradeDate = Sys.Date(),
-  bond = getCTD.TFutures(fut))
+  bond = takeCTD.TFutures(fut))
 }
 \arguments{
 \item{fut}{TFutures object (can be a list)}
