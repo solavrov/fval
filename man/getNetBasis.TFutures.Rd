@@ -5,7 +5,7 @@
 \title{Return Net Basis for TFutures object and given FIBond}
 \usage{
 getNetBasis.TFutures(fut, futPrice, bondPrice, repoRate,
-  tradeDate = Sys.Date(), bond = fut$ctd)
+  tradeDate = Sys.Date(), bond = takeCTD.TFutures(fut))
 }
 \arguments{
 \item{fut}{TFutures object}

@@ -7,7 +7,7 @@
 getPVBP.TFutures(fut, ctdPrice, repoRate, tradeDate = Sys.Date())
 }
 \arguments{
-\item{fut}{TFutures object}
+\item{fut}{TFutures object (can be a list)}
 
 \item{ctdPrice}{CTD bond clean price in percentage (can be a vector)}
 

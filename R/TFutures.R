@@ -352,7 +352,7 @@ getIRP.TFututes <- function(fut,
 
 #' Calculate PVBP of TFutures object relative to CTD yield change
 #'
-#' @param fut TFutures object
+#' @param fut TFutures object (can be a list)
 #' @param ctdPrice CTD bond clean price in percentage (can be a vector)
 #' @param repoRate CTD repo rate in percentage (can be a vector)
 #' @param tradeDate Calculation date (can be a vector)
@@ -363,10 +363,11 @@ getPVBP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
   bp <- 0.01
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
-  ctdYield <- getYield.FIBond(fut$ctd, ctdPrice, t1)
+  ctd <- takeCTD.TFutures(fut)
+  ctdYield <- getYield.FIBond(ctd, ctdPrice, t1)
 
-  bpPlusCTDprice <- getPrice.FIBond(fut$ctd, ctdYield + bp, t1)
-  bpMinusCTDprice <- getPrice.FIBond(fut$ctd, ctdYield - bp, t1)
+  bpPlusCTDprice <- getPrice.FIBond(ctd, ctdYield + bp, t1)
+  bpMinusCTDprice <- getPrice.FIBond(ctd, ctdYield - bp, t1)
 
   pvbp <-
     (
@@ -381,7 +382,7 @@ getPVBP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
 #' Calculate PVBP of TFutures object relative to CTD repo rate change
 #'
-#' @param fut TFutures object
+#' @param fut TFutures object (can be a list)
 #' @param ctdPrice CTD bond clean price in percentage (can be a vector)
 #' @param repoRate CTD repo rate in percentage (can be a vector)
 #' @param tradeDate Calculation date (can be a vector)
@@ -404,14 +405,14 @@ getPVBPRP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) 
 
 #' Return Basis for TFutures object and given FIBond
 #'
-#' @param fut TFutures object
+#' @param fut TFutures object (can be a list)
 #' @param futPrice TFutures price in percentage (can be a vector)
 #' @param bondPrice FIBond price in percentage (can be a vector)
 #'
 #' @return Basis in percentage of FIBond face
 #' @export
 getBasis.TFutures <- function(fut, futPrice, bondPrice) {
-  bondPrice - fut$ctd$cfactor * futPrice
+  bondPrice - takeCFactor.FIBond(takeCTD.TFutures(fut)) * futPrice
 }
 
 
@@ -431,7 +432,7 @@ getNetBasis.TFutures <- function(fut,
                                  bondPrice,
                                  repoRate,
                                  tradeDate = Sys.Date(),
-                                 bond = fut$ctd) {
+                                 bond = takeCTD.TFutures(fut)) {
 
   getBasis.TFutures(fut, futPrice, bondPrice) -
     getCarry.TFututes(fut, bondPrice, repoRate, tradeDate, bond)
