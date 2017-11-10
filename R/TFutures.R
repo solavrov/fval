@@ -206,6 +206,27 @@ takeCTD.TFutures <- function(fut) {
 }
 
 
+#' Return ISIN of TFutures object
+#'
+#' @param fut TFutures object (can be a list)
+#'
+#' @return ISIN as character (can be a vector)
+#' @export
+takeISIN.TFutures <- function(fut) {
+
+  len <- checkParams(fut)
+
+  isin <- numeric()
+
+  for (i in 1:len) {
+    isin[i] <- e(fut, i)$ctd$isin
+  }
+
+  return (isin)
+
+}
+
+
 #' Return value of TFutures contract
 #'
 #' @param fut TFutures object
