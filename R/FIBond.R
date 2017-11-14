@@ -141,7 +141,7 @@ print.FIBond <- function(bond) {
 #' @export
 takeCFactor.FIBond <- function(bond) {
 
-  len <- checkParams(bond)
+  len <- L(bond)
 
   cf <- numeric()
 
@@ -162,7 +162,7 @@ takeCFactor.FIBond <- function(bond) {
 #' @export
 getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 
-  len <- checkParams(bond, settleDate)
+  len <- L(bond, settleDate)
 
   time <- numeric()
 
@@ -209,7 +209,7 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 
-  len <- checkParams(bond, settleDate)
+  len <- L(bond, settleDate)
 
   face <- numeric()
 
@@ -244,7 +244,7 @@ getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getAccruedValue.FIBond <- function(bond, settleDate = nextBizDay()) {
 
-  len <- checkParams(bond, settleDate)
+  len <- L(bond, settleDate)
 
   accrued <- numeric()
 
@@ -299,7 +299,7 @@ getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
-  len <- checkParams(bond, yield, settleDate)
+  len <- L(bond, yield, settleDate)
 
   value <- numeric()
 
@@ -380,7 +380,7 @@ getYield.FIBond <- function(bond,
 
   yield <- numeric()
 
-  len <- checkParams(bond, price, settleDate)
+  len <- L(bond, price, settleDate)
 
   for (i in 1:len) {
 
@@ -444,7 +444,7 @@ getCarryValue.FIBond <- function(bond,
                                  settleDate2,
                                  repoRate) {
 
-  len <- checkParams(bond, price, settleDate1, settleDate2, repoRate)
+  len <- L(bond, price, settleDate1, settleDate2, repoRate)
 
   carry <- numeric()
 

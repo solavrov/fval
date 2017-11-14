@@ -20,7 +20,7 @@ TFutures object
 Attributes:
 $name - name as you wish
 $ticker - ticker like TYU7 etc
-$notionalAmount - notional amount of futures
+$notional - notional amount of futures
 $deliveryDate - Last delivery date that is supposed to be an accual delivary date
 $ctd - Ceapest-to-deliver Bond object
 }

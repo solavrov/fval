@@ -29,7 +29,7 @@ A <- function(obj, attrName) {
 #'
 #' @return Maximum length of params
 #' @export
-checkParams <- function(...) {
+L <- function(...) {
   hlpr::getLength(..., atoms = c("FIBond", "TFutures", "EurOption"))
 }
 

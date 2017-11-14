@@ -111,7 +111,7 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 #' Attributes:
 #' $name - name as you wish
 #' $ticker - ticker like TYU7 etc
-#' $notionalAmount - notional amount of futures
+#' $notional - notional amount of futures
 #' $deliveryDate - Last delivery date that is supposed to be an accual delivary date
 #' $ctd - Ceapest-to-deliver Bond object
 #'
@@ -125,7 +125,7 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
 
   list <- list()
 
-  len <- checkParams(ticker, ctdFile)
+  len <- L(ticker, ctdFile)
 
   for (i in 1:len) {
 
@@ -138,7 +138,7 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
     #default attributes
     fut$name <- NA
     fut$ticker <- NA
-    fut$notionalAmount <- NA
+    fut$notional <- NA
     fut$deliveryDate <- NA
     fut$ctd <- NA
 
@@ -149,7 +149,7 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
 
         fut$ticker <- ticker.i
         fut$deliveryDate <- getDeliveryDate.TFutures(ticker.i, decade)
-        fut$notionalAmount <- getNotional.TFutures(ticker.i)
+        fut$notional <- getNotional.TFutures(ticker.i)
 
         if (ctdFile.i == "") {
           ctdFile.i <- paste0("ctd_", tolower(ticker.i))
@@ -189,7 +189,7 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
 #' @export
 takeCTD.TFutures <- function(fut) {
 
-  len <- checkParams(fut)
+  len <- L(fut)
 
   ctd <- list()
 
@@ -214,7 +214,7 @@ takeCTD.TFutures <- function(fut) {
 #' @export
 takeISIN.TFutures <- function(fut) {
 
-  len <- checkParams(fut)
+  len <- L(fut)
 
   isin <- numeric()
 
@@ -238,7 +238,7 @@ takeISIN.TFutures <- function(fut) {
 #' @export
 getValue.TFutures <- function(fut, futPrice, settlePrice, side = "long") {
 
-  len <- checkParams(fut, futPrice, settlePrice, side)
+  len <- L(fut, futPrice, settlePrice, side)
 
   value <- numeric()
 
@@ -249,7 +249,7 @@ getValue.TFutures <- function(fut, futPrice, settlePrice, side = "long") {
     settlePrice.i <- E(settlePrice, i)
     side.i <- E(side, i)
 
-    value[i] <- fut.i$notionalAmount * (futPrice.i - settlePrice.i) / 100
+    value[i] <- fut.i$notional * (futPrice.i - settlePrice.i) / 100
     if (side.i != "long") value[i] <- -value[i]
 
   }
@@ -275,7 +275,7 @@ getCarry.TFututes <- function(fut,
                               tradeDate = Sys.Date(),
                               bond = takeCTD.TFutures(fut)) {
 
-  len <- checkParams(fut, bondPrice, repoRate, tradeDate, bond)
+  len <- L(fut, bondPrice, repoRate, tradeDate, bond)
 
   carry <- numeric()
 
@@ -334,7 +334,7 @@ getIRP.TFututes <- function(fut,
                             tradeDate = Sys.Date(),
                             bond = takeCTD.TFutures(fut)) {
 
-  len <- checkParams(fut, futPrice, bondPrice, tradeDate, bond)
+  len <- L(fut, futPrice, bondPrice, tradeDate, bond)
 
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
 

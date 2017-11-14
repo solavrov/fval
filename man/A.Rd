@@ -2,13 +2,18 @@
 % Please edit documentation in R/helper.R
 \name{A}
 \alias{A}
-\title{Title}
+\title{Return attribute of object}
 \usage{
 A(obj, attrName)
 }
 \arguments{
-\item{attrName}{}
+\item{obj}{Object or list of objects}
+
+\item{attrName}{Attribute name as character}
+}
+\value{
+Attribute of object
 }
 \description{
-Title
+Return attribute of object
 }
