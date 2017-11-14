@@ -129,8 +129,8 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
 
   for (i in 1:len) {
 
-    ticker.i <- e(ticker, i)
-    ctdFile.i <- e(ctdFile, i)
+    ticker.i <- E(ticker, i)
+    ctdFile.i <- E(ctdFile, i)
 
     fut <- list()
     class(fut) <- "TFutures"
@@ -194,7 +194,7 @@ takeCTD.TFutures <- function(fut) {
   ctd <- list()
 
   for (i in 1:len) {
-    ctd[[i]] <- e(fut, i)$ctd
+    ctd[[i]] <- E(fut, i)$ctd
     if (!is.na(ctd[[i]]$name)) names(ctd)[i] <- ctd[[i]]$name
   }
 
@@ -219,7 +219,7 @@ takeISIN.TFutures <- function(fut) {
   isin <- numeric()
 
   for (i in 1:len) {
-    isin[i] <- e(fut, i)$ctd$isin
+    isin[i] <- E(fut, i)$ctd$isin
   }
 
   return (isin)
@@ -244,10 +244,10 @@ getValue.TFutures <- function(fut, futPrice, settlePrice, side = "long") {
 
   for (i in 1:len) {
 
-    fut.i <- e(fut, i)
-    futPrice.i <- e(futPrice, i)
-    settlePrice.i <- e(settlePrice, i)
-    side.i <- e(side, i)
+    fut.i <- E(fut, i)
+    futPrice.i <- E(futPrice, i)
+    settlePrice.i <- E(settlePrice, i)
+    side.i <- E(side, i)
 
     value[i] <- fut.i$notionalAmount * (futPrice.i - settlePrice.i) / 100
     if (side.i != "long") value[i] <- -value[i]
@@ -281,11 +281,11 @@ getCarry.TFututes <- function(fut,
 
   for (i in 1:len) {
 
-    fut.i <- e(fut, i)
-    bondPrice.i <- e(bondPrice, i)
-    repoRate.i <- e(repoRate, i)
-    tradeDate.i <- e(tradeDate, i)
-    bond.i <- e(bond, i)
+    fut.i <- E(fut, i)
+    bondPrice.i <- E(bondPrice, i)
+    repoRate.i <- E(repoRate, i)
+    tradeDate.i <- E(tradeDate, i)
+    bond.i <- E(bond, i)
 
     carry[i] <-
       getCarry.FIBond(
@@ -342,11 +342,11 @@ getIRP.TFututes <- function(fut,
 
   for (i in 1:len) {
 
-    fut.i <- e(fut, i)
-    furPrice.i <- e(futPrice, i)
-    bondPrice.i <- e(bondPrice, i)
-    t1.i <- e(t1, i)
-    bond.i <- e(bond, i)
+    fut.i <- E(fut, i)
+    furPrice.i <- E(futPrice, i)
+    bondPrice.i <- E(bondPrice, i)
+    t1.i <- E(t1, i)
+    bond.i <- E(bond, i)
 
     inPlay <- which(bond.i$couponDates > t1.i & bond.i$couponDates <= fut.i$deliveryDate)
 

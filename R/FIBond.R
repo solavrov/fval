@@ -146,7 +146,7 @@ takeCFactor.FIBond <- function(bond) {
   cf <- numeric()
 
   for (i in 1:len) {
-    cf[i] <- e(bond, i)$cfactor
+    cf[i] <- E(bond, i)$cfactor
   }
 
   return (cf)
@@ -168,8 +168,8 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 
   for (i in 1:len) {
 
-    bond.i <- e(bond, i)
-    settleDate.i <- e(settleDate, i)
+    bond.i <- E(bond, i)
+    settleDate.i <- E(settleDate, i)
 
     if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
 
@@ -215,8 +215,8 @@ getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 
   for (i in 1:len) {
 
-    bond.i <- e(bond, i)
-    settleDate.i <- e(settleDate, i)
+    bond.i <- E(bond, i)
+    settleDate.i <- E(settleDate, i)
 
     if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
 
@@ -250,8 +250,8 @@ getAccruedValue.FIBond <- function(bond, settleDate = nextBizDay()) {
 
   for (i in 1:len) {
 
-    bond.i <- e(bond, i)
-    settleDate.i <- e(settleDate, i)
+    bond.i <- E(bond, i)
+    settleDate.i <- E(settleDate, i)
 
     if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
 
@@ -305,9 +305,9 @@ getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
   for (i in 1:len) {
 
-    bond.i <- e(bond, i)
-    yield.i <- e(yield, i)
-    settleDate.i <- e(settleDate, i)
+    bond.i <- E(bond, i)
+    yield.i <- E(yield, i)
+    settleDate.i <- E(settleDate, i)
 
     if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
 
@@ -384,9 +384,9 @@ getYield.FIBond <- function(bond,
 
   for (i in 1:len) {
 
-    bond.i <- e(bond, i)
-    price.i <- e(price, i)
-    settleDate.i <- e(settleDate, i)
+    bond.i <- E(bond, i)
+    price.i <- E(price, i)
+    settleDate.i <- E(settleDate, i)
 
     if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
 
@@ -450,11 +450,11 @@ getCarryValue.FIBond <- function(bond,
 
   for (i in 1:len) {
 
-    bond.i <- e(bond, i)
-    price.i <- e(price, i)
-    settleDate1.i <- e(settleDate1, i)
-    settleDate2.i <- e(settleDate2, i)
-    repoRate.i <- e(repoRate, i)
+    bond.i <- E(bond, i)
+    price.i <- E(price, i)
+    settleDate1.i <- E(settleDate1, i)
+    settleDate2.i <- E(settleDate2, i)
+    repoRate.i <- E(repoRate, i)
 
     inPlay <- which(bond.i$couponDates > settleDate1.i & bond.i$couponDates <= settleDate2.i)
 

@@ -6,7 +6,7 @@
 #'
 #' @return Value with index i
 #' @export
-e <- function(a, i) {
+E <- function(a, i) {
   hlpr::getByIndex(a, i, atoms = c("FIBond", "TFutures", "EurOption"))
 }
 
