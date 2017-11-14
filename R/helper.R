@@ -11,6 +11,18 @@ e <- function(a, i) {
 }
 
 
+#' Return attribute of object
+#'
+#' @param obj Object or list of objects
+#' @param attrName Attribute name as character
+#'
+#' @return Attribute of object
+#' @export
+A <- function(obj, attrName) {
+  hlpr::getAttribute(obj, attrName)
+}
+
+
 #' Check that all params have length = 1 or same length > 1
 #'
 #' @param ...
