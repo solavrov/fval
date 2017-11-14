@@ -181,52 +181,6 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
 }
 
 
-#' Return CTD of TFutures object
-#'
-#' @param fut TFutures object (can be a list)
-#'
-#' @return FIBond object of CTD (can be a list)
-#' @export
-takeCTD.TFutures <- function(fut) {
-
-  len <- L(fut)
-
-  ctd <- list()
-
-  for (i in 1:len) {
-    ctd[[i]] <- E(fut, i)$ctd
-    if (!is.na(ctd[[i]]$name)) names(ctd)[i] <- ctd[[i]]$name
-  }
-
-  if (length(ctd) == 1)
-    return (ctd[[1]])
-  else
-    return (ctd)
-
-}
-
-
-#' Return ISIN of TFutures object
-#'
-#' @param fut TFutures object (can be a list)
-#'
-#' @return ISIN as character (can be a vector)
-#' @export
-takeISIN.TFutures <- function(fut) {
-
-  len <- L(fut)
-
-  isin <- numeric()
-
-  for (i in 1:len) {
-    isin[i] <- E(fut, i)$ctd$isin
-  }
-
-  return (isin)
-
-}
-
-
 #' Return value of TFutures contract
 #'
 #' @param fut TFutures object
@@ -273,7 +227,7 @@ getCarry.TFututes <- function(fut,
                               bondPrice,
                               repoRate,
                               tradeDate = Sys.Date(),
-                              bond = takeCTD.TFutures(fut)) {
+                              bond = A(fut, "ctd")) {
 
   len <- L(fut, bondPrice, repoRate, tradeDate, bond)
 
@@ -314,7 +268,7 @@ getCarry.TFututes <- function(fut,
 #' @export
 getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
   (ctdPrice - getCarry.TFututes(fut, ctdPrice, repoRate, tradeDate)) /
-    takeCFactor.FIBond(takeCTD.TFutures(fut))
+    A(A(fut, "ctd"), "cfactor")
 }
 
 
@@ -332,7 +286,7 @@ getIRP.TFututes <- function(fut,
                             futPrice,
                             bondPrice,
                             tradeDate = Sys.Date(),
-                            bond = takeCTD.TFutures(fut)) {
+                            bond = A(fut, "ctd")) {
 
   len <- L(fut, futPrice, bondPrice, tradeDate, bond)
 
@@ -384,7 +338,7 @@ getPVBP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
   bp <- 0.01
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
-  ctd <- takeCTD.TFutures(fut)
+  ctd <- A(fut, "ctd")
   ctdYield <- getYield.FIBond(ctd, ctdPrice, t1)
 
   bpPlusCTDprice <- getPrice.FIBond(ctd, ctdYield + bp, t1)
@@ -433,7 +387,7 @@ getPVBPRP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) 
 #' @return Basis in percentage of FIBond face
 #' @export
 getBasis.TFutures <- function(fut, futPrice, bondPrice) {
-  bondPrice - takeCFactor.FIBond(takeCTD.TFutures(fut)) * futPrice
+  bondPrice - A(A(fut, "ctd"), "cfactor") * futPrice
 }
 
 
@@ -453,7 +407,7 @@ getNetBasis.TFutures <- function(fut,
                                  bondPrice,
                                  repoRate,
                                  tradeDate = Sys.Date(),
-                                 bond = takeCTD.TFutures(fut)) {
+                                 bond = A(fut, "ctd")) {
 
   getBasis.TFutures(fut, futPrice, bondPrice) -
     getCarry.TFututes(fut, bondPrice, repoRate, tradeDate, bond)
