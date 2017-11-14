@@ -5,7 +5,7 @@
 \title{Calculate implied repo rate for TFutures object}
 \usage{
 getIRP.TFututes(fut, futPrice, bondPrice, tradeDate = Sys.Date(),
-  bond = takeCTD.TFutures(fut))
+  bond = A(fut, "ctd"))
 }
 \arguments{
 \item{fut}{TFutures object (can be a list)}
