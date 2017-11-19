@@ -7,11 +7,11 @@
 getValue.FIBond(bond, yield, settleDate = nextBizDay())
 }
 \arguments{
-\item{bond}{FIBond object (can be a list)}
+\item{bond}{FIBond object}
 
-\item{yield}{FIBond yield in percentage (can be a vector)}
+\item{yield}{FIBond yield in percentage}
 
-\item{settleDate}{Calculation date (can be a vector)}
+\item{settleDate}{Calculation date}
 }
 \value{
 Dirty value of bond object

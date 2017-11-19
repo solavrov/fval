@@ -7,7 +7,7 @@
 getMonthNumberFromFuturesTicker(ticker)
 }
 \arguments{
-\item{ticker}{Ticker (can be a vector)}
+\item{ticker}{Ticker}
 }
 \value{
 Expiration month number

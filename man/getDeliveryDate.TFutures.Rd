@@ -7,7 +7,7 @@
 getDeliveryDate.TFutures(ticker, decade = "auto")
 }
 \arguments{
-\item{ticker}{Ticker (can be a vector)}
+\item{ticker}{Ticker}
 
 \item{decade}{decade that can be "auto" - default value, "pres" - present decade,
 "prev" - previous decade, "next" - next decade}

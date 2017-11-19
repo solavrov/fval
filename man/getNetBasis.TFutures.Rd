@@ -5,18 +5,18 @@
 \title{Return Net Basis for TFutures object and given FIBond}
 \usage{
 getNetBasis.TFutures(fut, futPrice, bondPrice, repoRate,
-  tradeDate = Sys.Date(), bond = A(fut, "ctd"))
+  tradeDate = Sys.Date(), bond = fut$ctd)
 }
 \arguments{
 \item{fut}{TFutures object}
 
-\item{futPrice}{TFutures price in percentage (can be a vector)}
+\item{futPrice}{TFutures price in percentage}
 
-\item{bondPrice}{FIBond price in percentage (can be a vector)}
+\item{bondPrice}{FIBond price in percentage}
 
-\item{repoRate}{FIBond repo rate in percentage (can be a vector)}
+\item{repoRate}{FIBond repo rate in percentage}
 
-\item{tradeDate}{Trade date (can be a vector)}
+\item{tradeDate}{Trade date}
 
 \item{bond}{FIBond object}
 }

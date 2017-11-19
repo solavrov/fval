@@ -8,11 +8,11 @@ getYield.FIBond(bond, price, settleDate = nextBizDay(), digits = 4,
   yieldRange = c(-90, 90))
 }
 \arguments{
-\item{bond}{FIBond object (can be a list)}
+\item{bond}{FIBond object}
 
-\item{price}{FIBond clean price in percentage (can be a vector)}
+\item{price}{FIBond clean price in percentage}
 
-\item{settleDate}{Calculation date (can be a vector)}
+\item{settleDate}{Calculation date}
 
 \item{digits}{Accuracy as a number of digits after point}
 }

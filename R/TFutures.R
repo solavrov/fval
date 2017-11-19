@@ -1,13 +1,13 @@
 
 #' Return contract type by TFutures ticker
 #'
-#' @param ticker Ticker (can be a vector)
+#' @param ticker Ticker
 #'
 #' @return Contract type
 #' @export
 getContractType.TFutures <- function(ticker) {
 
-  hlpr::vectorSwitch(
+  switch(
     getFuturesCodeFromTicker(ticker),
     TU = "2Y TNote",
     "3Y" = "3Y TNote",
@@ -24,7 +24,7 @@ getContractType.TFutures <- function(ticker) {
 
 #' Return contract name by TFutures ticker
 #'
-#' @param ticker Ticker (can be a vector)
+#' @param ticker Ticker
 #' @param decade decade that can be "auto" - default value, "pres" - present decade,
 #' "prev" - previous decade, "next" - next decade
 #'
@@ -40,7 +40,7 @@ getName.TFutures <- function(ticker, decade = "auto") {
   year <- getYearFromFuturesTicker(ticker, decade)
   name <- paste0(type, ' ', month, '-', year)
 
-  for (i in 1:length(ticker)) if (is.na(type[i])) name[i] <- NA
+  if (is.na(type)) name <- NA
 
   return (name)
 
@@ -49,13 +49,13 @@ getName.TFutures <- function(ticker, decade = "auto") {
 
 #' Return notional amount by TFutures ticker
 #'
-#' @param ticker Ticker (can be a vector)
+#' @param ticker Ticker
 #'
 #' @return Notional amount
 #' @export
 getNotional.TFutures <- function(ticker) {
 
-  hlpr::vectorSwitch(getFuturesCodeFromTicker(ticker),
+  switch(getFuturesCodeFromTicker(ticker),
          TU = 2e5,
          "3Y" = 1e5,
          FV = 1e5,
@@ -70,7 +70,7 @@ getNotional.TFutures <- function(ticker) {
 
 #' Return model delivery date by TFutures ticker
 #'
-#' @param ticker Ticker (can be a vector)
+#' @param ticker Ticker
 #' @param decade decade that can be "auto" - default value, "pres" - present decade,
 #' "prev" - previous decade, "next" - next decade
 #'
@@ -89,7 +89,7 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
   for (i in 1:3) thirdNextMonthBizDay <-
     nextBizDay(thirdNextMonthBizDay, calendar = "UnitedStates/GovernmentBond")
 
-  deliveryDate <- hlpr::matrixSwitch(
+  deliveryDate <- switch(
     futuresCode,
     TU = thirdNextMonthBizDay,
     "3Y" = thirdNextMonthBizDay,
@@ -115,22 +115,16 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 #' $deliveryDate - Last delivery date that is supposed to be an accual delivary date
 #' $ctd - Ceapest-to-deliver Bond object
 #'
-#' @param ticker Bloomberg ticker like TYU7 etc (can be a vector)
-#' @param ctdFile Name of ctd data file (can be a vector)
+#' @param ticker Bloomberg ticker like TYU7 etc
+#' @param ctdFile Name of ctd data file
 #' @param dateFormat File date format from lubridate package i.e. "dmy", "mdy" etc
 #'
 #' @return TFutures object
 #' @export
-TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "auto") {
-
-  list <- list()
-
-  len <- L(ticker, ctdFile)
-
-  for (i in 1:len) {
-
-    ticker.i <- E(ticker, i)
-    ctdFile.i <- E(ctdFile, i)
+TFutures <- function(ticker = NA,
+                     ctdFile = "",
+                     dateFormat = "mdy",
+                     decade = "auto") {
 
     fut <- list()
     class(fut) <- "TFutures"
@@ -143,42 +137,34 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
     fut$ctd <- NA
 
     #attributes by ticker
-    if (!is.na(ticker.i))  {
+    if (!is.na(ticker))  {
 
-      if (!is.na(fut$name <- getName.TFutures(ticker.i, decade))) {
+      if (!is.na(fut$name <- getName.TFutures(ticker, decade))) {
 
-        fut$ticker <- ticker.i
-        fut$deliveryDate <- getDeliveryDate.TFutures(ticker.i, decade)
-        fut$notional <- getNotional.TFutures(ticker.i)
+        fut$ticker <- ticker
+        fut$deliveryDate <- getDeliveryDate.TFutures(ticker, decade)
+        fut$notional <- getNotional.TFutures(ticker)
 
-        if (ctdFile.i == "") {
-          ctdFile.i <- paste0("ctd_", tolower(ticker.i))
-          path <- paste0("fval_data/", ctdFile.i, ".csv")
+        if (ctdFile == "") {
+          ctdFile <- paste0("ctd_", tolower(ticker))
+          path <- paste0("fval_data/", ctdFile, ".csv")
           if (!file.exists(path)) {
-            ctdFile.i <- ""
+            ctdFile <- ""
             cat("WARNING!", path, "is not found\n")
           }
         }
 
       } else {
-        cat("WARNING! Ticker", ticker.i, "is wrong!\n")
+        cat("WARNING! Ticker", ticker, "is wrong!\n")
       }
 
     }
 
-    if (ctdFile.i != "") fut$ctd <- FIBond(ctdFile.i, dateFormat)
+    if (ctdFile != "") fut$ctd <- FIBond(ctdFile, dateFormat)
 
-    list[[i]] <- fut
-    if (!is.na(fut$ticker)) names(list)[i] <- fut$ticker
+    return (fut)
 
   }
-
-  if (length(list) == 1)
-    return (list[[1]])
-  else
-    return (list)
-
-}
 
 
 #' Return value of TFutures contract
@@ -192,21 +178,8 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
 #' @export
 getValue.TFutures <- function(fut, futPrice, settlePrice, side = "long") {
 
-  len <- L(fut, futPrice, settlePrice, side)
-
-  value <- numeric()
-
-  for (i in 1:len) {
-
-    fut.i <- E(fut, i)
-    futPrice.i <- E(futPrice, i)
-    settlePrice.i <- E(settlePrice, i)
-    side.i <- E(side, i)
-
-    value[i] <- fut.i$notional * (futPrice.i - settlePrice.i) / 100
-    if (side.i != "long") value[i] <- -value[i]
-
-  }
+  value <- fut$notional * (futPrice - settlePrice) / 100
+  if (side != "long") value <- -value
 
   return (value)
 
@@ -215,10 +188,10 @@ getValue.TFutures <- function(fut, futPrice, settlePrice, side = "long") {
 
 #' Return percentage carry of FIBond till delivery date of TFutures
 #'
-#' @param fut TFutures object (can be a list)
-#' @param bondPrice FIBond price in percentage (can be a vector)
-#' @param repoRate FIBond repo rate in percentage (can be a vector)
-#' @param tradeDate Trade date (can be a vector)
+#' @param fut TFutures object
+#' @param bondPrice FIBond price in percentage
+#' @param repoRate FIBond repo rate in percentage
+#' @param tradeDate Trade date
 #' @param bond FIBond object
 #'
 #' @return Carry in percentage of FIBond face
@@ -227,58 +200,41 @@ getCarry.TFututes <- function(fut,
                               bondPrice,
                               repoRate,
                               tradeDate = Sys.Date(),
-                              bond = A(fut, "ctd")) {
+                              bond = fut$ctd) {
 
-  len <- L(fut, bondPrice, repoRate, tradeDate, bond)
-
-  carry <- numeric()
-
-  for (i in 1:len) {
-
-    fut.i <- E(fut, i)
-    bondPrice.i <- E(bondPrice, i)
-    repoRate.i <- E(repoRate, i)
-    tradeDate.i <- E(tradeDate, i)
-    bond.i <- E(bond, i)
-
-    carry[i] <-
-      getCarry.FIBond(
-        bond.i,
-        bondPrice.i,
-        nextBizDay(tradeDate.i, calendar = "UnitedStates/GovernmentBond"),
-        fut.i$deliveryDate,
-        repoRate.i
-      ) * checkDate(tradeDate.i, latestDate = fut.i$deliveryDate)
-
-  }
-
-  return (carry)
+  getCarry.FIBond(
+    bond,
+    bondPrice,
+    nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond"),
+    fut$deliveryDate,
+    repoRate
+  )
 
 }
 
 
 #' Calculate model price of TFutures object
 #'
-#' @param fut TFutures object (can be a list)
-#' @param ctdPrice CTD bond clean price in percentage (can be a vector)
-#' @param repoRate Term CTD repo rate in percentage (can be a vector)
-#' @param tradeDate Calculation date (can be a vector)
+#' @param fut TFutures object
+#' @param ctdPrice CTD bond clean price in percentage
+#' @param repoRate Term CTD repo rate in percentage
+#' @param tradeDate Calculation date
 #'
 #' @return Model price of TFutures object in percentage of notional
 #' @export
 getPrice.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
   (ctdPrice - getCarry.TFututes(fut, ctdPrice, repoRate, tradeDate)) /
-    A(A(fut, "ctd"), "cfactor")
+    fut$ctd$cfactor
 }
 
 
 #' Calculate implied repo rate for TFutures object
 #'
-#' @param fut TFutures object (can be a list)
-#' @param futPrice TFutures price in percentage (can be a vector)
-#' @param bondPrice CTD bond clean price in percentage (can be a vector)
-#' @param tradeDate Calculation date (can be a vector)
-#' @param bond FIBond object (can be a list)
+#' @param fut TFutures object
+#' @param futPrice TFutures price in percentage
+#' @param bondPrice CTD bond clean price in percentage
+#' @param tradeDate Calculation date
+#' @param bond FIBond object
 #'
 #' @return Implied repo rate for TFutures object in percentage
 #' @export
@@ -286,39 +242,27 @@ getIRP.TFututes <- function(fut,
                             futPrice,
                             bondPrice,
                             tradeDate = Sys.Date(),
-                            bond = A(fut, "ctd")) {
-
-  len <- L(fut, futPrice, bondPrice, tradeDate, bond)
+                            bond = fut$ctd) {
 
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
 
-  irp <- numeric()
+  inPlay <- which(bond$couponDates > t1 & bond$couponDates <= fut$deliveryDate)
 
-  for (i in 1:len) {
+  couponAmounts <- bond$couponAmounts[inPlay] / bond$initialFace * 100
+  couponDates <- bond$couponDates[inPlay]
 
-    fut.i <- E(fut, i)
-    furPrice.i <- E(futPrice, i)
-    bondPrice.i <- E(bondPrice, i)
-    t1.i <- E(t1, i)
-    bond.i <- E(bond, i)
-
-    inPlay <- which(bond.i$couponDates > t1.i & bond.i$couponDates <= fut.i$deliveryDate)
-
-    couponAmounts <- bond.i$couponAmounts[inPlay] / bond.i$initialFace * 100
-    couponDates <- bond.i$couponDates[inPlay]
-
-    irp[i] <-
-      (
-        bond.i$cfactor * furPrice.i + getAccrued.FIBond(bond.i, fut.i$deliveryDate)
-        + sum(couponAmounts) - bondPrice.i - getAccrued.FIBond(bond.i, t1.i)
-      ) /
-      (
-        (bondPrice.i + getAccrued.FIBond(bond.i, t1.i)) *
-          as.numeric(fut.i$deliveryDate - t1.i) / 360 -
-          sum(couponAmounts * as.numeric(fut.i$deliveryDate - couponDates) / 360)
-      ) * 100
-
-  }
+  irp <-
+    (
+      bond$cfactor * futPrice + getAccrued.FIBond(bond, fut$deliveryDate)
+      + sum(couponAmounts) - bondPrice - getAccrued.FIBond(bond, t1)
+    ) /
+    (
+      (bondPrice + getAccrued.FIBond(bond, t1)) *
+        as.numeric(fut$deliveryDate - t1) / 360 -
+        sum(
+          couponAmounts * as.numeric(fut$deliveryDate - couponDates) / 360
+        )
+    ) * 100
 
   return (irp)
 
@@ -327,10 +271,10 @@ getIRP.TFututes <- function(fut,
 
 #' Calculate PVBP of TFutures object relative to CTD yield change
 #'
-#' @param fut TFutures object (can be a list)
-#' @param ctdPrice CTD bond clean price in percentage (can be a vector)
-#' @param repoRate CTD repo rate in percentage (can be a vector)
-#' @param tradeDate Calculation date (can be a vector)
+#' @param fut TFutures object
+#' @param ctdPrice CTD bond clean price in percentage
+#' @param repoRate CTD repo rate in percentage
+#' @param tradeDate Calculation date
 #'
 #' @return PVBP of TFutures object relative to CTD yield change in percentage
 #' @export
@@ -338,11 +282,10 @@ getPVBP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
   bp <- 0.01
   t1 <- nextBizDay(tradeDate, calendar = "UnitedStates/GovernmentBond")
-  ctd <- A(fut, "ctd")
-  ctdYield <- getYield.FIBond(ctd, ctdPrice, t1)
+  ctdYield <- getYield.FIBond(fut$ctd, ctdPrice, t1)
 
-  bpPlusCTDprice <- getPrice.FIBond(ctd, ctdYield + bp, t1)
-  bpMinusCTDprice <- getPrice.FIBond(ctd, ctdYield - bp, t1)
+  bpPlusCTDprice <- getPrice.FIBond(fut$ctd, ctdYield + bp, t1)
+  bpMinusCTDprice <- getPrice.FIBond(fut$ctd, ctdYield - bp, t1)
 
   pvbp <-
     (
@@ -357,10 +300,10 @@ getPVBP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) {
 
 #' Calculate PVBP of TFutures object relative to CTD repo rate change
 #'
-#' @param fut TFutures object (can be a list)
-#' @param ctdPrice CTD bond clean price in percentage (can be a vector)
-#' @param repoRate CTD repo rate in percentage (can be a vector)
-#' @param tradeDate Calculation date (can be a vector)
+#' @param fut TFutures object
+#' @param ctdPrice CTD bond clean price in percentage
+#' @param repoRate CTD repo rate in percentage
+#' @param tradeDate Calculation date
 #'
 #' @return PVBP of TFutures object relative to CTD repo rate change in percentage
 #' @export
@@ -380,25 +323,25 @@ getPVBPRP.TFutures <- function(fut, ctdPrice, repoRate, tradeDate = Sys.Date()) 
 
 #' Return Basis for TFutures object and given FIBond
 #'
-#' @param fut TFutures object (can be a list)
-#' @param futPrice TFutures price in percentage (can be a vector)
-#' @param bondPrice FIBond price in percentage (can be a vector)
+#' @param fut TFutures object
+#' @param futPrice TFutures price in percentage
+#' @param bondPrice FIBond price in percentage
 #'
 #' @return Basis in percentage of FIBond face
 #' @export
 getBasis.TFutures <- function(fut, futPrice, bondPrice) {
-  bondPrice - A(A(fut, "ctd"), "cfactor") * futPrice
+  bondPrice - fut$ctd$cfactor * futPrice
 }
 
 
 #' Return Net Basis for TFutures object and given FIBond
 #'
 #' @param fut TFutures object
-#' @param futPrice TFutures price in percentage (can be a vector)
-#' @param bondPrice FIBond price in percentage (can be a vector)
-#' @param repoRate FIBond repo rate in percentage (can be a vector)
+#' @param futPrice TFutures price in percentage
+#' @param bondPrice FIBond price in percentage
+#' @param repoRate FIBond repo rate in percentage
 #' @param bond FIBond object
-#' @param tradeDate Trade date (can be a vector)
+#' @param tradeDate Trade date
 #'
 #' @return Net Basis in percentage of FIBond face
 #' @export
@@ -407,7 +350,7 @@ getNetBasis.TFutures <- function(fut,
                                  bondPrice,
                                  repoRate,
                                  tradeDate = Sys.Date(),
-                                 bond = A(fut, "ctd")) {
+                                 bond = fut$ctd) {
 
   getBasis.TFutures(fut, futPrice, bondPrice) -
     getCarry.TFututes(fut, bondPrice, repoRate, tradeDate, bond)

@@ -7,7 +7,7 @@
 nextBizDay(date = Sys.Date(), calendar = "WeekendsOnly")
 }
 \arguments{
-\item{date}{Date (can be a vector)}
+\item{date}{Date}
 
 \item{calendar}{RQuantLib calendar name}
 }

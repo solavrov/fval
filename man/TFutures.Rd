@@ -7,9 +7,9 @@
 TFutures(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "auto")
 }
 \arguments{
-\item{ticker}{Bloomberg ticker like TYU7 etc (can be a vector)}
+\item{ticker}{Bloomberg ticker like TYU7 etc}
 
-\item{ctdFile}{Name of ctd data file (can be a vector)}
+\item{ctdFile}{Name of ctd data file}
 
 \item{dateFormat}{File date format from lubridate package i.e. "dmy", "mdy" etc}
 }

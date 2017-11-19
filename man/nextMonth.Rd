@@ -7,9 +7,9 @@
 nextMonth(month, year)
 }
 \arguments{
-\item{month}{Number of present month (can be a vector)}
+\item{month}{Number of present month}
 
-\item{year}{Year (can be a vector)}
+\item{year}{Year}
 }
 \value{
 List where $month is next month and $year is year of next month

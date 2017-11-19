@@ -14,7 +14,7 @@
 #' $couponDates - vector of coupon dates
 #' $couponAmounts - vector of coupon amounts
 #'
-#' @param file Name of csv file that contains bond attributes (can be a vector).
+#' @param file Name of csv file that contains bond attributes.
 #' Heads should have names of attributes.
 #' File should be located in fval_data folder. Just name without extension
 #' @param dateFormat File date format from lubridate package i.e. "dmy", "mdy" etc
@@ -26,80 +26,74 @@ FIBond <- function(file = NA,
                    dateFormat = "mdy",
                    sep = ",") {
 
-  list <- list()
+  bond <- list()
+  class(bond) <- "FIBond"
 
-  for (i in 1:length(file)) {
+  #default attributes
+  bond$name <- NA
+  bond$isin <- NA
+  bond$currency <- NA
+  bond$initialFace <- NA
+  bond$couponFreq <- NA
+  bond$issueDate <- NA
+  bond$maturity <- NA
+  bond$formula <- "STD"
+  bond$dayCounter <- dayCounter$ActualActual
+  bond$cfactor <- NA
 
-    bond <- list()
-    class(bond) <- "FIBond"
+  bond$couponDates <- NA
+  bond$couponAmounts <- NA
+  bond$faceAmounts <- NA
 
-    #default attributes
-    bond$name <- NA
-    bond$isin <- NA
-    bond$currency <- NA
-    bond$initialFace <- NA
-    bond$couponFreq <- NA
-    bond$issueDate <- NA
-    bond$maturity <- NA
-    bond$formula <- "STD"
-    bond$dayCounter <- dayCounter$ActualActual
-    bond$cfactor <- NA
+  if (!is.na(file)) {
 
-    bond$couponDates <- NA
-    bond$couponAmounts <- NA
-    bond$faceAmounts <- NA
+    file <- paste0("fval_data/", file, ".csv")
 
-    if (!is.na(file[i])) {
+    if (file.exists(file)) {
+      df <- read.csv(file, sep = sep)
 
-      file[i] <- paste0("fval_data/", file[i], ".csv")
+      if (!is.null(df$name))
+        bond$name <- as.character(df$name[1])
+      if (!is.null(df$isin))
+        bond$isin <- as.character(df$isin[1])
+      if (!is.null(df$currency))
+        bond$currency <- as.character(df$currency[1])
 
-      if (file.exists(file[i])) {
+      if (!is.null(df$issueDate))
+        bond$issueDate <-
+          as.Date(lubridate::parse_date_time(as.character(df$issueDate[1]), dateFormat))
 
-        df <- read.csv(file[i], sep = sep)
+      if (!is.null(df$formula))
+        bond$formula <- as.character(df$formula[1])
+      if (!is.null(df$dayCounter))
+        bond$dayCounter <- df$dayCounter[1]
+      if (!is.null(df$cfactor))
+        bond$cfactor <- df$cfactor[1]
 
-        if (!is.null(df$name)) bond$name <- as.character(df$name[1])
-        if (!is.null(df$isin)) bond$isin <- as.character(df$isin[1])
-        if (!is.null(df$currency)) bond$currency <- as.character(df$currency[1])
-
-        if (!is.null(df$issueDate)) bond$issueDate <-
-            as.Date(lubridate::parse_date_time(as.character(df$issueDate[1]), dateFormat))
-
-        if (!is.null(df$formula)) bond$formula <- as.character(df$formula[1])
-        if (!is.null(df$dayCounter)) bond$dayCounter <- df$dayCounter[1]
-        if (!is.null(df$cfactor)) bond$cfactor <- df$cfactor[1]
-
-        if (!is.null(df$couponDates)) {
-          bond$couponDates <-
-            as.Date(lubridate::parse_date_time(as.character(df$couponDates), dateFormat))
-          bond$maturity <- tail(bond$couponDates, 1)
-          bond$couponFreq <-
-            round(length(bond$couponDates) / as.numeric(bond$maturity - bond$issueDate) * 365)
-        }
-
-        if (!is.null(df$couponAmounts)) bond$couponAmounts <- df$couponAmounts
-
-        if (!is.null(df$faceAmounts)) {
-          bond$faceAmounts <- df$faceAmounts
-          bond$initialFace <- sum(df$faceAmounts)
-        }
-
-      }  else {
-
-        cat("ERROR!", file[i], "is not found\n")
-
+      if (!is.null(df$couponDates)) {
+        bond$couponDates <-
+          as.Date(lubridate::parse_date_time(as.character(df$couponDates), dateFormat))
+        bond$maturity <- tail(bond$couponDates, 1)
+        bond$couponFreq <-
+          round(length(bond$couponDates) / as.numeric(bond$maturity - bond$issueDate) * 365)
       }
+
+      if (!is.null(df$couponAmounts))
+        bond$couponAmounts <- df$couponAmounts
+
+      if (!is.null(df$faceAmounts)) {
+        bond$faceAmounts <- df$faceAmounts
+        bond$initialFace <- sum(df$faceAmounts)
+      }
+
+    }  else {
+      cat("ERROR!", file, "is not found\n")
 
     }
 
-    list[[i]] <- bond
-    if (!is.na(bond$name)) names(list)[i] <- bond$name
-
   }
 
-  if (length(list) == 1)
-    return (list[[1]])
-  else
-    return (list)
+  return (bond)
 
 }
 
@@ -135,43 +129,32 @@ print.FIBond <- function(bond) {
 
 #' Calculate coupon time i.e. days passed over days in coupon period for FIBond object
 #'
-#' @param bond FIBond object (can be a list)
-#' @param settleDate Calculation date (can be a vector)
+#' @param bond FIBond object
+#' @param settleDate Calculation date
 #'
 #' @return Coupon time for FIBond object
 #' @export
 getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 
-  len <- L(bond, settleDate)
+  if (settleDate >= bond$issueDate && settleDate <= bond$maturity) {
 
-  time <- numeric()
+    nextPaymentIndex <- which(bond$couponDates > settleDate)[1]
+    nextDay <- bond$couponDates[nextPaymentIndex]
 
-  for (i in 1:len) {
-
-    bond.i <- E(bond, i)
-    settleDate.i <- E(settleDate, i)
-
-    if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
-
-      nextPaymentIndex <- which(bond.i$couponDates > settleDate.i)[1]
-      nextDay <- bond.i$couponDates[nextPaymentIndex]
-
-      if (nextPaymentIndex >= 2) {
-        prevDay <- bond.i$couponDates[nextPaymentIndex - 1]
-      } else {
-        prevDay <- bond.i$issueDate
-      }
-
-      period <- RQuantLib::dayCount(prevDay, nextDay, bond.i$dayCounter)
-      daysPassed <- RQuantLib::dayCount(prevDay, settleDate.i, bond.i$dayCounter)
-
-      time[i] <- daysPassed / period
-
+    if (nextPaymentIndex >= 2) {
+      prevDay <- bond$couponDates[nextPaymentIndex - 1]
     } else {
-
-      time[i] <- NA
-
+      prevDay <- bond$issueDate
     }
+
+    period <- RQuantLib::dayCount(prevDay, nextDay, bond$dayCounter)
+    daysPassed <- RQuantLib::dayCount(prevDay, settleDate, bond$dayCounter)
+
+    time <- daysPassed / period
+
+  } else {
+
+    time <- NA
 
   }
 
@@ -182,33 +165,22 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 
 #' Return current face amount
 #'
-#' @param bond FIBond object (can be a list)
-#' @param settleDate Calculation date (can be a vector)
+#' @param bond FIBond object
+#' @param settleDate Calculation date
 #'
 #' @return Current face amount
 #' @export
 getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 
-  len <- L(bond, settleDate)
+    if (settleDate >= bond$issueDate && settleDate <= bond$maturity) {
 
-  face <- numeric()
-
-  for (i in 1:len) {
-
-    bond.i <- E(bond, i)
-    settleDate.i <- E(settleDate, i)
-
-    if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
-
-      face[i] <- sum(bond.i$faceAmounts[bond.i$couponDates > settleDate.i])
+      face <- sum(bond$faceAmounts[bond$couponDates > settleDate])
 
     } else {
 
-      face[i] <- NA
+      face <- NA
 
     }
-
-  }
 
   return (face)
 
@@ -217,38 +189,27 @@ getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 
 #' Calculate accrued interest for FIBond object
 #'
-#' @param bond FIBond object (can be a list)
-#' @param settleDate Calculation date (can be a vector)
+#' @param bond FIBond object
+#' @param settleDate Calculation date
 #'
 #' @return Accrued interest
 #' @export
 getAccruedValue.FIBond <- function(bond, settleDate = nextBizDay()) {
 
-  len <- L(bond, settleDate)
+  if (settleDate >= bond$issueDate && settleDate <= bond$maturity) {
 
-  accrued <- numeric()
+    nextPaymentIndex <- which(bond$couponDates > settleDate)[1]
+    coupon <- bond$couponAmounts[nextPaymentIndex]
+    accrued <- coupon * getCouponTime.FIBond(bond, settleDate)
 
-  for (i in 1:len) {
-
-    bond.i <- E(bond, i)
-    settleDate.i <- E(settleDate, i)
-
-    if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
-
-      nextPaymentIndex <- which(bond.i$couponDates > settleDate.i)[1]
-      coupon <- bond.i$couponAmounts[nextPaymentIndex]
-      accrued[i] <- coupon * getCouponTime.FIBond(bond.i, settleDate.i)
-
-      if (bond.i$formula == "OFZ") {
-        accrued[i] <-
-          round(accrued[i] / bond.i$initialFace * 1000, digits = 2) * bond.i$initialFace / 1000
-      }
-
-    } else {
-
-      accrued[i] <- NA
-
+    if (bond$formula == "OFZ") {
+      accrued <-
+        round(accrued / bond$initialFace * 1000, digits = 2) * bond$initialFace / 1000
     }
+
+  } else {
+
+    accrued <- NA
 
   }
 
@@ -259,8 +220,8 @@ getAccruedValue.FIBond <- function(bond, settleDate = nextBizDay()) {
 
 #' Calculate accrued interest in percentage of current face
 #'
-#' @param bond FIBond object (can be a list)
-#' @param settleDate Calculation date (can be a vector)
+#' @param bond FIBond object
+#' @param settleDate Calculation date
 #'
 #' @return Accrued interest in percentage of current face
 #' @export
@@ -271,51 +232,39 @@ getAccrued.FIBond <- function(bond, settleDate = nextBizDay()) {
 
 #' Calculate value of FIBond object
 #'
-#' @param bond FIBond object (can be a list)
-#' @param yield FIBond yield in percentage (can be a vector)
-#' @param settleDate Calculation date (can be a vector)
+#' @param bond FIBond object
+#' @param yield FIBond yield in percentage
+#' @param settleDate Calculation date
 #'
 #' @return Dirty value of bond object
 #' @export
 getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
-  len <- L(bond, yield, settleDate)
+  if (settleDate >= bond$issueDate && settleDate <= bond$maturity) {
 
-  value <- numeric()
+    spans <- as.numeric(bond$couponDates - settleDate)
 
-  for (i in 1:len) {
+    if (bond$formula == "OFZ") {
 
-    bond.i <- E(bond, i)
-    yield.i <- E(yield, i)
-    settleDate.i <- E(settleDate, i)
-
-    if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
-
-      spans <- as.numeric(bond.i$couponDates - settleDate.i)
-
-      if (bond.i$formula == "OFZ") {
-
-        factors <- (spans > 0) * 1 / (1 + yield.i / 100) ^ (spans / 365)
-        payments <- bond.i$couponAmounts + bond.i$faceAmounts
-
-      } else {
-
-        numOfFutureCoupons <- length(spans[spans > 0])
-
-        factors <- 1 / (1 + yield.i / 100 / bond.i$couponFreq) ^
-          (1:numOfFutureCoupons - getCouponTime.FIBond(bond.i, settleDate.i))
-
-        payments <- tail(bond.i$couponAmounts + bond.i$faceAmounts, numOfFutureCoupons)
-
-      }
-
-      value[i] <- sum(payments * factors)
+      factors <- (spans > 0) * 1 / (1 + yield / 100) ^ (spans / 365)
+      payments <- bond$couponAmounts + bond$faceAmounts
 
     } else {
 
-      value[i] <- NA
+      numOfFutureCoupons <- length(spans[spans > 0])
+
+      factors <- 1 / (1 + yield / 100 / bond$couponFreq) ^
+        (1:numOfFutureCoupons - getCouponTime.FIBond(bond, settleDate))
+
+      payments <- tail(bond$couponAmounts + bond$faceAmounts, numOfFutureCoupons)
 
     }
+
+    value <- sum(payments * factors)
+
+  } else {
+
+    value <- NA
 
   }
 
@@ -326,9 +275,9 @@ getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
 #' Calculate clean price of FIBond
 #'
-#' @param bond FIBond object (can be a list)
-#' @param yield FIBond yield in percentage (can be a vector)
-#' @param settleDate Calculation date (can be a vector)
+#' @param bond FIBond object
+#' @param yield FIBond yield in percentage
+#' @param settleDate Calculation date
 #'
 #' @return Clean price of FIBond object in percentage
 #' @export
@@ -345,9 +294,9 @@ getPrice.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
 
 #' Calculate yield of FIBond object
 #'
-#' @param bond FIBond object (can be a list)
-#' @param price FIBond clean price in percentage (can be a vector)
-#' @param settleDate Calculation date (can be a vector)
+#' @param bond FIBond object
+#' @param price FIBond clean price in percentage
+#' @param settleDate Calculation date
 #' @param digits Accuracy as a number of digits after point
 #'
 #' @return FIBond yield in percentage
@@ -358,27 +307,15 @@ getYield.FIBond <- function(bond,
                             digits = 4,
                             yieldRange = c(-90, 90)) {
 
-  yield <- numeric()
+  if (settleDate >= bond$issueDate && settleDate <= bond$maturity) {
 
-  len <- L(bond, price, settleDate)
+    f <- function(x) (getPrice.FIBond(bond, x, settleDate) - price)
+    solution <- uniroot(f, yieldRange, tol = 10 ^ (-digits - 1))
+    yield <- round(solution$root, digits)
 
-  for (i in 1:len) {
+  } else {
 
-    bond.i <- E(bond, i)
-    price.i <- E(price, i)
-    settleDate.i <- E(settleDate, i)
-
-    if (settleDate.i >= bond.i$issueDate && settleDate.i <= bond.i$maturity) {
-
-      f <- function(x) (getPrice.FIBond(bond.i, x, settleDate.i) - price.i)
-      solution <- uniroot(f, yieldRange, tol = 10 ^ (-digits - 1))
-      yield[i] <- round(solution$root, digits)
-
-    } else {
-
-      yield[i] <- NA
-
-    }
+    yield <- NA
 
   }
 
@@ -389,9 +326,9 @@ getYield.FIBond <- function(bond,
 
 #' Calculate PVBP of FIBond object
 #'
-#' @param bond FIBond object (can be a list)
-#' @param price FIBond clean price in percentage (can be a vector)
-#' @param settleDate Calculation date (can be a vector)
+#' @param bond FIBond object
+#' @param price FIBond clean price in percentage
+#' @param settleDate Calculation date
 #'
 #' @return PVBP of FIBond object in percentage
 #' @export
@@ -411,10 +348,10 @@ getPVBP.FIBond <- function(bond, price, settleDate = nextBizDay()) {
 #' Calculate carry for FIBond object
 #'
 #' @param bond FIBond object (can be a list)
-#' @param price FIBond clean price in percentage (can be a vector)
-#' @param settleDate1 Start date (can be a vector)
-#' @param settleDate2 End date (can be a vector)
-#' @param repoRate Funding term repo rate in percentage (can be a vector)
+#' @param price FIBond clean price in percentage
+#' @param settleDate1 Start date
+#' @param settleDate2 End date
+#' @param repoRate Funding term repo rate in percentage
 #'
 #' @return Carry for FIBond object
 #' @export
@@ -424,34 +361,22 @@ getCarryValue.FIBond <- function(bond,
                                  settleDate2,
                                  repoRate) {
 
-  len <- L(bond, price, settleDate1, settleDate2, repoRate)
+  inPlay <- which(bond$couponDates > settleDate1 & bond$couponDates <= settleDate2)
 
-  carry <- numeric()
+  payments <- bond$couponAmounts[inPlay] + bond$faceAmounts[inPlay]
 
-  for (i in 1:len) {
+  couponDates <- bond$couponDates[inPlay]
 
-    bond.i <- E(bond, i)
-    price.i <- E(price, i)
-    settleDate1.i <- E(settleDate1, i)
-    settleDate2.i <- E(settleDate2, i)
-    repoRate.i <- E(repoRate, i)
+  carry <-
+    getAccruedValue.FIBond(bond, settleDate2) - getAccruedValue.FIBond(bond, settleDate1) +
+    sum(payments * (1 + repoRate / 100 * as.numeric(settleDate2 - couponDates) / 360)) -
+    (
+      price / 100 * getFace.FIBond(bond, settleDate1) +
+        getAccruedValue.FIBond(bond, settleDate1)
+    ) *
+    repoRate / 100 * as.numeric(settleDate2 - settleDate1) / 360
 
-    inPlay <- which(bond.i$couponDates > settleDate1.i & bond.i$couponDates <= settleDate2.i)
-
-    payments <- bond.i$couponAmounts[inPlay] + bond.i$faceAmounts[inPlay]
-
-    couponDates <- bond.i$couponDates[inPlay]
-
-    carry[i] <-
-      getAccruedValue.FIBond(bond.i, settleDate2.i) - getAccruedValue.FIBond(bond.i, settleDate1.i) +
-      sum(payments * (1 + repoRate.i / 100 * as.numeric(settleDate2.i - couponDates) / 360)) -
-      (
-        price.i / 100 * getFace.FIBond(bond.i, settleDate1.i) +
-          getAccruedValue.FIBond(bond.i, settleDate1.i)
-      ) *
-      repoRate.i / 100 * as.numeric(settleDate2.i - settleDate1.i) / 360
-
-  }
+  carry <- carry * if (settleDate2 >= settleDate1) 1 else NA
 
   return (carry)
 
@@ -461,10 +386,10 @@ getCarryValue.FIBond <- function(bond,
 #' Calculate carry for FIBond object in percentage of current face
 #'
 #' @param bond FIBond object (can be a list)
-#' @param price FIBond clean price in percentage (can be a vector)
-#' @param settleDate1 Start date (can be a vector)
-#' @param settleDate2 End date (can be a vector)
-#' @param repoRate Funding term repo rate in percentage (can be a vector)
+#' @param price FIBond clean price in percentage
+#' @param settleDate1 Start date
+#' @param settleDate2 End date
+#' @param repoRate Funding term repo rate in percentage
 #'
 #' @return Carry for FIBond object in percentage of current face
 #' @export

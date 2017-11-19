@@ -22,15 +22,12 @@ dayCounter <- list(
 
 #' Return name of day counter
 #'
-#' @param counter Counter as a number (can be a vector)
+#' @param counter Counter as a number
 #'
 #' @return Name
 #' @export
-#'
-#' @examples
-#' counter(0)
 counterName <- function(counter) {
-  hlpr::vectorSwitch(as.character(counter),
+  switch(as.character(counter),
          "0" = "Actual360",
          "1" = "Actual360FixEd",
          "2" = "ActualActual",
@@ -51,19 +48,17 @@ counterName <- function(counter) {
 
 #' Return next business day using RQuantLib calendars
 #'
-#' @param date Date (can be a vector)
+#' @param date Date
 #' @param calendar RQuantLib calendar name
 #'
 #' @return Next business day
 #' @export
 nextBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 
-  for (i in 1:length(date)) {
-    repeat {
-      date[i] <- date[i] + 1
-      if (RQuantLib::isBusinessDay(calendar, date[i])) break
+  repeat {
+      date <- date + 1
+      if (RQuantLib::isBusinessDay(calendar, date)) break
     }
-  }
 
   return (date)
 
@@ -72,18 +67,16 @@ nextBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 
 #' Return previous business day using RQuantLib calendars
 #'
-#' @param date Date (can be a vector)
+#' @param date Date
 #' @param calendar RQuantLib calendar name
 #'
 #' @return Next business day
 #' @export
 prevBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 
-  for (i in 1:length(date)) {
-    repeat {
-      date[i] <- date[i] - 1
-      if (RQuantLib::isBusinessDay(calendar, date[i])) break
-    }
+  repeat {
+      date <- date - 1
+      if (RQuantLib::isBusinessDay(calendar, date)) break
   }
 
   return (date)
@@ -93,19 +86,17 @@ prevBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 
 #' Return number of next month
 #'
-#' @param month Number of present month (can be a vector)
-#' @param year Year (can be a vector)
+#' @param month Number of present month
+#' @param year Year
 #'
 #' @return List where $month is next month and $year is year of next month
 #' @export
 nextMonth <- function(month, year) {
 
-  for (i in 1:length(month)) {
-    month[i] <- month[i] + 1
-    if (month[i] > 12) {
-      month[i] <- 1
-      year[i] <- year[i] + 1
-    }
+  month <- month + 1
+  if (month > 12) {
+    month <- 1
+    year <- year + 1
   }
 
   return (list(month = month, year = year))
@@ -115,8 +106,8 @@ nextMonth <- function(month, year) {
 
 #' Return date of last business day for a given month and year
 #'
-#' @param month Month number (can be a vector)
-#' @param year Year (can be a vector)
+#' @param month Month number
+#' @param year Year
 #' @param calendar RQuantLib calendar name
 #'
 #' @return Date of last business day of a given month and year
@@ -138,8 +129,8 @@ lastBizDay <- function(month, year, calendar = "WeekendsOnly") {
 
 #' Return date of first business day for a given month and year
 #'
-#' @param month Month number (can be a vector)
-#' @param year Year (can be a vector)
+#' @param month Month number
+#' @param year Year
 #' @param calendar RQuantLib calendar name
 #'
 #' @return Date of first business day of a given month and year
@@ -152,23 +143,4 @@ firstBizDay <- function(month, year, calendar = "WeekendsOnly") {
   )
 
 }
-
-
-#' Return 1 if date within range and NA otherwise
-#'
-#' @param date Date (can be a vector)
-#' @param earliestDate Earliest date, default value is minus infinity (-1e6)
-#' @param latestDate Latest date, default value is plus infinity (1e6)
-#'
-#' @return 1 if date within range and NA otherwise
-#' @export
-checkDate <- function(date, earliestDate = -Inf, latestDate = Inf) {
-
-  check <- 1 * (date >= earliestDate) * (date <= latestDate)
-  check[check == 0] <- NA
-
-  return (check)
-
-}
-
 

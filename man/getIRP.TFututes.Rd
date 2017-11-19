@@ -5,18 +5,18 @@
 \title{Calculate implied repo rate for TFutures object}
 \usage{
 getIRP.TFututes(fut, futPrice, bondPrice, tradeDate = Sys.Date(),
-  bond = A(fut, "ctd"))
+  bond = fut$ctd)
 }
 \arguments{
-\item{fut}{TFutures object (can be a list)}
+\item{fut}{TFutures object}
 
-\item{futPrice}{TFutures price in percentage (can be a vector)}
+\item{futPrice}{TFutures price in percentage}
 
-\item{bondPrice}{CTD bond clean price in percentage (can be a vector)}
+\item{bondPrice}{CTD bond clean price in percentage}
 
-\item{tradeDate}{Calculation date (can be a vector)}
+\item{tradeDate}{Calculation date}
 
-\item{bond}{FIBond object (can be a list)}
+\item{bond}{FIBond object}
 }
 \value{
 Implied repo rate for TFutures object in percentage

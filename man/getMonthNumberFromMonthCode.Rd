@@ -7,7 +7,7 @@
 getMonthNumberFromMonthCode(code)
 }
 \arguments{
-\item{code}{Month code (can be a vector)}
+\item{code}{Month code}
 }
 \value{
 Month number

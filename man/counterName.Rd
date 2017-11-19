@@ -7,14 +7,11 @@
 counterName(counter)
 }
 \arguments{
-\item{counter}{Counter as a number (can be a vector)}
+\item{counter}{Counter as a number}
 }
 \value{
 Name
 }
 \description{
 Return name of day counter
-}
-\examples{
-counter(0)
 }

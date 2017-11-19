@@ -7,7 +7,7 @@
 getFuturesCodeFromTicker(ticker)
 }
 \arguments{
-\item{ticker}{Ticker (can be a vector)}
+\item{ticker}{Ticker}
 }
 \value{
 Contract type code

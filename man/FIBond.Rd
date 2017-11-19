@@ -7,7 +7,7 @@
 FIBond(file = NA, dateFormat = "mdy", sep = ",")
 }
 \arguments{
-\item{file}{Name of csv file that contains bond attributes (can be a vector).
+\item{file}{Name of csv file that contains bond attributes.
 Heads should have names of attributes.
 File should be located in fval_data folder. Just name without extension}
 

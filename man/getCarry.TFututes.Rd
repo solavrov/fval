@@ -5,16 +5,16 @@
 \title{Return percentage carry of FIBond till delivery date of TFutures}
 \usage{
 getCarry.TFututes(fut, bondPrice, repoRate, tradeDate = Sys.Date(),
-  bond = A(fut, "ctd"))
+  bond = fut$ctd)
 }
 \arguments{
-\item{fut}{TFutures object (can be a list)}
+\item{fut}{TFutures object}
 
-\item{bondPrice}{FIBond price in percentage (can be a vector)}
+\item{bondPrice}{FIBond price in percentage}
 
-\item{repoRate}{FIBond repo rate in percentage (can be a vector)}
+\item{repoRate}{FIBond repo rate in percentage}
 
-\item{tradeDate}{Trade date (can be a vector)}
+\item{tradeDate}{Trade date}
 
 \item{bond}{FIBond object}
 }

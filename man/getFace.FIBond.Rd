@@ -7,9 +7,9 @@
 getFace.FIBond(bond, settleDate = nextBizDay())
 }
 \arguments{
-\item{bond}{FIBond object (can be a list)}
+\item{bond}{FIBond object}
 
-\item{settleDate}{Calculation date (can be a vector)}
+\item{settleDate}{Calculation date}
 }
 \value{
 Current face amount

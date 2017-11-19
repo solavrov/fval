@@ -7,11 +7,11 @@
 getBasis.TFutures(fut, futPrice, bondPrice)
 }
 \arguments{
-\item{fut}{TFutures object (can be a list)}
+\item{fut}{TFutures object}
 
-\item{futPrice}{TFutures price in percentage (can be a vector)}
+\item{futPrice}{TFutures price in percentage}
 
-\item{bondPrice}{FIBond price in percentage (can be a vector)}
+\item{bondPrice}{FIBond price in percentage}
 }
 \value{
 Basis in percentage of FIBond face
