@@ -146,8 +146,8 @@ TFutures <- function(ticker = NA,
         fut$notional <- getNotional.TFutures(ticker)
 
         if (ctdFile == "") {
-          ctdFile <- paste0("ctd_", tolower(ticker))
-          path <- paste0("fval_data/", ctdFile, ".csv")
+          ctdFile <- paste0("ctd_", ticker)
+          path <- paste0("fval_data/t_fut/", ctdFile, ".csv")
           if (!file.exists(path)) {
             ctdFile <- ""
             cat("WARNING!", path, "is not found\n")
@@ -160,7 +160,7 @@ TFutures <- function(ticker = NA,
 
     }
 
-    if (ctdFile != "") fut$ctd <- FIBond(ctdFile, dateFormat)
+    if (ctdFile != "") fut$ctd <- FIBond(paste0("t_fut/", ctdFile))
 
     return (fut)
 

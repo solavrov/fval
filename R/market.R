@@ -7,7 +7,7 @@
 #' @export
 loadMarket <- function(file = "market") {
 
-  file <- paste0("fval_data/", file, ".csv")
+  file <- paste0("fval_data/market/", file, ".csv")
 
   m <- NA
 
@@ -15,7 +15,7 @@ loadMarket <- function(file = "market") {
     m <- read.csv(file)
     m$DATE <- as.Date(m$DATE)
   } else {
-    cat("ERROR!", file, "is not found\n")
+    stop("ERROR! ", file, " is not found")
   }
 
   return (m)

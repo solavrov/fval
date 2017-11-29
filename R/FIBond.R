@@ -87,7 +87,7 @@ FIBond <- function(file = NA,
       }
 
     }  else {
-      cat("ERROR!", file, "is not found\n")
+      stop("ERROR! ", file, " is not found")
 
     }
 
