@@ -71,6 +71,18 @@ countDays <- function(startDate, endDate, dayCounter) {
 }
 
 
+#' Return date object
+#'
+#' @param date Date as a string
+#' @param format dmy, mdy, ymd
+#'
+#' @return Date object
+#' @export
+parseDate <- function(date, format) {
+  as.Date(lubridate::parse_date_time(as.character(date), format))
+}
+
+
 #' Return next business day using RQuantLib calendars
 #'
 #' @param date Date

@@ -22,9 +22,7 @@
 #'
 #' @return FIBond object
 #' @export
-FIBond <- function(file = NA,
-                   dateFormat = "mdy",
-                   sep = ",") {
+FIBond <- function(file = NA, dateFormat = "mdy", sep = ",") {
 
   bond <- list()
   class(bond) <- "FIBond"
@@ -58,11 +56,8 @@ FIBond <- function(file = NA,
         bond$isin <- as.character(df$isin[1])
       if (!is.null(df$currency))
         bond$currency <- as.character(df$currency[1])
-
       if (!is.null(df$issueDate))
-        bond$issueDate <-
-          as.Date(lubridate::parse_date_time(as.character(df$issueDate[1]), dateFormat))
-
+        bond$issueDate <- parseDate(df$issueDate[1], dateFormat)
       if (!is.null(df$formula))
         bond$formula <- as.character(df$formula[1])
       if (!is.null(df$dayCounter))
@@ -71,8 +66,7 @@ FIBond <- function(file = NA,
         bond$cfactor <- df$cfactor[1]
 
       if (!is.null(df$couponDates)) {
-        bond$couponDates <-
-          as.Date(lubridate::parse_date_time(as.character(df$couponDates), dateFormat))
+        bond$couponDates <- parseDate(df$couponDates, dateFormat)
         bond$maturity <- tail(bond$couponDates, 1)
         bond$couponFreq <-
           round(length(bond$couponDates) / as.numeric(bond$maturity - bond$issueDate) * 365)
