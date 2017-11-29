@@ -147,8 +147,8 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
       prevDay <- bond$issueDate
     }
 
-    period <- RQuantLib::dayCount(prevDay, nextDay, bond$dayCounter)
-    daysPassed <- RQuantLib::dayCount(prevDay, settleDate, bond$dayCounter)
+    period <- countDays(prevDay, nextDay, bond$dayCounter)
+    daysPassed <- countDays(prevDay, settleDate, bond$dayCounter)
 
     time <- daysPassed / period
 

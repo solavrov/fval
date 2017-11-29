@@ -46,6 +46,31 @@ counterName <- function(counter) {
 }
 
 
+#' Is given date a business day
+#'
+#' @param calendar Calendar name from RQuantLib
+#' @param date Date
+#'
+#' @return TRUE if business day, FALSE otherwise
+#' @export
+isBizDay <- function(calendar, date) {
+  RQuantLib::isBusinessDay(calendar, date)
+}
+
+
+#' Return number of days between two dates for a given day counter
+#'
+#' @param startDate Start date
+#' @param endDate End date
+#' @param dayCounter Day counter
+#'
+#' @return
+#' @export
+countDays <- function(startDate, endDate, dayCounter) {
+  RQuantLib::dayCount(startDate, endDate, dayCounter)
+}
+
+
 #' Return next business day using RQuantLib calendars
 #'
 #' @param date Date
@@ -57,7 +82,7 @@ nextBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 
   repeat {
       date <- date + 1
-      if (RQuantLib::isBusinessDay(calendar, date)) break
+      if (isBizDay(calendar, date)) break
     }
 
   return (date)
@@ -76,7 +101,7 @@ prevBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 
   repeat {
       date <- date - 1
-      if (RQuantLib::isBusinessDay(calendar, date)) break
+      if (isBizDay(calendar, date)) break
   }
 
   return (date)
