@@ -64,7 +64,7 @@ isBizDay <- function(calendar, date) {
 #' @param endDate End date
 #' @param DAY_COUNTER Day counter
 #'
-#' @return
+#' @return Number of days between two dates for a given day counter
 #' @export
 countDays <- function(startDate, endDate, dayCounter) {
   RQuantLib::dayCount(startDate, endDate, dayCounter)

@@ -25,11 +25,32 @@ loadMarket <- function(file = "market") {
     m <- read.csv(file)
     m$DATE <- as.Date(m$DATE)
   } else {
-    stop("ERROR! ", file, " is not found")
+    stop("File ", file, " is not found")
   }
 
   return (m)
 
 }
+
+
+# showFIBonds <- function() {
+#
+#   name <- character()
+#   isin <- character()
+#   issueDate <-
+#
+#   files <- list.files()
+#   files <- substr(files, 1, nchar(files) - 4)
+#
+#   for (i in 1:length(files)) {
+#
+#     b <- FIBond(files[i])
+#
+#
+#   }
+#
+#
+# }
+
 
 

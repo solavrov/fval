@@ -46,6 +46,7 @@ FIBond <- function(file = NA, folder = FIBONDS_FOLDER, dateFormat = "mdy", sep =
   }
 
   bond$name <- get(df, "name", asChar = TRUE)[1]
+  bond$risk <- get(df, "risk", asChar = TRUE)[1]
   bond$isin <- get(df, "isin", asChar = TRUE)[1]
   bond$currency <- get(df, "currency", asChar = TRUE)[1]
   bond$issueDate <- parseDate(df$issueDate[1], dateFormat)
@@ -74,6 +75,7 @@ FIBond <- function(file = NA, folder = FIBONDS_FOLDER, dateFormat = "mdy", sep =
 print.FIBond <- function(bond) {
 
   cat("name:         ", bond$name, "\n")
+  cat("risk:         ", bond$risk, "\n")
   cat("isin:         ", bond$isin, "\n")
   cat("currency:     ", bond$currency, "\n")
   cat("initialFace:  ", bond$initialFace, "\n")

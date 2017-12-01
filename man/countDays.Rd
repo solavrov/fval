@@ -13,6 +13,9 @@ countDays(startDate, endDate, dayCounter)
 
 \item{DAY_COUNTER}{Day counter}
 }
+\value{
+Number of days between two dates for a given day counter
+}
 \description{
 Return number of days between two dates for a given day counter
 }
