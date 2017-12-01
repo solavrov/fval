@@ -1,4 +1,7 @@
 
+#' @export
+TFUTURES_FOLDER <- "fval_data/tfutures/"
+
 #' Return contract type by TFutures ticker
 #'
 #' @param ticker Ticker
