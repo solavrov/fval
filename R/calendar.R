@@ -2,7 +2,7 @@
 #' List of RQuantLib day counters
 #'
 #' @export
-dayCounter <- list(
+DAY_COUNTER <- list(
   Actual360 = 0,
   Actual360FixEd = 1,
   ActualActual = 2,
@@ -62,7 +62,7 @@ isBizDay <- function(calendar, date) {
 #'
 #' @param startDate Start date
 #' @param endDate End date
-#' @param dayCounter Day counter
+#' @param DAY_COUNTER Day counter
 #'
 #' @return
 #' @export
@@ -79,7 +79,10 @@ countDays <- function(startDate, endDate, dayCounter) {
 #' @return Date object
 #' @export
 parseDate <- function(date, format) {
-  as.Date(lubridate::parse_date_time(as.character(date), format))
+  if (is.na(date) || is.null(date))
+    return (NA)
+  else
+    return (as.Date(lubridate::parse_date_time(as.character(date), format)))
 }
 
 

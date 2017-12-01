@@ -5,20 +5,52 @@
 #'
 #' @return Contract type
 #' @export
-getContractType.TFutures <- function(ticker) {
+getType.TFutures <- function(ticker) {
 
-  switch(
-    getFuturesCodeFromTicker(ticker),
-    TU = "2Y TNote",
-    "3Y" = "3Y TNote",
-    FV = "5Y TNote",
-    TY = "10Y TNote",
-    UXY = "Ultra 10Y TNote",
-    US = "TBond",
-    WN = "Ultra TBond",
-    NA
-  )
+  code <- getCode.Futures(ticker)
 
+  if (is.na(code))
+    type <- NA
+  else
+    type <- switch(
+      code,
+      TU = "2Y TNote",
+      "3Y" = "3Y TNote",
+      FV = "5Y TNote",
+      TY = "10Y TNote",
+      UXY = "Ultra 10Y TNote",
+      US = "TBond",
+      WN = "Ultra TBond",
+      NA
+    )
+
+  return (type)
+
+}
+
+
+#' Is TFutures ticker
+#'
+#' @param ticker Ticker
+#'
+#' @return TRUE if it is a ticker, FALSE otherwise
+#' @export
+isTicker.TFutures <- function(ticker) {
+  isTicker.Futures(ticker) && !is.na(getType.TFutures(ticker))
+}
+
+
+#' Check TFutures ticker
+#'
+#' @param ticker Ticker
+#'
+#' @return Ticker if it is a ticker, NA otherwise
+#' @export
+checkTicker.TFutures <- function(ticker) {
+  if (isTicker.TFutures(ticker))
+    return (ticker)
+  else
+    return (NA)
 }
 
 
@@ -32,15 +64,15 @@ getContractType.TFutures <- function(ticker) {
 #' @export
 getName.TFutures <- function(ticker, decade = "auto") {
 
-  name <- NA
+  type <- getType.TFutures(ticker)
 
-  type <- getContractType.TFutures(ticker)
-
-  month <- month.abb[getMonthNumberFromFuturesTicker(ticker)]
-  year <- getYearFromFuturesTicker(ticker, decade)
-  name <- paste0(type, ' ', month, '-', year)
-
-  if (is.na(type)) name <- NA
+  if (is.na(type)) {
+    name <- NA
+  } else {
+    month <- month.abb[getMonth.Futures(ticker)]
+    year <- getYear.Futures(ticker, decade)
+    name <- paste0(type, ' ', month, '-', year)
+  }
 
   return (name)
 
@@ -55,15 +87,24 @@ getName.TFutures <- function(ticker, decade = "auto") {
 #' @export
 getNotional.TFutures <- function(ticker) {
 
-  switch(getFuturesCodeFromTicker(ticker),
-         TU = 2e5,
-         "3Y" = 1e5,
-         FV = 1e5,
-         TY = 1e5,
-         UXY = 1e5,
-         US = 1e5,
-         WN = 1e5,
-         NA)
+  code <- getCode.Futures(ticker)
+
+  if (is.na(code))
+    notional <- NA
+  else
+    notional <- switch(
+      code,
+      TU = 2e5,
+      "3Y" = 1e5,
+      FV = 1e5,
+      TY = 1e5,
+      UXY = 1e5,
+      US = 1e5,
+      WN = 1e5,
+      NA
+    )
+
+  return (notional)
 
 }
 
@@ -78,30 +119,61 @@ getNotional.TFutures <- function(ticker) {
 #' @export
 getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 
-  futuresCode <- getFuturesCodeFromTicker(ticker)
+  if (isTicker.TFutures(ticker)) {
 
-  lastMonthBizDay <- lastBizDay(getMonthNumberFromFuturesTicker(ticker),
-                                getYearFromFuturesTicker(ticker, decade),
-                                calendar = "UnitedStates/GovernmentBond")
+    futuresCode <- getCode.Futures(ticker)
 
-  thirdNextMonthBizDay <- lastMonthBizDay
+    lastMonthBizDay <- lastBizDay(getMonth.Futures(ticker),
+                                  getYear.Futures(ticker, decade),
+                                  calendar = "UnitedStates/GovernmentBond")
 
-  for (i in 1:3) thirdNextMonthBizDay <-
-    nextBizDay(thirdNextMonthBizDay, calendar = "UnitedStates/GovernmentBond")
+    thirdNextMonthBizDay <- lastMonthBizDay
 
-  deliveryDate <- switch(
-    futuresCode,
-    TU = thirdNextMonthBizDay,
-    "3Y" = thirdNextMonthBizDay,
-    FV = thirdNextMonthBizDay,
-    TY = lastMonthBizDay,
-    UXY = lastMonthBizDay,
-    US = lastMonthBizDay,
-    WN = lastMonthBizDay,
-    NA
-  )
+    for (i in 1:3) thirdNextMonthBizDay <-
+      nextBizDay(thirdNextMonthBizDay, calendar = "UnitedStates/GovernmentBond")
+
+    deliveryDate <- switch(
+      futuresCode,
+      TU = thirdNextMonthBizDay,
+      "3Y" = thirdNextMonthBizDay,
+      FV = thirdNextMonthBizDay,
+      TY = lastMonthBizDay,
+      UXY = lastMonthBizDay,
+      US = lastMonthBizDay,
+      WN = lastMonthBizDay,
+      NA
+    )
+
+  } else {
+
+    deliveryDate <- NA
+
+  }
 
   return (deliveryDate)
+
+}
+
+
+#' Return FIBond object of CTD for a given TFutures
+#'
+#' @param ticker Ticker of TFutures
+#' @param file Filename of CTD without extension
+#'
+#' @return FIBond object of CTD
+#' @export
+loadCTD.TFutures <- function(ticker, file = "") {
+
+  if (file != "")
+    ctd <- FIBond(file)
+  else if (isTicker.TFutures(ticker))
+    ctd <- FIBond(paste0("ctd_", ticker), folder = TFUTURES_FOLDER)
+  else {
+    if (!is.na(ticker)) stop("Ticker ", ticker, " is wrong")
+    ctd <- NA
+  }
+
+  return (ctd)
 
 }
 
@@ -121,46 +193,16 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 #'
 #' @return TFutures object
 #' @export
-TFutures <- function(ticker = NA,
-                     ctdFile = "",
-                     dateFormat = "mdy",
-                     decade = "auto") {
+TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "auto") {
 
     fut <- list()
     class(fut) <- "TFutures"
 
-    #default attributes
-    fut$name <- NA
-    fut$ticker <- NA
-    fut$notional <- NA
-    fut$deliveryDate <- NA
-    fut$ctd <- NA
-
-    #attributes by ticker
-    if (!is.na(ticker))  {
-
-      if (!is.na(fut$name <- getName.TFutures(ticker, decade))) {
-
-        fut$ticker <- ticker
-        fut$deliveryDate <- getDeliveryDate.TFutures(ticker, decade)
-        fut$notional <- getNotional.TFutures(ticker)
-
-        if (ctdFile == "") {
-          ctdFile <- paste0("ctd_", ticker)
-          path <- paste0("fval_data/t_fut/", ctdFile, ".csv")
-          if (!file.exists(path)) {
-            ctdFile <- ""
-            cat("WARNING!", path, "is not found\n")
-          }
-        }
-
-      } else {
-        cat("WARNING! Ticker", ticker, "is wrong!\n")
-      }
-
-    }
-
-    if (ctdFile != "") fut$ctd <- FIBond(paste0("t_fut/", ctdFile))
+    fut$name <- getName.TFutures(ticker, decade)
+    fut$ticker <- checkTicker.TFutures(ticker)
+    fut$notional <- getNotional.TFutures(ticker)
+    fut$deliveryDate <- getDeliveryDate.TFutures(ticker)
+    fut$ctd <- loadCTD.TFutures(ticker, ctdFile)
 
     return (fut)
 

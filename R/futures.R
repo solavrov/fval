@@ -1,14 +1,14 @@
 
-#' Return month number for a given month futures code
+#' Return month number for a given month code
 #'
 #' @param code Month code
 #'
 #' @return Month number
 #' @export
-getMonthNumberFromMonthCode <- function(code) {
+month.Futures <- function(letter) {
 
   switch(
-    code,
+    letter,
     F = 1,
     G = 2,
     H = 3,
@@ -27,16 +27,62 @@ getMonthNumberFromMonthCode <- function(code) {
 }
 
 
+#' Return month code for a given month number
+#'
+#' @param month Month number
+#'
+#' @return Month code
+#' @export
+letter.Futures <- function(month) {
+
+  switch(
+    as.character(month),
+    "1" = "F",
+    "2" = "G",
+    "3" = "H",
+    "4" = "J",
+    "5" = "K",
+    "6" = "M",
+    "7" = "N",
+    "8" = "Q",
+    "9" = "U",
+    "10" = "V",
+    "11" = "X",
+    "12" = "Z",
+    NA
+  )
+
+}
+
+
+#' Is Futures ticker
+#'
+#' @param ticker Ticker
+#'
+#' @return TRUE if it is a ticker, FALSE otherwise
+#' @export
+isTicker.Futures <- function(ticker) {
+
+  year <- as.numeric(substr(ticker, nchar(ticker), nchar(ticker)))
+  month <- month.Futures(substr(ticker, nchar(ticker) - 1, nchar(ticker) - 1))
+
+  return (!is.na(year) && !is.na(month))
+
+}
+
+
 #' Take expiration month number from futures ticker
 #'
 #' @param ticker Ticker
 #'
 #' @return Expiration month number
 #' @export
-getMonthNumberFromFuturesTicker <- function(ticker) {
+getMonth.Futures <- function(ticker) {
 
-  code <- substr(ticker, nchar(ticker) - 1, nchar(ticker) - 1)
-  month <- getMonthNumberFromMonthCode(code)
+  if (isTicker.Futures(ticker))
+    month <- month.Futures(substr(ticker, nchar(ticker) - 1, nchar(ticker) - 1))
+  else
+    month <- NA
 
   return (month)
 
@@ -51,26 +97,34 @@ getMonthNumberFromFuturesTicker <- function(ticker) {
 #'
 #' @return Contract's year
 #' @export
-getYearFromFuturesTicker <- function(ticker, decade = "auto") {
+getYear.Futures <- function(ticker, decade = "auto") {
 
-  sysYear <- as.numeric(substr(Sys.Date(), 1, 4))
+  if (isTicker.Futures(ticker)) {
 
-  presYear <- 10 * as.numeric(substr(Sys.Date(), 1, 3)) +
-    as.numeric(substr(ticker, nchar(ticker), nchar(ticker)))
+    sysYear <- as.numeric(substr(Sys.Date(), 1, 4))
 
-  if (presYear >= sysYear)
-    autoYear <- presYear
-  else
-    autoYear <- presYear + 10
+    presYear <- 10 * as.numeric(substr(Sys.Date(), 1, 3)) +
+      as.numeric(substr(ticker, nchar(ticker), nchar(ticker)))
 
-  year <- switch(
-    decade,
-    "auto" = autoYear,
-    "pres" = presYear,
-    "prev" = presYear - 10,
-    "next" = presYear + 10,
-    NA
-  )
+    if (presYear >= sysYear)
+      autoYear <- presYear
+    else
+      autoYear <- presYear + 10
+
+    year <- switch(
+      decade,
+      "auto" = autoYear,
+      "pres" = presYear,
+      "prev" = presYear - 10,
+      "next" = presYear + 10,
+      NA
+    )
+
+  } else {
+
+    year <- NA
+
+  }
 
   return (year)
 
@@ -83,9 +137,14 @@ getYearFromFuturesTicker <- function(ticker, decade = "auto") {
 #'
 #' @return Contract type code
 #' @export
-getFuturesCodeFromTicker <- function(ticker) {
+getCode.Futures <- function(ticker) {
 
-  substr(ticker, 1, nchar(ticker) - 2)
+  if (isTicker.Futures(ticker))
+    code <- substr(ticker, 1, nchar(ticker) - 2)
+  else
+    code <- NA
+
+  return (code)
 
 }
 

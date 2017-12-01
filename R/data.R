@@ -1,4 +1,14 @@
 
+#' @export
+FIBONDS_FOLDER <- "fval_data/fibonds/"
+
+#' @export
+TFUTURES_FOLDER <- "fval_data/tfutures/"
+
+#' @export
+MARKET_FOLDER <- "fval_data/market/"
+
+
 #' Load historical market prices and rates
 #'
 #' @param file File name of csv data file without extension
@@ -7,7 +17,7 @@
 #' @export
 loadMarket <- function(file = "market") {
 
-  file <- paste0("fval_data/market/", file, ".csv")
+  file <- paste0(MARKET_FOLDER, file, ".csv")
 
   m <- NA
 
@@ -21,4 +31,5 @@ loadMarket <- function(file = "market") {
   return (m)
 
 }
+
 

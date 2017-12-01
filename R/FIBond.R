@@ -16,76 +16,49 @@
 #'
 #' @param file Name of csv file that contains bond attributes.
 #' Heads should have names of attributes.
-#' File should be located in fval_data folder. Just name without extension
+#' File should be located in FIBONDS_FOLDER. Just name without extension
 #' @param dateFormat File date format from lubridate package i.e. "dmy", "mdy" etc
 #' @param sep Separator i.e. comma, semicolon or else
 #'
 #' @return FIBond object
 #' @export
-FIBond <- function(file = NA, dateFormat = "mdy", sep = ",") {
+FIBond <- function(file = NA, folder = FIBONDS_FOLDER, dateFormat = "mdy", sep = ",") {
 
   bond <- list()
   class(bond) <- "FIBond"
 
-  #default attributes
-  bond$name <- NA
-  bond$isin <- NA
-  bond$currency <- NA
-  bond$initialFace <- NA
-  bond$couponFreq <- NA
-  bond$issueDate <- NA
-  bond$maturity <- NA
-  bond$formula <- "STD"
-  bond$dayCounter <- dayCounter$ActualActual
-  bond$cfactor <- NA
+  if (is.na(file))
+    df <- data.frame()
+  else
+    df <- read.csv(paste0(folder, file, ".csv"), sep = sep)
 
-  bond$couponDates <- NA
-  bond$couponAmounts <- NA
-  bond$faceAmounts <- NA
+  get <- function(df, name, asChar = FALSE, ifNull = NA) {
 
-  if (!is.na(file)) {
+    result <- df[[name]]
 
-    file <- paste0("fval_data/", file, ".csv")
+    if(is.null(result))
+      result <- ifNull
+    else if (asChar)
+      result <- as.character(result)
 
-    if (file.exists(file)) {
-      df <- read.csv(file, sep = sep)
-
-      if (!is.null(df$name))
-        bond$name <- as.character(df$name[1])
-      if (!is.null(df$isin))
-        bond$isin <- as.character(df$isin[1])
-      if (!is.null(df$currency))
-        bond$currency <- as.character(df$currency[1])
-      if (!is.null(df$issueDate))
-        bond$issueDate <- parseDate(df$issueDate[1], dateFormat)
-      if (!is.null(df$formula))
-        bond$formula <- as.character(df$formula[1])
-      if (!is.null(df$dayCounter))
-        bond$dayCounter <- df$dayCounter[1]
-      if (!is.null(df$cfactor))
-        bond$cfactor <- df$cfactor[1]
-
-      if (!is.null(df$couponDates)) {
-        bond$couponDates <- parseDate(df$couponDates, dateFormat)
-        bond$maturity <- tail(bond$couponDates, 1)
-        bond$couponFreq <-
-          round(length(bond$couponDates) / as.numeric(bond$maturity - bond$issueDate) * 365)
-      }
-
-      if (!is.null(df$couponAmounts))
-        bond$couponAmounts <- df$couponAmounts
-
-      if (!is.null(df$faceAmounts)) {
-        bond$faceAmounts <- df$faceAmounts
-        bond$initialFace <- sum(df$faceAmounts)
-      }
-
-    }  else {
-      stop("ERROR! ", file, " is not found")
-
-    }
+    return (result)
 
   }
+
+  bond$name <- get(df, "name", asChar = TRUE)[1]
+  bond$isin <- get(df, "isin", asChar = TRUE)[1]
+  bond$currency <- get(df, "currency", asChar = TRUE)[1]
+  bond$issueDate <- parseDate(df$issueDate[1], dateFormat)
+  bond$formula <- get(df, "formula", asChar = TRUE, ifNull = "STD")[1]
+  bond$dayCounter <- get(df, "dayCounter", ifNull = DAY_COUNTER$ActualActual)[1]
+  bond$cfactor <- get(df, "cfactor")[1]
+  bond$couponDates <- parseDate(df$couponDates, dateFormat)
+  bond$maturity <- tail(bond$couponDates, 1)
+  bond$couponFreq <- round(length(bond$couponDates) /
+                             as.numeric(bond$maturity - bond$issueDate) * 365)
+  bond$couponAmounts <- get(df, "couponAmounts")
+  bond$faceAmounts <- get(df, "faceAmounts")
+  bond$initialFace <- sum(bond$faceAmounts)
 
   return (bond)
 
