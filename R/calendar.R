@@ -79,10 +79,7 @@ countDays <- function(startDate, endDate, dayCounter) {
 #' @return Date object
 #' @export
 parseDate <- function(date, format) {
-  if (is.na(date) || is.null(date))
-    return (NA)
-  else
-    return (as.Date(lubridate::parse_date_time(as.character(date), format)))
+  as.Date(lubridate::parse_date_time(as.character(date), format))
 }
 
 

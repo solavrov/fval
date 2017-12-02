@@ -53,11 +53,11 @@ FIBond <- function(file = NA, folder = FIBONDS_FOLDER, dateFormat = "mdy", sep =
   bond$risk <- get(df, "risk", asChar = TRUE)[1]
   bond$isin <- get(df, "isin", asChar = TRUE)[1]
   bond$currency <- get(df, "currency", asChar = TRUE)[1]
-  bond$issueDate <- parseDate(df$issueDate[1], dateFormat)
+  bond$issueDate <- parseDate(get(df,"issueDate")[1], dateFormat)
   bond$formula <- get(df, "formula", asChar = TRUE, ifNull = "STD")[1]
   bond$dayCounter <- get(df, "dayCounter", ifNull = DAY_COUNTER$ActualActual)[1]
   bond$cfactor <- get(df, "cfactor")[1]
-  bond$couponDates <- parseDate(df$couponDates, dateFormat)
+  bond$couponDates <- parseDate(get(df,"couponDates"), dateFormat)
   bond$maturity <- tail(bond$couponDates, 1)
   bond$couponFreq <- round(length(bond$couponDates) /
                              as.numeric(bond$maturity - bond$issueDate) * 365)
@@ -100,37 +100,34 @@ print.FIBond <- function(bond) {
 }
 
 
-#' Show prime attributes of all bonds from a given folder
+#' Show attributes of all bonds from a given folder
 #'
+#' @param attr Vector of attributes' names
 #' @param folder Folder
 #'
 #' @return Data frame with bonds' attributes
 #' @export
-showFolder.FIBond <- function(folder = FIBONDS_FOLDER) {
+dir.FIBond <- function(attr = c("isin", "name", "risk", "issueDate", "maturity"),
+                              folder = FIBONDS_FOLDER) {
 
-  name <- character()
-  risk <- character()
-  isin <- character()
-  issueDate <- character()
-  maturity <- character()
+  l <- vector("list", length(attr))
+  names(l) <- attr
 
   files <- list.files(folder)
   files <- substr(files, 1, nchar(files) - 4)
 
   for (i in 1:length(files)) {
     b <- FIBond(files[i], folder = folder)
-    name[i] <- b$name
-    risk[i] <- b$risk
-    isin[i] <- b$isin
-    issueDate[i] <- as.character(b$issueDate)
-    maturity[i] <- as.character(b$maturity)
+    for (j in 1:length(attr)) {
+      if (i == 1)
+        l[[j]] <- b[[attr[j]]]
+      else
+        l[[j]][i] <- b[[attr[j]]]
+    }
   }
 
-  issueDate <- as.Date(issueDate)
-  maturity <- as.Date(maturity)
-
-  df <- data.frame(name = name, risk = risk, isin = isin,
-                   issueDate = issueDate, maturity = maturity)
+  df <- data.frame(l)
+  names(df) <- attr
 
   return (df)
 
