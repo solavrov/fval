@@ -28,42 +28,56 @@ FIBONDS_FOLDER <- "fval_data/fibonds/"
 #' @export
 FIBond <- function(file = NA, folder = FIBONDS_FOLDER, dateFormat = "mdy", sep = ",") {
 
-  bond <- list()
-  class(bond) <- "FIBond"
-
-  if (is.na(file))
+  if (is.na(file)) {
+    toBuild <- TRUE
     df <- data.frame()
-  else
+  } else if (file.exists(paste0(folder, file, ".csv"))) {
+    toBuild <- TRUE
     df <- read.csv(paste0(folder, file, ".csv"), sep = sep)
-
-  get <- function(df, name, asChar = FALSE, ifNull = NA) {
-
-    result <- df[[name]]
-
-    if(is.null(result))
-      result <- ifNull
-    else if (asChar)
-      result <- as.character(result)
-
-    return (result)
-
+  } else {
+    toBuild <- FALSE
+    warning("FIBond's file does not exist")
   }
 
-  bond$name <- get(df, "name", asChar = TRUE)[1]
-  bond$risk <- get(df, "risk", asChar = TRUE)[1]
-  bond$isin <- get(df, "isin", asChar = TRUE)[1]
-  bond$currency <- get(df, "currency", asChar = TRUE)[1]
-  bond$issueDate <- parseDate(get(df,"issueDate")[1], dateFormat)
-  bond$formula <- get(df, "formula", asChar = TRUE, ifNull = "STD")[1]
-  bond$dayCounter <- get(df, "dayCounter", ifNull = DAY_COUNTER$ActualActual)[1]
-  bond$cfactor <- get(df, "cfactor")[1]
-  bond$couponDates <- parseDate(get(df,"couponDates"), dateFormat)
-  bond$maturity <- tail(bond$couponDates, 1)
-  bond$couponFreq <- round(length(bond$couponDates) /
-                             as.numeric(bond$maturity - bond$issueDate) * 365)
-  bond$couponAmounts <- get(df, "couponAmounts")
-  bond$faceAmounts <- get(df, "faceAmounts")
-  bond$initialFace <- sum(bond$faceAmounts)
+  if (toBuild) {
+
+    bond <- list()
+    class(bond) <- "FIBond"
+
+    get <- function(df, name, asChar = FALSE, ifNull = NA) {
+
+      result <- df[[name]]
+
+      if(is.null(result))
+        result <- ifNull
+      else if (asChar)
+        result <- as.character(result)
+
+      return (result)
+
+    }
+
+    bond$name <- get(df, "name", asChar = TRUE)[1]
+    bond$risk <- get(df, "risk", asChar = TRUE)[1]
+    bond$isin <- get(df, "isin", asChar = TRUE)[1]
+    bond$currency <- get(df, "currency", asChar = TRUE)[1]
+    bond$issueDate <- parseDate(get(df,"issueDate")[1], dateFormat)
+    bond$formula <- get(df, "formula", asChar = TRUE, ifNull = "STD")[1]
+    bond$dayCounter <- get(df, "dayCounter", ifNull = DAY_COUNTER$ActualActual)[1]
+    bond$cfactor <- get(df, "cfactor")[1]
+    bond$couponDates <- parseDate(get(df,"couponDates"), dateFormat)
+    bond$maturity <- tail(bond$couponDates, 1)
+    bond$couponFreq <- round(length(bond$couponDates) /
+                               as.numeric(bond$maturity - bond$issueDate) * 365)
+    bond$couponAmounts <- get(df, "couponAmounts")
+    bond$faceAmounts <- get(df, "faceAmounts")
+    bond$initialFace <- sum(bond$faceAmounts)
+
+  } else {
+
+    bond <- NA
+
+  }
 
   return (bond)
 
