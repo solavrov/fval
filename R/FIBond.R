@@ -28,13 +28,13 @@ FIBONDS_FOLDER <- "fval_data/fibonds/"
 #' @export
 FIBond <- function(file = NA, folder = FIBONDS_FOLDER, dateFormat = "mdy", sep = ",") {
 
-  if (is.na(file)) {
-    toBuild <- TRUE
+  toBuild <- TRUE
+
+  if (is.na(file))
     df <- data.frame()
-  } else if (file.exists(paste0(folder, file, ".csv"))) {
-    toBuild <- TRUE
-    df <- read.csv(paste0(folder, file, ".csv"), sep = sep)
-  } else {
+  else if (file.exists(path <- paste0(folder, file, ".csv")))
+    df <- read.csv(path, sep = sep)
+  else {
     toBuild <- FALSE
     warning("FIBond's file does not exist")
   }
