@@ -4,8 +4,8 @@
 \alias{dir.FIBond}
 \title{Show attributes of all bonds from a given folder}
 \usage{
-dir.FIBond(attr = c("isin", "name", "risk", "issueDate", "maturity"),
-  folder = FIBONDS_FOLDER)
+dir.FIBond(attr = c("name", "isin", "risk", "issueDate", "maturity"),
+  folder = FIBONDS_FOLDER, showFiles = TRUE)
 }
 \arguments{
 \item{attr}{Vector of attributes' names}
