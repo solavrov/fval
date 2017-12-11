@@ -122,7 +122,7 @@ print.FIBond <- function(bond) {
 #' @return Data frame with bonds' attributes
 #' @export
 dir.FIBond <- function(attr = c("name", "isin", "risk", "issueDate", "maturity"),
-                       folder = FIBONDS_FOLDER, showFiles = TRUE) {
+                       folder = FIBONDS_FOLDER) {
 
   files <- list.files(folder)
   files <- substr(files, 1, nchar(files) - 4)
@@ -142,9 +142,7 @@ dir.FIBond <- function(attr = c("name", "isin", "risk", "issueDate", "maturity")
 
   df <- data.frame(l)
   names(df) <- attr
-
-  if (showFiles)
-    df <- data.frame(list(fileName = files), df)
+  df <- data.frame(list(fileName = files), df)
 
   return (df)
 

@@ -212,6 +212,24 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
   }
 
 
+
+#' Show attributes of all ctd bonds in TFUTURES_FOLDER
+#'
+#' @param attr Vector of attributes' names
+#'
+#' @return Data frame with bonds' attributes
+#' @export
+dir.TFutures <- function(attr = c("name", "isin", "issueDate", "maturity")) {
+
+  df <- dir.FIBond(attr, TFUTURES_FOLDER)
+  l <- list(futures = toupper(substr(df[[1]], 5, 8)))
+  df <- data.frame(df[1], l, df[-1])
+
+  return (df)
+
+}
+
+
 #' Return value of TFutures contract
 #'
 #' @param fut TFutures object
