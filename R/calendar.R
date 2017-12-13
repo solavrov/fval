@@ -144,6 +144,18 @@ nextMonth <- function(month, year) {
 }
 
 
+#' Return date of first day for a given month and year
+#'
+#' @param month Month number
+#' @param year Year
+#'
+#' @return Date of first day for a given month and year
+#' @export
+firstDay <- function(month, year) {
+  as.Date(paste0(year, '-', month, '-', '01'))
+}
+
+
 #' Return date of last business day for a given month and year
 #'
 #' @param month Month number
@@ -153,17 +165,9 @@ nextMonth <- function(month, year) {
 #' @return Date of last business day of a given month and year
 #' @export
 lastBizDay <- function(month, year, calendar = "WeekendsOnly") {
-
     prevBizDay(
-      as.Date(
-        paste0(nextMonth(month, year)$year,
-               '-',
-               nextMonth(month, year)$month,
-               '-',
-               '01')
-        ),
+      firstDay(nextMonth(month, year)$month, nextMonth(month, year)$year),
       calendar)
-
 }
 
 
@@ -176,11 +180,6 @@ lastBizDay <- function(month, year, calendar = "WeekendsOnly") {
 #' @return Date of first business day of a given month and year
 #' @export
 firstBizDay <- function(month, year, calendar = "WeekendsOnly") {
-
-  nextBizDay(prevBizDay(
-    as.Date(paste0(year, '-', month, '-', '01')),
-    calendar)
-  )
-
+  nextBizDay(prevBizDay(firstDay(month, year), calendar))
 }
 
