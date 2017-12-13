@@ -195,7 +195,7 @@ getBondTerm.TFutures <- function(maturity, ticker, decade = "auto") {
     "3Y" = "month",
     FV = "month",
     TY = "quarter",
-    UXY = "quarter",
+    UXY = "month",
     US = "quarter",
     WN = "quarter",
     NA
@@ -203,6 +203,8 @@ getBondTerm.TFutures <- function(maturity, ticker, decade = "auto") {
 
   term <- roundSpan(firstDate, maturity, roundBy = roundBy) /
     ((roundBy == "month") * 12 + (roundBy == "quarter") * 4)
+
+  return (term)
 
 }
 
@@ -231,15 +233,51 @@ getCFactor.TFutures <- function(bond, ticker, decade = "auto") {
 }
 
 
-# isFromBasket <- function(issueDate, maturity, ticker, decade = "auto") {
-#
-#   firstDate <- getFirstDay.TFutures(ticker, decade)
-#
-#   termIssue <- roundSpan(issueDatem maturity)
-#
-#   termFirstDay <- getBondTerm.TFutures()
-#
-# }
+#' Return TRUE if FIBond is form basket of TFutures
+#'
+#' @param issueDate Issue date of FIBond
+#' @param maturity Maturity date of FIBond
+#' @param ticker Ticker of TFutures
+#' @param decade Decade that can be "auto" - default value, "pres" - present decade,
+#' "prev" - previous decade, "next" - next decade
+#'
+#' @return TRUE if FIBond is form basket of TFutures, otherwise FALSE
+#' @export
+isFromBasket <- function(issueDate, maturity, ticker, decade = "auto") {
+
+  ti <- roundSpan(issueDate, maturity)
+  tf <- getBondTerm.TFutures(maturity, ticker, decade) * 12
+
+  answer <-
+    switch(
+     getCode.Futures(ticker),
+     TU   = (ti <= 63)  && (tf >= 21)   && (tf <= 24),
+     "3Y" = (ti <= 63)  && (tf >= 33)   && (tf <= 36),
+     FV   = (ti <= 63)  && (tf >= 50),
+     TY   = (ti <= 120) && (tf >= 78),
+     UXY  = (ti <= 120) && (tf >= 113),
+     US   =                (tf >= 180)  && (tf <= 300),
+     WN   =                (tf >= 300),
+     NA)
+
+  return (answer)
+
+}
+
+
+#' Return TRUE if FIBond is form basket of TFutures
+#'
+#' @param bond FIBond object
+#' @param ticker Ticker of TFutures
+#' @param decade Decade that can be "auto" - default value, "pres" - present decade,
+#' "prev" - previous decade, "next" - next decade
+#'
+#' @return TRUE if FIBond is form basket of TFutures, otherwise FALSE
+#' @export
+isFromBasket2 <- function(bond, ticker, decade = "auto") {
+  isFromBasket(bond$issueDate, bond$maturity, ticker, decade)
+}
+
 
 #
 # getBasket <- function(ticker, folder = FIBONDS_FOLDER) {
