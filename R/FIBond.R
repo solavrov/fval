@@ -72,7 +72,7 @@ FIBond <- function(file = NA, folder = FIBONDS_FOLDER, dateFormat = "mdy", sep =
     bond$couponAmounts <- get(df, "couponAmounts")
     bond$faceAmounts <- get(df, "faceAmounts")
     bond$initialFace <- sum(bond$faceAmounts)
-    bond$initialCoupon <- bond$couponDates[1]
+    bond$initialCoupon <- bond$couponAmounts[1]
 
   } else {
 
@@ -98,7 +98,7 @@ print.FIBond <- function(bond) {
   cat("isin:          ", bond$isin, "\n")
   cat("currency:      ", bond$currency, "\n")
   cat("initialFace:   ", bond$initialFace, "\n")
-  cat("initialCoupon: ", bond$initialFace, "\n")
+  cat("initialCoupon: ", bond$initialCoupon, "\n")
   cat("couponFreq:    ", bond$couponFreq, "\n")
   cat("issueDate:     ", as.character(bond$issueDate), "\n")
   cat("maturity:      ", as.character(bond$maturity), "\n")
