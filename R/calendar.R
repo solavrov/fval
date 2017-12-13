@@ -183,3 +183,18 @@ firstBizDay <- function(month, year, calendar = "WeekendsOnly") {
   nextBizDay(prevBizDay(firstDay(month, year), calendar))
 }
 
+
+#' Return span between two dates in whole weeks, months, quarters or years
+#'
+#' @param startDate Start date
+#' @param endDate End date
+#' @param roundBy Round by week, month, quarter, year
+#'
+#' @return Span between two dates
+#' @export
+roundSpan <- function(startDate, endDate, roundBy = "month") {
+  length(seq(startDate, endDate, by = roundBy)) - 1
+}
+
+
+
