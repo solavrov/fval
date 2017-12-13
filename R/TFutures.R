@@ -170,10 +170,9 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 #'
 #' @return First business day
 #' @export
-getFirstBizDay.TFutures <- function(ticker, decade = "auto") {
-  firstBizDay(getMonth.Futures(ticker),
-               getYear.Futures(ticker, decade),
-               calendar = "UnitedStates/GovernmentBond")
+getFirstDay.TFutures <- function(ticker, decade = "auto") {
+  firstDay(getMonth.Futures(ticker),
+           getYear.Futures(ticker, decade))
 }
 
 
@@ -188,7 +187,7 @@ getFirstBizDay.TFutures <- function(ticker, decade = "auto") {
 #' @export
 roundTerm.TFutures <- function(bond, ticker, decade = "auto") {
 
-  firstDate <- getFirstBizDay.TFutures(ticker, decade)
+  firstDate <- getFirstDay.TFutures(ticker, decade)
 
   roundBy <- switch(
     getCode.Futures(ticker),
