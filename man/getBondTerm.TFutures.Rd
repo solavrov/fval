@@ -4,7 +4,7 @@
 \alias{getBondTerm.TFutures}
 \title{Return rounded bond's term to maturity according to TFutures rules}
 \usage{
-getBondTerm.TFutures(maturity, ticker, decade = "auto")
+getBondTerm.TFutures(maturity, ticker, decade = "auto", forCFactor = FALSE)
 }
 \arguments{
 \item{maturity}{Maturity date}

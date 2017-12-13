@@ -185,7 +185,7 @@ getFirstDay.TFutures <- function(ticker, decade = "auto") {
 #'
 #' @return Rounded bond's term in years
 #' @export
-getBondTerm.TFutures <- function(maturity, ticker, decade = "auto") {
+getBondTerm.TFutures <- function(maturity, ticker, decade = "auto", forCFactor = FALSE) {
 
   firstDate <- getFirstDay.TFutures(ticker, decade)
 
@@ -195,7 +195,7 @@ getBondTerm.TFutures <- function(maturity, ticker, decade = "auto") {
     "3Y" = "month",
     FV = "month",
     TY = "quarter",
-    UXY = "month",
+    UXY = if (forCFactor) "quarter" else "month",
     US = "quarter",
     WN = "quarter",
     NA
@@ -222,7 +222,8 @@ getCFactor.TFutures <- function(bond, ticker, decade = "auto") {
 
   cf <- round(
     getPV.TVM(TFUTURES_CF_YIELD / 2,
-              getBondTerm.TFutures(bond$maturity, ticker, decade = "auto") * 2,
+              getBondTerm.TFutures(bond$maturity, ticker,
+                                   decade = "auto", forCFactor = TRUE) * 2,
               bond$initialCoupon,
               bond$initialFace,
               TRUE) / bond$initialFace,
@@ -279,13 +280,23 @@ isFromBasket2 <- function(bond, ticker, decade = "auto") {
 }
 
 
-#
-# getBasket <- function(ticker, folder = FIBONDS_FOLDER) {
-#
-#   df <- dir.FIBond(folder = folder)[which(df$risk=="US"),]
-#
-#
-# }
+#' Return ISINs of FIBonds from basket
+#'
+#' @param ticker Ticker of TFutures
+#' @param folder FIBond's folder
+#'
+#' @return Vector os ISINs
+#' @export
+getBasket <- function(ticker, folder = FIBONDS_FOLDER) {
+
+  df <- dir.FIBond(folder = folder)
+  df <- df[which(df$risk=="US"),]
+  whichFromBasket <- which(mapply(isFromBasket, df$issueDate, df$maturity, ticker))
+  isins <- as.character(df$isin[whichFromBasket])
+
+  return (isins)
+
+}
 
 
 #' Return FIBond object of CTD for a given TFutures
