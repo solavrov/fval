@@ -222,7 +222,7 @@ getCFactor.TFutures <- function(bond, ticker, decade = "auto") {
   cf <- round(
     getPV.TVM(TFUTURES_CF_YIELD / 2,
               roundTerm.TFutures(bond, ticker, decade = "auto") * 2,
-              bond$couponAmounts[1],
+              bond$initialCoupon,
               bond$initialFace,
               TRUE) / bond$initialFace,
     4)
