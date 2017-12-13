@@ -2,6 +2,10 @@
 #' @export
 TFUTURES_FOLDER <- "fval_data/tfutures/"
 
+#' @export
+TFUTURES_CF_YIELD <- 6
+
+
 #' Return contract type by TFutures ticker
 #'
 #' @param ticker Ticker
@@ -60,7 +64,7 @@ checkTicker.TFutures <- function(ticker) {
 #' Return contract name by TFutures ticker
 #'
 #' @param ticker Ticker
-#' @param decade decade that can be "auto" - default value, "pres" - present decade,
+#' @param decade Decade that can be "auto" - default value, "pres" - present decade,
 #' "prev" - previous decade, "next" - next decade
 #'
 #' @return Contract name
@@ -115,7 +119,7 @@ getNotional.TFutures <- function(ticker) {
 #' Return model delivery date by TFutures ticker
 #'
 #' @param ticker Ticker
-#' @param decade decade that can be "auto" - default value, "pres" - present decade,
+#' @param decade Decade that can be "auto" - default value, "pres" - present decade,
 #' "prev" - previous decade, "next" - next decade
 #'
 #' @return Delivery date
@@ -154,6 +158,76 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
   }
 
   return (deliveryDate)
+
+}
+
+
+#' Return first bisness day of delivery month by TFutures ticker
+#'
+#' @param ticker Ticker
+#' @param decade Decade that can be "auto" - default value, "pres" - present decade,
+#' "prev" - previous decade, "next" - next decade
+#'
+#' @return First business day
+#' @export
+getFirstBizDay.TFutures <- function(ticker, decade = "auto") {
+  firstBizDay(getMonth.Futures(ticker),
+               getYear.Futures(ticker, decade),
+               calendar = "UnitedStates/GovernmentBond")
+}
+
+
+#' Round bond's term to maturity according to TFutures rules
+#'
+#' @param bond FIBond object
+#' @param ticker TFutures ticker
+#' @param decade Decade that can be "auto" - default value, "pres" - present decade,
+#' "prev" - previous decade, "next" - next decade
+#'
+#' @return Rounded bond's term in years
+#' @export
+roundTerm.TFutures <- function(bond, ticker, decade = "auto") {
+
+  firstDate <- getFirstBizDay.TFutures(ticker, decade)
+
+  roundBy <- switch(
+    getCode.Futures(ticker),
+    TU = "month",
+    "3Y" = "month",
+    FV = "month",
+    TY = "quarter",
+    UXY = "quarter",
+    US = "quarter",
+    WN = "quarter",
+    NA
+  )
+
+  term <- (length(seq(firstDate, bond$maturity, by = roundBy)) - 1) /
+    ((roundBy == "month") * 12 + (roundBy == "quarter") * 4)
+
+}
+
+
+#' Return covnersion factor for given FIBond and TFutures
+#'
+#' @param bond FIBond object
+#' @param ticker Ticker of TFutures
+#' @param decade Decade that can be "auto" - default value, "pres" - present decade,
+#' "prev" - previous decade, "next" - next decade
+#'
+#' @return Conversion factor
+#' @export
+getCFactor.TFutures <- function(bond, ticker, decade = "auto") {
+
+  cf <- round(
+    getPV.TVM(TFUTURES_CF_YIELD / 2,
+              roundTerm.TFutures(bond, ticker, decade = "auto") * 2,
+              bond$couponAmounts[1],
+              bond$initialFace,
+              TRUE) / bond$initialFace,
+    4)
+
+  return (cf)
 
 }
 
@@ -210,7 +284,6 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
     return (fut)
 
   }
-
 
 
 #' Show attributes of all ctd bonds in TFUTURES_FOLDER
