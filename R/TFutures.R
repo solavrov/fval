@@ -178,14 +178,14 @@ getFirstDay.TFutures <- function(ticker, decade = "auto") {
 
 #' Return rounded bond's term to maturity according to TFutures rules
 #'
-#' @param bond FIBond object
+#' @param maturity Maturity date
 #' @param ticker TFutures ticker
 #' @param decade Decade that can be "auto" - default value, "pres" - present decade,
 #' "prev" - previous decade, "next" - next decade
 #'
 #' @return Rounded bond's term in years
 #' @export
-getBondTerm.TFutures <- function(bond, ticker, decade = "auto") {
+getBondTerm.TFutures <- function(maturity, ticker, decade = "auto") {
 
   firstDate <- getFirstDay.TFutures(ticker, decade)
 
@@ -201,7 +201,7 @@ getBondTerm.TFutures <- function(bond, ticker, decade = "auto") {
     NA
   )
 
-  term <- roundSpan(firstDate, bond$maturity, roundBy = roundBy) /
+  term <- roundSpan(firstDate, maturity, roundBy = roundBy) /
     ((roundBy == "month") * 12 + (roundBy == "quarter") * 4)
 
 }
@@ -220,7 +220,7 @@ getCFactor.TFutures <- function(bond, ticker, decade = "auto") {
 
   cf <- round(
     getPV.TVM(TFUTURES_CF_YIELD / 2,
-              getBondTerm.TFutures(bond, ticker, decade = "auto") * 2,
+              getBondTerm.TFutures(bond$maturity, ticker, decade = "auto") * 2,
               bond$initialCoupon,
               bond$initialFace,
               TRUE) / bond$initialFace,
@@ -231,9 +231,20 @@ getCFactor.TFutures <- function(bond, ticker, decade = "auto") {
 }
 
 
+# isFromBasket <- function(issueDate, maturity, ticker, decade = "auto") {
+#
+#   firstDate <- getFirstDay.TFutures(ticker, decade)
+#
+#   termIssue <- roundSpan(issueDatem maturity)
+#
+#   termFirstDay <- getBondTerm.TFutures()
+#
+# }
 
+#
 # getBasket <- function(ticker, folder = FIBONDS_FOLDER) {
 #
+#   df <- dir.FIBond(folder = folder)[which(df$risk=="US"),]
 #
 #
 # }
