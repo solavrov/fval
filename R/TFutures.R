@@ -1,6 +1,6 @@
 
 #' @export
-FOLDER_TFUTURES <- "fval_data/tfutures/"
+FOLDER_TFUTURES <- "fval_data/TFutures/"
 
 #' @export
 TFUTURES_CF_YIELD <- 6
@@ -287,7 +287,7 @@ isFromBasket2 <- function(bond, ticker, decade = "auto") {
 #'
 #' @return Vector os ISINs
 #' @export
-getBasket.TFutures <- function(ticker, folder = FOLDER_FIBONDS) {
+getBasket.TFutures <- function(ticker, folder = FOLDER_FIBONDS_US_GOV) {
 
   df <- dir.FIBond(folder = folder)
   df <- df[which(df$risk=="US"),]

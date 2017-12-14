@@ -4,13 +4,12 @@
 \alias{FIBond}
 \title{Constructor of simple fixed income bond object}
 \usage{
-FIBond(file = NA, folder = FOLDER_FIBONDS, dateFormat = "mdy",
+FIBond(file = NA, folder = FOLDER_FIBONDS_US_GOV, dateFormat = "mdy",
   sep = ",")
 }
 \arguments{
-\item{file}{Name of csv file that contains bond attributes.
-Heads should have names of attributes.
-File should be located in FOLDER_FIBONDS. Just name without extension}
+\item{file}{Name, without extension, of csv file that contains bond attributes.
+Heads should have names of attributes.}
 
 \item{dateFormat}{File date format from lubridate package i.e. "dmy", "mdy" etc}
 

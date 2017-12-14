@@ -1,6 +1,12 @@
 
 #' @export
-FOLDER_FIBONDS <- "fval_data/fibonds/"
+FOLDER_FIBONDS <- "fval_data/FIBonds/"
+
+#' @export
+FOLDER_FIBONDS_US_GOV <- "fval_data/FIBonds/US_GOV/"
+
+#' @export
+FOLDER_FIBONDS_RU_GOV <- "fval_data/FIBonds/RU_GOV/"
 
 #' Constructor of simple fixed income bond object
 #'
@@ -18,15 +24,14 @@ FOLDER_FIBONDS <- "fval_data/fibonds/"
 #' $couponDates - vector of coupon dates
 #' $couponAmounts - vector of coupon amounts
 #'
-#' @param file Name of csv file that contains bond attributes.
+#' @param file Name, without extension, of csv file that contains bond attributes.
 #' Heads should have names of attributes.
-#' File should be located in FOLDER_FIBONDS. Just name without extension
 #' @param dateFormat File date format from lubridate package i.e. "dmy", "mdy" etc
 #' @param sep Separator i.e. comma, semicolon or else
 #'
 #' @return FIBond object
 #' @export
-FIBond <- function(file = NA, folder = FOLDER_FIBONDS, dateFormat = "mdy", sep = ",") {
+FIBond <- function(file = NA, folder = FOLDER_FIBONDS_US_GOV, dateFormat = "mdy", sep = ",") {
 
   toBuild <- TRUE
 
@@ -118,13 +123,13 @@ print.FIBond <- function(bond) {
 
 #' Show attributes of all bonds from a given folder
 #'
-#' @param attr Vector of attributes' names
 #' @param folder Folder
+#' @param attr Vector of attributes' names
 #'
 #' @return Data frame with bonds' attributes
 #' @export
-dir.FIBond <- function(attr = c("name", "isin", "risk", "issueDate", "maturity"),
-                       folder = FOLDER_FIBONDS) {
+dir.FIBond <- function(folder = FOLDER_FIBONDS_US_GOV,
+                       attr = c("name", "isin", "risk", "issueDate", "maturity")) {
 
   files <- list.files(folder)
   files <- substr(files, 1, nchar(files) - 4)

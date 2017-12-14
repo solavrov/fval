@@ -4,7 +4,7 @@
 \alias{getBasket.TFutures}
 \title{Return ISINs of FIBonds from basket}
 \usage{
-getBasket.TFutures(ticker, folder = FOLDER_FIBONDS)
+getBasket.TFutures(ticker, folder = FOLDER_FIBONDS_US_GOV)
 }
 \arguments{
 \item{ticker}{Ticker of TFutures}
