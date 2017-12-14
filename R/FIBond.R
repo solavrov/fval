@@ -161,9 +161,11 @@ dir.FIBond <- function(folder = FOLDER_FIBONDS_US_GOV,
 #' @param bond FIBond object
 #' @param settleDate Calculation date
 #'
-#' @return Coupon time for FIBond object
+#' @return List of $period (days), $passed (days), $time (ratio) values
 #' @export
-getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
+getTime.FIBond <- function(bond, settleDate = nextBizDay()) {
+
+  time <- list()
 
   if (settleDate >= bond$issueDate && settleDate <= bond$maturity) {
 
@@ -176,14 +178,15 @@ getCouponTime.FIBond <- function(bond, settleDate = nextBizDay()) {
       prevDay <- bond$issueDate
     }
 
-    period <- countDays(prevDay, nextDay, bond$dayCounter)
-    daysPassed <- countDays(prevDay, settleDate, bond$dayCounter)
-
-    time <- daysPassed / period
+    time$period <- countDays(prevDay, nextDay, bond$dayCounter)
+    time$passed <- countDays(prevDay, settleDate, bond$dayCounter)
+    time$time <- time$passed / time$period
 
   } else {
 
-    time <- NA
+    time$period <- NA
+    time$passed <- NA
+    time$time <- NA
 
   }
 
@@ -237,6 +240,23 @@ getCoupon.FIBond <- function(bond, settleDate = nextBizDay()) {
 }
 
 
+# getCouponRate.FIBond <- function(bond, settleDate = nextBizDay()) {
+#
+#
+#   if (bond$formula == "OFZ") {
+#
+#     rate <-
+#
+#   } else {
+#     rate <- getCoupon.FIBond(bond, settleDate) * bond$couponFreq /
+#       getFace.FIBond(bond, settleDate) * 100
+#   }
+#
+#
+#
+# }
+
+
 #' Calculate accrued interest for FIBond object
 #'
 #' @param bond FIBond object
@@ -247,7 +267,7 @@ getCoupon.FIBond <- function(bond, settleDate = nextBizDay()) {
 getAccruedValue.FIBond <- function(bond, settleDate = nextBizDay()) {
 
   accrued <-
-    getCoupon.FIBond(bond, settleDate) * getCouponTime.FIBond(bond, settleDate)
+    getCoupon.FIBond(bond, settleDate) * getTime.FIBond(bond, settleDate)$time
 
   if (bond$formula == "OFZ") {
     accrued <-
@@ -295,7 +315,7 @@ getValue.FIBond <- function(bond, yield, settleDate = nextBizDay()) {
       numOfFutureCoupons <- length(spans[spans > 0])
 
       factors <- 1 / (1 + yield / 100 / bond$couponFreq) ^
-        (1:numOfFutureCoupons - getCouponTime.FIBond(bond, settleDate))
+        (1:numOfFutureCoupons - getTime.FIBond(bond, settleDate)$time)
 
       payments <- tail(bond$couponAmounts + bond$faceAmounts, numOfFutureCoupons)
 
