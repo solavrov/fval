@@ -287,7 +287,7 @@ isEligible2.TFutures <- function(bond, ticker, decade = "auto") {
 #'
 #' @return Vector of ISINs
 #' @export
-getEligible.TFutures <- function(ticker) {
+getEligibles.TFutures <- function(ticker) {
 
   df <- dir.FIBond(folder = FOLDER_FIBONDS_US_GOV)
   whichBasket <- which(mapply(isBasket.TFutures, df$issueDate, df$maturity, ticker))
