@@ -176,7 +176,7 @@ getFirstDay.TFutures <- function(ticker, decade = "auto") {
 }
 
 
-#' Return rounded bond's term to maturity according to TFutures rules
+#' Return rounded bond's term to maturity according to CBOT rules
 #'
 #' @param maturity Maturity date
 #' @param ticker TFutures ticker
@@ -234,7 +234,7 @@ getCFactor.TFutures <- function(bond, ticker, decade = "auto") {
 }
 
 
-#' Return TRUE if FIBond is form basket of TFutures
+#' Return TRUE if FIBond is eligible for given ticker
 #'
 #' @param issueDate Issue date of FIBond
 #' @param maturity Maturity date of FIBond
@@ -244,7 +244,7 @@ getCFactor.TFutures <- function(bond, ticker, decade = "auto") {
 #'
 #' @return TRUE if FIBond is form basket of TFutures, otherwise FALSE
 #' @export
-isFromBasket <- function(issueDate, maturity, ticker, decade = "auto") {
+isEligible.TFutures <- function(issueDate, maturity, ticker, decade = "auto") {
 
   ti <- roundSpan(issueDate, maturity)
   tf <- getBondTerm.TFutures(maturity, ticker, decade) * 12
@@ -266,7 +266,7 @@ isFromBasket <- function(issueDate, maturity, ticker, decade = "auto") {
 }
 
 
-#' Return TRUE if FIBond is form basket of TFutures
+#' Return TRUE if FIBond is eligible for given ticker
 #'
 #' @param bond FIBond object
 #' @param ticker Ticker of TFutures
@@ -275,24 +275,23 @@ isFromBasket <- function(issueDate, maturity, ticker, decade = "auto") {
 #'
 #' @return TRUE if FIBond is form basket of TFutures, otherwise FALSE
 #' @export
-isFromBasket2 <- function(bond, ticker, decade = "auto") {
+isEligible2.TFutures <- function(bond, ticker, decade = "auto") {
   isFromBasket(bond$issueDate, bond$maturity, ticker, decade)
 }
 
 
-#' Return ISINs of FIBonds from basket
+#' Return ISINs of eligible FIBonds for giben ticker
 #'
 #' @param ticker Ticker of TFutures
 #' @param folder FIBond's folder
 #'
-#' @return Vector os ISINs
+#' @return Vector of ISINs
 #' @export
-getBasket.TFutures <- function(ticker, folder = FOLDER_FIBONDS_US_GOV) {
+getEligible.TFutures <- function(ticker) {
 
-  df <- dir.FIBond(folder = folder)
-  df <- df[which(df$risk=="US"),]
-  whichFromBasket <- which(mapply(isFromBasket, df$issueDate, df$maturity, ticker))
-  isins <- as.character(df$isin[whichFromBasket])
+  df <- dir.FIBond(folder = FOLDER_FIBONDS_US_GOV)
+  whichBasket <- which(mapply(isBasket.TFutures, df$issueDate, df$maturity, ticker))
+  isins <- as.character(df$isin[whichBasket])
 
   return (isins)
 

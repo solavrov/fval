@@ -2,9 +2,9 @@
 % Please edit documentation in R/TFutures.R
 \name{getBasket.TFutures}
 \alias{getBasket.TFutures}
-\title{Return ISINs of FIBonds from basket}
+\title{Return ISINs of eligible FIBonds for giben ticker}
 \usage{
-getBasket.TFutures(ticker, folder = FOLDER_FIBONDS_US_GOV)
+getBasket.TFutures(ticker)
 }
 \arguments{
 \item{ticker}{Ticker of TFutures}
@@ -12,8 +12,8 @@ getBasket.TFutures(ticker, folder = FOLDER_FIBONDS_US_GOV)
 \item{folder}{FIBond's folder}
 }
 \value{
-Vector os ISINs
+Vector of ISINs
 }
 \description{
-Return ISINs of FIBonds from basket
+Return ISINs of eligible FIBonds for giben ticker
 }

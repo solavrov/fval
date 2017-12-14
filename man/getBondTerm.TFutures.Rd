@@ -2,7 +2,7 @@
 % Please edit documentation in R/TFutures.R
 \name{getBondTerm.TFutures}
 \alias{getBondTerm.TFutures}
-\title{Return rounded bond's term to maturity according to TFutures rules}
+\title{Return rounded bond's term to maturity according to CBOT rules}
 \usage{
 getBondTerm.TFutures(maturity, ticker, decade = "auto", forCFactor = FALSE)
 }
@@ -18,5 +18,5 @@ getBondTerm.TFutures(maturity, ticker, decade = "auto", forCFactor = FALSE)
 Rounded bond's term in years
 }
 \description{
-Return rounded bond's term to maturity according to TFutures rules
+Return rounded bond's term to maturity according to CBOT rules
 }
