@@ -77,7 +77,7 @@ FIBond <- function(file = NA, folder = FOLDER_FIBONDS_US_GOV, dateFormat = "mdy"
     bond$couponAmounts <- get(df, "couponAmounts")
     bond$faceAmounts <- get(df, "faceAmounts")
     bond$initialFace <- sum(bond$faceAmounts)
-    bond$initialCoupon <- bond$couponAmounts[1]
+    bond$initialRate <- getRate.FIBond(bond, bond$issueDate)
 
   } else {
 
@@ -98,18 +98,18 @@ FIBond <- function(file = NA, folder = FOLDER_FIBONDS_US_GOV, dateFormat = "mdy"
 #' @export
 print.FIBond <- function(bond) {
 
-  cat("name:          ", bond$name, "\n")
-  cat("risk:          ", bond$risk, "\n")
-  cat("isin:          ", bond$isin, "\n")
-  cat("currency:      ", bond$currency, "\n")
-  cat("initialFace:   ", bond$initialFace, "\n")
-  cat("initialCoupon: ", bond$initialCoupon, "\n")
-  cat("couponFreq:    ", bond$couponFreq, "\n")
-  cat("issueDate:     ", as.character(bond$issueDate), "\n")
-  cat("maturity:      ", as.character(bond$maturity), "\n")
-  cat("formula:       ", bond$formula, "\n")
-  cat("dayCounter:    ", counterName(bond$dayCounter), "\n")
-  cat("cfactor:       ", bond$cfactor, "\n\n")
+  cat("name:        ", bond$name, "\n")
+  cat("risk:        ", bond$risk, "\n")
+  cat("isin:        ", bond$isin, "\n")
+  cat("currency:    ", bond$currency, "\n")
+  cat("initialFace: ", bond$initialFace, "\n")
+  cat("initialRate: ", bond$initialRate, "\n")
+  cat("couponFreq:  ", bond$couponFreq, "\n")
+  cat("issueDate:   ", as.character(bond$issueDate), "\n")
+  cat("maturity:    ", as.character(bond$maturity), "\n")
+  cat("formula:     ", bond$formula, "\n")
+  cat("dayCounter:  ", counterName(bond$dayCounter), "\n")
+  cat("cfactor:     ", bond$cfactor, "\n\n")
   print(
     data.frame(
       couponDates = bond$couponDates,

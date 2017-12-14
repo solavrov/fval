@@ -221,12 +221,12 @@ getBondTerm.TFutures <- function(maturity, ticker, decade = "auto", forCFactor =
 getCFactor.TFutures <- function(bond, ticker, decade = "auto") {
 
   cf <- round(
-    getPV.TVM(TFUTURES_CF_YIELD / 2,
-              getBondTerm.TFutures(bond$maturity, ticker,
-                                   decade = "auto", forCFactor = TRUE) * 2,
-              bond$initialCoupon,
-              bond$initialFace,
-              TRUE) / bond$initialFace,
+    getPV.TVM(rate = TFUTURES_CF_YIELD / 2,
+              nper = getBondTerm.TFutures(bond$maturity, ticker,
+                                          decade = "auto", forCFactor = TRUE) * 2,
+              pmt = bond$initialRate / 2 / 100,
+              fv = 1,
+              lessAccrued = TRUE),
     4)
 
   return (cf)
