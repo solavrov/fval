@@ -1,6 +1,6 @@
 
 #' @export
-TFUTURES_FOLDER <- "fval_data/tfutures/"
+FOLDER_TFUTURES <- "fval_data/tfutures/"
 
 #' @export
 TFUTURES_CF_YIELD <- 6
@@ -287,7 +287,7 @@ isFromBasket2 <- function(bond, ticker, decade = "auto") {
 #'
 #' @return Vector os ISINs
 #' @export
-getBasket <- function(ticker, folder = FIBONDS_FOLDER) {
+getBasket <- function(ticker, folder = FOLDER_FIBONDS) {
 
   df <- dir.FIBond(folder = folder)
   df <- df[which(df$risk=="US"),]
@@ -311,7 +311,7 @@ loadCTD.TFutures <- function(ticker, file = "") {
   if (file != "")
     ctd <- FIBond(file)
   else if (isTicker.TFutures(ticker))
-    ctd <- FIBond(paste0("ctd_", ticker), folder = TFUTURES_FOLDER)
+    ctd <- FIBond(paste0("ctd_", ticker), folder = FOLDER_TFUTURES)
   else {
     if (!is.na(ticker)) stop("Ticker ", ticker, " is wrong")
     ctd <- NA
@@ -353,14 +353,14 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
   }
 
 
-#' Show attributes of all ctd bonds in TFUTURES_FOLDER
+#' Show attributes of all ctd bonds in FOLDER_TFUTURES
 #'
 #' @param attr Vector of attributes' names
 #'
 #' @return Data frame with bonds' attributes
 #' @export
 dir.TFutures <- function(attr = c("name", "isin", "issueDate", "maturity")) {
-  dir.FIBond(attr, TFUTURES_FOLDER)
+  dir.FIBond(attr, FOLDER_TFUTURES)
 }
 
 

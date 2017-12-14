@@ -2,7 +2,7 @@
 % Please edit documentation in R/TFutures.R
 \name{dir.TFutures}
 \alias{dir.TFutures}
-\title{Show attributes of all ctd bonds in TFUTURES_FOLDER}
+\title{Show attributes of all ctd bonds in FOLDER_TFUTURES}
 \usage{
 dir.TFutures(attr = c("name", "isin", "issueDate", "maturity"))
 }
@@ -13,5 +13,5 @@ dir.TFutures(attr = c("name", "isin", "issueDate", "maturity"))
 Data frame with bonds' attributes
 }
 \description{
-Show attributes of all ctd bonds in TFUTURES_FOLDER
+Show attributes of all ctd bonds in FOLDER_TFUTURES
 }
