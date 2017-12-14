@@ -287,7 +287,7 @@ isFromBasket2 <- function(bond, ticker, decade = "auto") {
 #'
 #' @return Vector os ISINs
 #' @export
-getBasket <- function(ticker, folder = FOLDER_FIBONDS) {
+getBasket.TFutures <- function(ticker, folder = FOLDER_FIBONDS) {
 
   df <- dir.FIBond(folder = folder)
   df <- df[which(df$risk=="US"),]
