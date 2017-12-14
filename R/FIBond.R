@@ -246,21 +246,12 @@ getCoupon.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getAccruedValue.FIBond <- function(bond, settleDate = nextBizDay()) {
 
-  if (settleDate >= bond$issueDate && settleDate <= bond$maturity) {
+  accrued <-
+    getCoupon.FIBond(bond, settleDate) * getCouponTime.FIBond(bond, settleDate)
 
-    nextPaymentIndex <- which(bond$couponDates > settleDate)[1]
-    coupon <- bond$couponAmounts[nextPaymentIndex]
-    accrued <- coupon * getCouponTime.FIBond(bond, settleDate)
-
-    if (bond$formula == "OFZ") {
-      accrued <-
-        round(accrued / bond$initialFace * 1000, digits = 2) * bond$initialFace / 1000
-    }
-
-  } else {
-
-    accrued <- NA
-
+  if (bond$formula == "OFZ") {
+    accrued <-
+      round(accrued / bond$initialFace * 1000, digits = 2) * bond$initialFace / 1000
   }
 
   return (accrued)
