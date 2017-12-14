@@ -374,6 +374,20 @@ getPVBP.FIBond <- function(bond, price, settleDate = nextBizDay()) {
 }
 
 
+#' Return modified duration of given FIBond
+#'
+#' @param bond FIBond object
+#' @param price FIBond clean price in percentage
+#' @param settleDate Calculation date
+#'
+#' @return Modified duration of given FIBond
+#' @export
+getDur.FIBond <- function(bond, price, settleDate = nextBizDay()) {
+  - getPVBP.FIBond(bond, price, settleDate) * 100 /
+    (price + getAccrued.FIBond(bond, settleDate)) * 100
+}
+
+
 #' Calculate carry for FIBond object
 #'
 #' @param bond FIBond object (can be a list)
