@@ -216,6 +216,27 @@ getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 }
 
 
+#' Return current coupon amount
+#'
+#' @param bond FIBond object
+#' @param settleDate Calculation date
+#'
+#' @return Current coupon amount
+#' @export
+getCoupon.FIBond <- function(bond, settleDate = nextBizDay()) {
+
+  if (settleDate >= bond$issueDate && settleDate <= bond$maturity) {
+    nextPaymentIndex <- which(bond$couponDates > settleDate)[1]
+    coupon <- bond$couponAmounts[nextPaymentIndex]
+  } else {
+    coupon <- NA
+  }
+
+  return (coupon)
+
+}
+
+
 #' Calculate accrued interest for FIBond object
 #'
 #' @param bond FIBond object
