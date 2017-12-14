@@ -240,21 +240,28 @@ getCoupon.FIBond <- function(bond, settleDate = nextBizDay()) {
 }
 
 
-# getCouponRate.FIBond <- function(bond, settleDate = nextBizDay()) {
-#
-#
-#   if (bond$formula == "OFZ") {
-#
-#     rate <-
-#
-#   } else {
-#     rate <- getCoupon.FIBond(bond, settleDate) * bond$couponFreq /
-#       getFace.FIBond(bond, settleDate) * 100
-#   }
-#
-#
-#
-# }
+#' Return coupon rate for current period
+#'
+#' @param bond FIBond object
+#' @param settleDate Calculation date
+#'
+#' @return Coupon rate for current period in percentage
+#' @export
+getRate.FIBond <- function(bond, settleDate = nextBizDay()) {
+
+  if (bond$formula == "OFZ")
+    rate <- round (
+      getCoupon.FIBond(bond, settleDate) / getFace.FIBond(bond, settleDate) *
+        365 / getTime.FIBond(bond, settleDate)$period * 100,
+      2
+    )
+  else
+    rate <- getCoupon.FIBond(bond, settleDate) * bond$couponFreq /
+      getFace.FIBond(bond, settleDate) * 100
+
+  return (rate)
+
+}
 
 
 #' Calculate accrued interest for FIBond object
