@@ -73,16 +73,16 @@ countDays <- function(startDate, endDate, dayCounter) {
 
 #' Return date object
 #'
-#' @param date Date as a string
+#' @param string Date as a string
 #' @param format dmy, mdy, ymd
 #'
 #' @return Date object
 #' @export
-parseDate <- function(date, format) {
-  if (all(is.na(date)))
-    return (rep(NA, length(date)))
+parseDate <- function(string, format) {
+  if (all(is.na(string)))
+    return (rep(NA, length(string)))
   else
-    return (as.Date(lubridate::parse_date_time(as.character(date), format)))
+    return (as.Date(lubridate::parse_date_time(as.character(string), format)))
 }
 
 
@@ -124,22 +124,25 @@ prevBizDay <- function(date = Sys.Date(), calendar = "WeekendsOnly") {
 }
 
 
-#' Return number of next month
+#' Return next month's number and year
 #'
-#' @param month Number of present month
+#' @param month Present month's number
 #' @param year Year
+#' @param n Number of months to go forward
 #'
 #' @return List where $month is next month and $year is year of next month
 #' @export
-nextMonth <- function(month, year) {
+nextMonth <- function(month, year, n = 1) {
 
-  month <- month + 1
+  year <- year + n %/% 12
+  month <- month + n %% 12
+
   if (month > 12) {
-    month <- 1
+    month <- month - 12
     year <- year + 1
   }
 
-  return (list(month = month, year = year))
+  return (list (month = month, year = year))
 
 }
 
@@ -182,6 +185,45 @@ lastBizDay <- function(month, year, calendar = "WeekendsOnly") {
 firstBizDay <- function(month, year, calendar = "WeekendsOnly") {
   nextBizDay(prevBizDay(firstDay(month, year), calendar))
 }
+
+#
+#
+# disassembleDate <- function(date) {
+#   list(day = as.numeric(strftime(date, format = "%d")),
+#        month = as.numeric(strftime(date, format = "%m")),
+#        year = as.numeric(strftime(date, format = "%Y")))
+# }
+#
+#
+# plusMonth <- function(date, n = 1) {
+#
+#   d <- disassembleDate(date)
+#   nm <- nextMonth(d$month, d$year)
+#   d$month <- nm$month
+#   d$year <- nm$year
+#
+#   date <- as.Date(ISOdate(d$year, d$month, d$day))
+#
+#   while (is.na(date)) {
+#     d$day <- d$day - 1
+#     date <- as.Date(ISOdate(d$year, d$month, d$day))
+#   }
+#
+#   return (date)
+#
+# }
+#
+#
+#
+#
+# getSchedule <- function(startDate, nper, period) {
+#
+#   switch (period,
+#           month = plusNMonths(startDate, nper))
+#
+#
+#
+# }
 
 
 #' Return span between two dates in whole weeks, months, quarters or years
