@@ -261,7 +261,13 @@ getSchedule <- function(startDate, nper, period = "month") {
 #' @return Span between two dates
 #' @export
 roundSpan <- function(startDate, endDate, roundBy = "month") {
-  length(seq(startDate, endDate, by = roundBy)) - 1
+
+  nper <- ceiling(as.numeric(endDate - startDate) / 28)
+  sch <- getSchedule(startDate, nper, roundBy)
+  span <- length(which(sch <= endDate)) - 1
+
+  return (span)
+
 }
 
 
