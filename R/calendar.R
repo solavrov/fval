@@ -186,44 +186,70 @@ firstBizDay <- function(month, year, calendar = "WeekendsOnly") {
   nextBizDay(prevBizDay(firstDay(month, year), calendar))
 }
 
-#
-#
-# disassembleDate <- function(date) {
-#   list(day = as.numeric(strftime(date, format = "%d")),
-#        month = as.numeric(strftime(date, format = "%m")),
-#        year = as.numeric(strftime(date, format = "%Y")))
-# }
-#
-#
-# plusMonth <- function(date, n = 1) {
-#
-#   d <- disassembleDate(date)
-#   nm <- nextMonth(d$month, d$year)
-#   d$month <- nm$month
-#   d$year <- nm$year
-#
-#   date <- as.Date(ISOdate(d$year, d$month, d$day))
-#
-#   while (is.na(date)) {
-#     d$day <- d$day - 1
-#     date <- as.Date(ISOdate(d$year, d$month, d$day))
-#   }
-#
-#   return (date)
-#
-# }
-#
-#
-#
-#
-# getSchedule <- function(startDate, nper, period) {
-#
-#   switch (period,
-#           month = plusNMonths(startDate, nper))
-#
-#
-#
-# }
+
+
+#' Disassemble date object to three numericals - day, month, year
+#'
+#' @param date Date object
+#'
+#' @return list of numericals $day, $month, $year
+#' @export
+disassembleDate <- function(date) {
+  list(day = as.numeric(strftime(date, format = "%d")),
+       month = as.numeric(strftime(date, format = "%m")),
+       year = as.numeric(strftime(date, format = "%Y")))
+}
+
+
+#' Return date n month forward from given date
+#'
+#' @param date Date
+#' @param n Number of months to go forward
+#'
+#' @return Date n month forward
+#' @export
+plusMonth <- function(date, n = 1) {
+
+  d <- disassembleDate(date)
+  m <- nextMonth(d$month, d$year, n)
+  d$month <- m$month
+  d$year <- m$year
+
+  date <- as.Date(ISOdate(d$year, d$month, d$day))
+
+  while (is.na(date)) {
+    d$day <- d$day - 1
+    date <- as.Date(ISOdate(d$year, d$month, d$day))
+  }
+
+  return (date)
+
+}
+
+
+#' Return vector of dates with given period from given start date
+#'
+#' @param startDate Start date
+#' @param nper Number of periods
+#' @param period Period - "month", "quarter", "half", "year"
+#'
+#' @return Vector of dates with given period from given start date
+#' @export
+getSchedule <- function(startDate, nper, period = "month") {
+
+  monthSeq <-
+    switch(period,
+           month = seq(0, nper, 1),
+           quarter = seq(0, nper * 3, 3),
+           half = seq(0, nper * 6, 6),
+           year = seq(0, nper * 12, 12),
+           NA)
+
+  schedule <- as.Date(mapply(plusMonth, startDate, monthSeq), origin = "1970-01-01")
+
+  return (schedule)
+
+}
 
 
 #' Return span between two dates in whole weeks, months, quarters or years

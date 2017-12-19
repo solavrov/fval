@@ -2,18 +2,20 @@
 % Please edit documentation in R/calendar.R
 \name{nextMonth}
 \alias{nextMonth}
-\title{Return number of next month}
+\title{Return next month's number and year}
 \usage{
-nextMonth(month, year)
+nextMonth(month, year, n = 1)
 }
 \arguments{
-\item{month}{Number of present month}
+\item{month}{Present month's number}
 
 \item{year}{Year}
+
+\item{n}{Number of months to go forward}
 }
 \value{
 List where $month is next month and $year is year of next month
 }
 \description{
-Return number of next month
+Return next month's number and year
 }

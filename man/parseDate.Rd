@@ -4,10 +4,10 @@
 \alias{parseDate}
 \title{Return date object}
 \usage{
-parseDate(date, format)
+parseDate(string, format)
 }
 \arguments{
-\item{date}{Date as a string}
+\item{string}{Date as a string}
 
 \item{format}{dmy, mdy, ymd}
 }

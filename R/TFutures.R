@@ -161,6 +161,51 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 
 }
 
+#'
+#' #' Return last drading date by TFutures ticker
+#' #'
+#' #' @param ticker Ticker
+#' #' @param decade Decade that can be "auto" - default value, "pres" - present decade,
+#' #' "prev" - previous decade, "next" - next decade
+#' #'
+#' #' @return Last trading date
+#' #' @export
+#' getLastTradingDate.TFutures <- function(ticker, decade = "auto") {
+#'
+#'   if (isTicker.TFutures(ticker)) {
+#'
+#'     futuresCode <- getCode.Futures(ticker)
+#'
+#'     lastMonthBizDay <- lastBizDay(getMonth.Futures(ticker),
+#'                                   getYear.Futures(ticker, decade),
+#'                                   calendar = "UnitedStates/GovernmentBond")
+#'
+#'     for (i in 1:7) eighthMonthBizDayFromEnd <-
+#'       prevBizDay(lastMonthBizDay, calendar = "UnitedStates/GovernmentBond")
+#'
+#'     lastTradingDate <- switch(
+#'       futuresCode,
+#'       TU = lastMonthBizDay,
+#'       "3Y" = lastMonthBizDay,
+#'       FV = lastMonthBizDay,
+#'       TY = eighthMonthBizDayFromEnd,
+#'       UXY = eighthMonthBizDayFromEnd,
+#'       US = eighthMonthBizDayFromEnd,
+#'       WN = eighthMonthBizDayFromEnd,
+#'       NA
+#'     )
+#'
+#'   } else {
+#'
+#'     lastTradingDate <- NA
+#'
+#'   }
+#'
+#'   return (lastTradingDate)
+#'
+#' }
+
+
 
 #' Return first bisness day of delivery month by TFutures ticker
 #'
