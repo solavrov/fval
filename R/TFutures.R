@@ -438,7 +438,7 @@ print.TFutures <- function(fut) {
 #' @return Data frame with bonds' attributes
 #' @export
 dir.TFutures <- function(attr = c("name", "isin", "issueDate", "maturity")) {
-  dir.FIBond(attr, FOLDER_TFUTURES)
+  dir.FIBond(FOLDER_TFUTURES, attr)
 }
 
 
