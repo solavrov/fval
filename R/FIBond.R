@@ -121,12 +121,31 @@ print.FIBond <- function(bond) {
 }
 
 
-# insertSchedule.FIBond <- function(bond, issueDate, nper, face, rate) {
-#
-#   bond$iss
-#
-# }
+#' Return FIBond object with specified standard payment schedule
+#'
+#' @param bond FIBond object
+#' @param rate Coupon rate
+#' @param issueDate Issue date
+#' @param nper Number of coupon periods
+#' @param freq Frequency of payments: "month", "quarter", "half", "year"
+#' @param face Face value
+#'
+#' @return FIBond object with specified schedule
+#' @export
+buildSchedule.FIBond <- function(bond, rate, issueDate, nper, freq = "half", face = 1e3) {
 
+  bond$initialFace <- face
+  bond$initialRate <- rate
+  bond$couponFreq <- switch(freq, month = 12, quarter = 4, half = 2, year = 1, NA)
+  bond$issueDate <- issueDate
+  bond$couponDates <- tail(getSchedule(issueDate, nper, freq), -1)
+  bond$maturity <- tail(bond$couponDates, 1)
+  bond$couponAmounts <- rep(face * rate / 100 / bond$couponFreq, nper)
+  bond$faceAmounts <- c(rep(0, nper - 1), face)
+
+  return (bond)
+
+}
 
 
 #' Show attributes of all bonds from a given folder
