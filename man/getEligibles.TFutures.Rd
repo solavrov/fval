@@ -4,7 +4,7 @@
 \alias{getEligibles.TFutures}
 \title{Return ISINs of eligible FIBonds for giben ticker}
 \usage{
-getEligibles.TFutures(ticker)
+getEligibles.TFutures(ticker, decade = "auto")
 }
 \arguments{
 \item{ticker}{Ticker of TFutures}

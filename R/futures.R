@@ -63,6 +63,8 @@ letter.Futures <- function(month) {
 #' @export
 isTicker.Futures <- function(ticker) {
 
+  ticker <- toupper(ticker)
+
   year <- as.numeric(substr(ticker, nchar(ticker), nchar(ticker)))
   month <- month.Futures(substr(ticker, nchar(ticker) - 1, nchar(ticker) - 1))
 
@@ -78,6 +80,8 @@ isTicker.Futures <- function(ticker) {
 #' @return Expiration month number
 #' @export
 getMonth.Futures <- function(ticker) {
+
+  ticker <- toupper(ticker)
 
   if (isTicker.Futures(ticker))
     month <- month.Futures(substr(ticker, nchar(ticker) - 1, nchar(ticker) - 1))
@@ -98,6 +102,8 @@ getMonth.Futures <- function(ticker) {
 #' @return Contract's year
 #' @export
 getYear.Futures <- function(ticker, decade = "auto") {
+
+  ticker <- toupper(ticker)
 
   if (isTicker.Futures(ticker)) {
 
@@ -138,6 +144,8 @@ getYear.Futures <- function(ticker, decade = "auto") {
 #' @return Contract type code
 #' @export
 getCode.Futures <- function(ticker) {
+
+  ticker <- toupper(ticker)
 
   if (isTicker.Futures(ticker))
     code <- substr(ticker, 1, nchar(ticker) - 2)

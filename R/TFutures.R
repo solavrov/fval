@@ -14,6 +14,8 @@ TFUTURES_CF_YIELD <- 6
 #' @export
 getType.TFutures <- function(ticker) {
 
+  ticker <- toupper(ticker)
+
   code <- getCode.Futures(ticker)
 
   if (is.na(code))
@@ -55,7 +57,7 @@ isTicker.TFutures <- function(ticker) {
 #' @export
 checkTicker.TFutures <- function(ticker) {
   if (isTicker.TFutures(ticker))
-    return (ticker)
+    return (toupper(ticker))
   else
     return (NA)
 }
@@ -346,10 +348,10 @@ isEligible2.TFutures <- function(bond, ticker, decade = "auto") {
 #'
 #' @return Vector of ISINs
 #' @export
-getEligibles.TFutures <- function(ticker) {
+getEligibles.TFutures <- function(ticker, decade = "auto") {
 
   df <- dir.FIBond(folder = FOLDER_FIBONDS_US_GOV)
-  whichBasket <- which(mapply(isBasket.TFutures, df$issueDate, df$maturity, ticker))
+  whichBasket <- which(mapply(isEligible.TFutures, df$issueDate, df$maturity, ticker, decade))
   isins <- as.character(df$isin[whichBasket])
 
   return (isins)
@@ -371,7 +373,7 @@ loadCTD.TFutures <- function(ticker, file = "") {
   else if (isTicker.TFutures(ticker))
     ctd <- FIBond(paste0("ctd_", ticker), folder = FOLDER_TFUTURES)
   else {
-    if (!is.na(ticker)) stop("Ticker ", ticker, " is wrong")
+    if (!is.na(ticker)) stop("Ticker ", toupper(ticker), " is wrong")
     ctd <- NA
   }
 
