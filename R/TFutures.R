@@ -127,8 +127,16 @@ getNotional.TFutures <- function(ticker) {
 #' @return First day
 #' @export
 getFirstDay.TFutures <- function(ticker, decade = "auto") {
-  firstDay(getMonth.Futures(ticker),
-           getYear.Futures(ticker, decade))
+
+  if (isTicker.TFutures(ticker)) {
+    fd <- firstDay(getMonth.Futures(ticker),
+             getYear.Futures(ticker, decade))
+  } else {
+    fd <- NA
+  }
+
+  return (fd)
+
 }
 
 
@@ -141,7 +149,14 @@ getFirstDay.TFutures <- function(ticker, decade = "auto") {
 #' @return First intention date
 #' @export
 getFirstIntention.TFutures <- function(ticker, decade = "auto") {
-  prevBizDay(prevBizDay(getFirstDay.TFutures(ticker, decade)))
+
+  if (isTicker.TFutures(ticker))
+    fi <- prevBizDay(prevBizDay(getFirstDay.TFutures(ticker, decade)))
+  else
+    fi <- NA
+
+  return (fi)
+
 }
 
 
