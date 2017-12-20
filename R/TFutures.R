@@ -413,6 +413,24 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
   }
 
 
+#' Print TFutures object
+#'
+#' @param bond TFutures object
+#'
+#' @return Info on screen
+#' @export
+print.TFutures <- function(fut) {
+  cat("name:           ", fut$name, "\n")
+  cat("ticker:         ", fut$ticker, "\n")
+  cat("notional:       ", prettyNum(f$notional, big.mark = ",", scientific = FALSE), "\n")
+  cat("firstIntention: ", as.character(fut$firstIntention), "\n")
+  cat("lastTrading:    ", as.character(fut$lastTrading), "\n")
+  cat("deliveryDate:   ", as.character(fut$deliveryDate), "\n\n")
+  cat("CTD info\n--------\n")
+  print(fut$ctd)
+}
+
+
 #' Show attributes of all ctd bonds in FOLDER_TFUTURES
 #'
 #' @param attr Vector of attributes' names
