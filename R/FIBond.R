@@ -121,6 +121,14 @@ print.FIBond <- function(bond) {
 }
 
 
+# insertSchedule.FIBond <- function(bond, issueDate, nper, face, rate) {
+#
+#   bond$iss
+#
+# }
+
+
+
 #' Show attributes of all bonds from a given folder
 #'
 #' @param folder Folder
@@ -204,15 +212,10 @@ getTime.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 
-    if (settleDate >= bond$issueDate && settleDate <= bond$maturity) {
-
-      face <- sum(bond$faceAmounts[bond$couponDates > settleDate])
-
-    } else {
-
-      face <- NA
-
-    }
+  if (is.na(settleDate) || settleDate < bond$issueDate || settleDate > bond$maturity)
+    face <- NA
+  else
+    face <- sum(bond$faceAmounts[bond$couponDates > settleDate])
 
   return (face)
 
@@ -228,11 +231,11 @@ getFace.FIBond <- function(bond, settleDate = nextBizDay()) {
 #' @export
 getCoupon.FIBond <- function(bond, settleDate = nextBizDay()) {
 
-  if (settleDate >= bond$issueDate && settleDate <= bond$maturity) {
+  if (is.na(settleDate) || settleDate < bond$issueDate || settleDate > bond$maturity)
+    coupon <- NA
+  else {
     nextPaymentIndex <- which(bond$couponDates > settleDate)[1]
     coupon <- bond$couponAmounts[nextPaymentIndex]
-  } else {
-    coupon <- NA
   }
 
   return (coupon)
