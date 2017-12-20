@@ -116,6 +116,33 @@ getNotional.TFutures <- function(ticker) {
 }
 
 
+#' Return first day of delivery month by TFutures ticker
+#'
+#' @param ticker Ticker
+#' @param decade Decade that can be "auto" - default value, "pres" - present decade,
+#' "prev" - previous decade, "next" - next decade
+#'
+#' @return First day
+#' @export
+getFirstDay.TFutures <- function(ticker, decade = "auto") {
+  firstDay(getMonth.Futures(ticker),
+           getYear.Futures(ticker, decade))
+}
+
+
+#' Return first intention date by TFutures ticker
+#'
+#' @param ticker Ticker
+#' @param decade Decade that can be "auto" - default value, "pres" - present decade,
+#' "prev" - previous decade, "next" - next decade
+#'
+#' @return First intention date
+#' @export
+getFirstIntention.TFutures <- function(ticker, decade = "auto") {
+  prevBizDay(prevBizDay(getFirstDay.TFutures(ticker, decade)))
+}
+
+
 #' Return model delivery date by TFutures ticker
 #'
 #' @param ticker Ticker
@@ -170,7 +197,7 @@ getDeliveryDate.TFutures <- function(ticker, decade = "auto") {
 #'
 #' @return Last trading date
 #' @export
-getLastTradingDate.TFutures <- function(ticker, decade = "auto") {
+getLastTrading.TFutures <- function(ticker, decade = "auto") {
 
   if (isTicker.TFutures(ticker)) {
 
@@ -205,20 +232,6 @@ getLastTradingDate.TFutures <- function(ticker, decade = "auto") {
 
   return (lastTradingDate)
 
-}
-
-
-#' Return first bisness day of delivery month by TFutures ticker
-#'
-#' @param ticker Ticker
-#' @param decade Decade that can be "auto" - default value, "pres" - present decade,
-#' "prev" - previous decade, "next" - next decade
-#'
-#' @return First business day
-#' @export
-getFirstDay.TFutures <- function(ticker, decade = "auto") {
-  firstDay(getMonth.Futures(ticker),
-           getYear.Futures(ticker, decade))
 }
 
 
@@ -390,6 +403,8 @@ TFutures <- function(ticker = NA, ctdFile = "", dateFormat = "mdy", decade = "au
     fut$name <- getName.TFutures(ticker, decade)
     fut$ticker <- checkTicker.TFutures(ticker)
     fut$notional <- getNotional.TFutures(ticker)
+    fut$firstIntention <- getFirstIntention.TFutures(ticker, decade)
+    fut$lastTrading <- getLastTrading.TFutures(ticker, decade)
     fut$deliveryDate <- getDeliveryDate.TFutures(ticker)
     fut$ctd <- loadCTD.TFutures(ticker, ctdFile)
 
