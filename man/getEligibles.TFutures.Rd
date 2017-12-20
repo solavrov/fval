@@ -2,7 +2,7 @@
 % Please edit documentation in R/TFutures.R
 \name{getEligibles.TFutures}
 \alias{getEligibles.TFutures}
-\title{Return ISINs of eligible FIBonds for giben ticker}
+\title{Return ISINs of eligible FIBonds for given ticker}
 \usage{
 getEligibles.TFutures(ticker, decade = "auto")
 }
@@ -15,5 +15,5 @@ getEligibles.TFutures(ticker, decade = "auto")
 Vector of ISINs
 }
 \description{
-Return ISINs of eligible FIBonds for giben ticker
+Return ISINs of eligible FIBonds for given ticker
 }

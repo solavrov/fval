@@ -356,7 +356,7 @@ isEligible2.TFutures <- function(bond, ticker, decade = "auto") {
 }
 
 
-#' Return ISINs of eligible FIBonds for giben ticker
+#' Return ISINs of eligible FIBonds for given ticker
 #'
 #' @param ticker Ticker of TFutures
 #' @param folder FIBond's folder

@@ -252,11 +252,11 @@ getSchedule <- function(startDate, nper, period = "month") {
 }
 
 
-#' Return span between two dates in whole weeks, months, quarters or years
+#' Return span between two dates in whole months, quarters, halfyears, years
 #'
 #' @param startDate Start date
 #' @param endDate End date
-#' @param roundBy Round by week, month, quarter, year
+#' @param roundBy Round by "month", "quarter", "half", "year"
 #'
 #' @return Span between two dates
 #' @export

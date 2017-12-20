@@ -2,7 +2,7 @@
 % Please edit documentation in R/calendar.R
 \name{roundSpan}
 \alias{roundSpan}
-\title{Return span between two dates in whole weeks, months, quarters or years}
+\title{Return span between two dates in whole months, quarters, halfyears, years}
 \usage{
 roundSpan(startDate, endDate, roundBy = "month")
 }
@@ -11,11 +11,11 @@ roundSpan(startDate, endDate, roundBy = "month")
 
 \item{endDate}{End date}
 
-\item{roundBy}{Round by week, month, quarter, year}
+\item{roundBy}{Round by "month", "quarter", "half", "year"}
 }
 \value{
 Span between two dates
 }
 \description{
-Return span between two dates in whole weeks, months, quarters or years
+Return span between two dates in whole months, quarters, halfyears, years
 }
